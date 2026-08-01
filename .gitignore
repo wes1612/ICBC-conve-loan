@@ -1,0 +1,27 @@
+# --- 通用 ---
+.DS_Store
+.env
+.env.local
+*.log
+
+# --- 前端 (Node) ---
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/build/
+frontend/.turbo/
+
+# --- 后端 (Python) ---
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+
+# --- 数据库/本地数据 ---
+*.sqlite3
+*.db
+
+# --- IDE ---
+.vscode/
+.idea/
