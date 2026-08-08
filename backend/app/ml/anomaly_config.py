@@ -1,0 +1,29 @@
+"""异常识别 v1 的集中化阈值和分值配置。"""
+
+from __future__ import annotations
+
+from typing import Final
+
+
+ANOMALY_LOOKBACK_DAYS: Final[int] = 30
+REPEATED_AMOUNT_MIN_COUNT: Final[int] = 3
+REPEATED_AMOUNT_MIN_VALUE: Final[float] = 1000.0
+NIGHT_TRANSACTION_RATIO: Final[float] = 0.15
+NIGHT_TRANSACTION_MIN_COUNT: Final[int] = 3
+COUNTERPARTY_AMOUNT_SHARE: Final[float] = 0.55
+RAPID_ROUNDTRIP_HOURS: Final[float] = 2.0
+RAPID_ROUNDTRIP_AMOUNT_TOLERANCE: Final[float] = 0.03
+REFUND_REVERSAL_RATIO: Final[float] = 0.15
+MISSING_ORDER_LINK_RATIO: Final[float] = 0.35
+MAD_Z_THRESHOLD: Final[float] = 3.5
+
+RULE_CONTRIBUTIONS: Final[dict[str, int]] = {
+    "REPEATED_ROUND_AMOUNT": 25,
+    "OFF_HOURS_CONCENTRATION": 15,
+    "COUNTERPARTY_CONCENTRATION": 20,
+    "RAPID_IN_OUT_ROUNDTRIP": 30,
+    "HIGH_REFUND_REVERSAL": 20,
+    "AMOUNT_MAD_OUTLIER": 15,
+    "MISSING_ORDER_LINK": 15,
+}
+
