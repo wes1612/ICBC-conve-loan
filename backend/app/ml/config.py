@@ -88,6 +88,7 @@ PROFILE_CONFIGS: Final[dict[str, dict[str, object]]] = {
         "authenticity_uses_final_inconsistency": False,
         "strict_confidence": False,
         "enable_v09_review_rule": False,
+        "enable_tax_review_rule": False,
     },
     "v5_current": {
         "score_version": "scorecard_v5_2026_08",
@@ -101,6 +102,6 @@ PROFILE_CONFIGS: Final[dict[str, dict[str, object]]] = {
         "authenticity_uses_final_inconsistency": True,
         "strict_confidence": True,
         "enable_v09_review_rule": True,
+        "enable_tax_review_rule": True,
     },
 }
-
