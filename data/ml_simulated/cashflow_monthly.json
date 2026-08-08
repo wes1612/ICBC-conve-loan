@@ -1,0 +1,457 @@
+[
+  {
+    "case_id": "M001_cash_gap_case",
+    "source_type": "SIMULATED_FOR_COMPETITION_MVP",
+    "input": {
+      "merchant_id": "M001",
+      "snapshot_date": "2026-07-31",
+      "history": [
+        {
+          "month": "2025-08-01",
+          "operating_inflow": 76830.0,
+          "operating_outflow": 55516.22
+        },
+        {
+          "month": "2025-09-01",
+          "operating_inflow": 78307.5,
+          "operating_outflow": 54919.61
+        },
+        {
+          "month": "2025-10-01",
+          "operating_inflow": 79785.0,
+          "operating_outflow": 57086.25
+        },
+        {
+          "month": "2025-11-01",
+          "operating_inflow": 78997.0,
+          "operating_outflow": 55962.81
+        },
+        {
+          "month": "2025-12-01",
+          "operating_inflow": 81262.5,
+          "operating_outflow": 59294.76
+        },
+        {
+          "month": "2026-01-01",
+          "operating_inflow": 82740.0,
+          "operating_outflow": 57442.12
+        },
+        {
+          "month": "2026-02-01",
+          "operating_inflow": 84217.5,
+          "operating_outflow": 60854.32
+        },
+        {
+          "month": "2026-03-01",
+          "operating_inflow": 85498.0,
+          "operating_outflow": 60568.22
+        },
+        {
+          "month": "2026-04-01",
+          "operating_inflow": 86877.0,
+          "operating_outflow": 60929.68
+        },
+        {
+          "month": "2026-05-01",
+          "operating_inflow": 88157.5,
+          "operating_outflow": 63076.78
+        },
+        {
+          "month": "2026-06-01",
+          "operating_inflow": 89438.0,
+          "operating_outflow": 65260.17
+        },
+        {
+          "month": "2026-07-01",
+          "operating_inflow": 90620.0,
+          "operating_outflow": 62270.83
+        }
+      ],
+      "current_cash_balance": 160000,
+      "restricted_cash": 5000,
+      "unused_credit": 80000,
+      "minimum_cash_balance": 50000,
+      "planned_capex_3m": [
+        0,
+        10000,
+        0
+      ],
+      "debt_service_3m": [
+        8000,
+        8000,
+        8000
+      ],
+      "confirmed_extra_inflows_3m": [
+        0,
+        0,
+        0
+      ],
+      "stress_inflow_decline": 0.15,
+      "stress_outflow_increase": 0.1
+    }
+  },
+  {
+    "case_id": "M002_cash_gap_case",
+    "source_type": "SIMULATED_FOR_COMPETITION_MVP",
+    "input": {
+      "merchant_id": "M002",
+      "snapshot_date": "2026-07-31",
+      "history": [
+        {
+          "month": "2025-08-01",
+          "operating_inflow": 28130.0,
+          "operating_outflow": 22130.76
+        },
+        {
+          "month": "2025-09-01",
+          "operating_inflow": 31040.0,
+          "operating_outflow": 23701.91
+        },
+        {
+          "month": "2025-10-01",
+          "operating_inflow": 33950.0,
+          "operating_outflow": 26447.68
+        },
+        {
+          "month": "2025-11-01",
+          "operating_inflow": 36860.0,
+          "operating_outflow": 28430.33
+        },
+        {
+          "month": "2025-12-01",
+          "operating_inflow": 39770.0,
+          "operating_outflow": 31595.07
+        },
+        {
+          "month": "2026-01-01",
+          "operating_inflow": 43650.0,
+          "operating_outflow": 32994.14
+        },
+        {
+          "month": "2026-02-01",
+          "operating_inflow": 47530.0,
+          "operating_outflow": 37393.36
+        },
+        {
+          "month": "2026-03-01",
+          "operating_inflow": 51410.0,
+          "operating_outflow": 39652.82
+        },
+        {
+          "month": "2026-04-01",
+          "operating_inflow": 55290.0,
+          "operating_outflow": 42219.03
+        },
+        {
+          "month": "2026-05-01",
+          "operating_inflow": 59170.0,
+          "operating_outflow": 46094.54
+        },
+        {
+          "month": "2026-06-01",
+          "operating_inflow": 63050.0,
+          "operating_outflow": 50089.74
+        },
+        {
+          "month": "2026-07-01",
+          "operating_inflow": 67900.0,
+          "operating_outflow": 50800.5
+        }
+      ],
+      "current_cash_balance": 55000,
+      "restricted_cash": 0,
+      "unused_credit": 100000,
+      "minimum_cash_balance": 45000,
+      "planned_capex_3m": [
+        80000,
+        120000,
+        0
+      ],
+      "debt_service_3m": [
+        5000,
+        5000,
+        5000
+      ],
+      "confirmed_extra_inflows_3m": [
+        30000,
+        0,
+        0
+      ],
+      "stress_inflow_decline": 0.15,
+      "stress_outflow_increase": 0.1
+    }
+  },
+  {
+    "case_id": "M003_cash_gap_case",
+    "source_type": "SIMULATED_FOR_COMPETITION_MVP",
+    "input": {
+      "merchant_id": "M003",
+      "snapshot_date": "2026-07-31",
+      "history": [
+        {
+          "month": "2025-08-01",
+          "operating_inflow": 65280.0,
+          "operating_outflow": 71144.13
+        },
+        {
+          "month": "2025-09-01",
+          "operating_inflow": 63360.0,
+          "operating_outflow": 67020.72
+        },
+        {
+          "month": "2025-10-01",
+          "operating_inflow": 60480.0,
+          "operating_outflow": 65266.74
+        },
+        {
+          "month": "2025-11-01",
+          "operating_inflow": 57600.0,
+          "operating_outflow": 61543.36
+        },
+        {
+          "month": "2025-12-01",
+          "operating_inflow": 55680.0,
+          "operating_outflow": 61276.67
+        },
+        {
+          "month": "2026-01-01",
+          "operating_inflow": 52800.0,
+          "operating_outflow": 55286.45
+        },
+        {
+          "month": "2026-02-01",
+          "operating_inflow": 48000.0,
+          "operating_outflow": 52311.86
+        },
+        {
+          "month": "2026-03-01",
+          "operating_inflow": 44160.0,
+          "operating_outflow": 47183.24
+        },
+        {
+          "month": "2026-04-01",
+          "operating_inflow": 40320.0,
+          "operating_outflow": 42649.55
+        },
+        {
+          "month": "2026-05-01",
+          "operating_inflow": 37440.0,
+          "operating_outflow": 40403.22
+        },
+        {
+          "month": "2026-06-01",
+          "operating_inflow": 34560.0,
+          "operating_outflow": 38033.8
+        },
+        {
+          "month": "2026-07-01",
+          "operating_inflow": 32640.0,
+          "operating_outflow": 33828.33
+        }
+      ],
+      "current_cash_balance": 12000,
+      "restricted_cash": 2000,
+      "unused_credit": 20000,
+      "minimum_cash_balance": 35000,
+      "planned_capex_3m": [
+        0,
+        0,
+        0
+      ],
+      "debt_service_3m": [
+        8000,
+        8000,
+        8000
+      ],
+      "confirmed_extra_inflows_3m": [
+        0,
+        0,
+        0
+      ],
+      "stress_inflow_decline": 0.15,
+      "stress_outflow_increase": 0.1
+    }
+  },
+  {
+    "case_id": "M004_cash_gap_case",
+    "source_type": "SIMULATED_FOR_COMPETITION_MVP",
+    "input": {
+      "merchant_id": "M004",
+      "snapshot_date": "2026-07-31",
+      "history": [
+        {
+          "month": "2025-08-01",
+          "operating_inflow": 36100.0,
+          "operating_outflow": 30194.04
+        },
+        {
+          "month": "2025-09-01",
+          "operating_inflow": 38000.0,
+          "operating_outflow": 30848.4
+        },
+        {
+          "month": "2025-10-01",
+          "operating_inflow": 37525.0,
+          "operating_outflow": 31078.2
+        },
+        {
+          "month": "2025-11-01",
+          "operating_inflow": 38950.0,
+          "operating_outflow": 31939.0
+        },
+        {
+          "month": "2025-12-01",
+          "operating_inflow": 40850.0,
+          "operating_outflow": 34501.91
+        },
+        {
+          "month": "2026-01-01",
+          "operating_inflow": 42275.0,
+          "operating_outflow": 33972.19
+        },
+        {
+          "month": "2026-02-01",
+          "operating_inflow": 43700.0,
+          "operating_outflow": 36550.68
+        },
+        {
+          "month": "2026-03-01",
+          "operating_inflow": 45125.0,
+          "operating_outflow": 37002.5
+        },
+        {
+          "month": "2026-04-01",
+          "operating_inflow": 46360.0,
+          "operating_outflow": 37635.05
+        },
+        {
+          "month": "2026-05-01",
+          "operating_inflow": 47500.0,
+          "operating_outflow": 39339.5
+        },
+        {
+          "month": "2026-06-01",
+          "operating_inflow": 48640.0,
+          "operating_outflow": 41081.34
+        },
+        {
+          "month": "2026-07-01",
+          "operating_inflow": 49875.0,
+          "operating_outflow": 39670.57
+        }
+      ],
+      "current_cash_balance": 25000,
+      "restricted_cash": 5000,
+      "unused_credit": 30000,
+      "minimum_cash_balance": 40000,
+      "planned_capex_3m": [
+        20000,
+        0,
+        0
+      ],
+      "debt_service_3m": [
+        4000,
+        4000,
+        4000
+      ],
+      "confirmed_extra_inflows_3m": [
+        0,
+        0,
+        0
+      ],
+      "stress_inflow_decline": 0.15,
+      "stress_outflow_increase": 0.1
+    }
+  },
+  {
+    "case_id": "M005_cash_gap_case",
+    "source_type": "SIMULATED_FOR_COMPETITION_MVP",
+    "input": {
+      "merchant_id": "M005",
+      "snapshot_date": "2026-07-31",
+      "history": [
+        {
+          "month": "2025-08-01",
+          "operating_inflow": 81180.0,
+          "operating_outflow": 54193.26
+        },
+        {
+          "month": "2025-09-01",
+          "operating_inflow": 83160.0,
+          "operating_outflow": 53882.26
+        },
+        {
+          "month": "2025-10-01",
+          "operating_inflow": 85140.0,
+          "operating_outflow": 56279.61
+        },
+        {
+          "month": "2025-11-01",
+          "operating_inflow": 84150.0,
+          "operating_outflow": 55074.46
+        },
+        {
+          "month": "2025-12-01",
+          "operating_inflow": 87120.0,
+          "operating_outflow": 58728.81
+        },
+        {
+          "month": "2026-01-01",
+          "operating_inflow": 89100.0,
+          "operating_outflow": 57147.85
+        },
+        {
+          "month": "2026-02-01",
+          "operating_inflow": 91080.0,
+          "operating_outflow": 60802.2
+        },
+        {
+          "month": "2026-03-01",
+          "operating_inflow": 92070.0,
+          "operating_outflow": 60257.93
+        },
+        {
+          "month": "2026-04-01",
+          "operating_inflow": 94050.0,
+          "operating_outflow": 60938.27
+        },
+        {
+          "month": "2026-05-01",
+          "operating_inflow": 95040.0,
+          "operating_outflow": 62823.76
+        },
+        {
+          "month": "2026-06-01",
+          "operating_inflow": 96030.0,
+          "operating_outflow": 64735.16
+        },
+        {
+          "month": "2026-07-01",
+          "operating_inflow": 97020.0,
+          "operating_outflow": 61592.68
+        }
+      ],
+      "current_cash_balance": 75000,
+      "restricted_cash": 10000,
+      "unused_credit": 50000,
+      "minimum_cash_balance": 45000,
+      "planned_capex_3m": [
+        40000,
+        20000,
+        0
+      ],
+      "debt_service_3m": [
+        6000,
+        6000,
+        6000
+      ],
+      "confirmed_extra_inflows_3m": [
+        0,
+        0,
+        0
+      ],
+      "stress_inflow_decline": 0.15,
+      "stress_outflow_increase": 0.1
+    }
+  }
+]

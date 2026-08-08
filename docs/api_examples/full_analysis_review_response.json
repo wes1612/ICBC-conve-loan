@@ -1,0 +1,309 @@
+{
+  "merchant_id": "M005",
+  "generated_at": "2026-08-07T12:00:00Z",
+  "overall_risk": "MANUAL_REVIEW",
+  "module_states": {
+    "score": "READY",
+    "anomaly": "READY",
+    "cash_gap": "READY"
+  },
+  "data_warnings": [],
+  "score": {
+    "merchant_id": "M005",
+    "merchant_name": "欣悦美发工作室",
+    "profile": "v5_current",
+    "score_version": "scorecard_v5_2026_08",
+    "features": {
+      "receipts_6m": 571000.0,
+      "receipts_12m": 1086000.0,
+      "average_receipt_6m": 95166.66666666667,
+      "receipt_mom_growth": 0.010309278350515427,
+      "receipt_cagr_6m": 0.01271594910569096,
+      "receipt_volatility": 0.022221676953501784,
+      "max_month_receipt_share": 0.17162872154115585,
+      "active_months_6m": 6,
+      "operating_cashflow_margin_6m": 0.3434343434343434,
+      "debt_ratio": 0.4,
+      "current_ratio": 2.5,
+      "platform_orders_6m": 151.0,
+      "platform_order_growth_6m": 0.0,
+      "redemption_rate_6m": 0.9,
+      "refund_rate_6m": 0.04,
+      "effective_orders_6m": 130.464,
+      "estimated_ticket_6m": 4376.6862889379445,
+      "invoice_receipt_diff": 0.49355432780847147,
+      "cashflow_receipt_diff": 0.01,
+      "order_receipt_correlation": -0.45946744790341887,
+      "valid_invoice_ratio": 0.625,
+      "subject_consistency": "异常",
+      "data_completeness": 1.0,
+      "structured_inconsistency_count": 2,
+      "final_inconsistency_count": 3,
+      "review_order_ratio": 2.3761344125582538,
+      "monthly_orders_6m": 25.166666666666668,
+      "capacity_utilization": 0.07743589743589743,
+      "peak_season_order_growth": -0.1241
+    },
+    "dimensions": {
+      "stability": 95.5,
+      "growth": 43.0,
+      "authenticity": 20.0,
+      "capacity": 32.0,
+      "online_reputation": 59.0,
+      "social_activity": 31.5,
+      "complaint_risk": 100.0,
+      "unstructured": 65.8
+    },
+    "operating_credit_score": 61.1,
+    "credit_grade": "D",
+    "risk_band": "MANUAL_REVIEW",
+    "pd_12m": null,
+    "pd_status": "UNCALIBRATED",
+    "confidence": "LOW",
+    "decision": "MANUAL_REVIEW",
+    "review_required": true,
+    "review_rules": [
+      {
+        "code": "V01",
+        "level": "HIGH",
+        "message": "资料一致性异常数≥3"
+      },
+      {
+        "code": "V04",
+        "level": "HIGH",
+        "message": "流水异常模式命中"
+      },
+      {
+        "code": "V05",
+        "level": "HIGH",
+        "message": "合同发票匹配失败"
+      },
+      {
+        "code": "V06",
+        "level": "HIGH",
+        "message": "三主体一致性异常"
+      },
+      {
+        "code": "V07",
+        "level": "HIGH",
+        "message": "法人授信状态异常"
+      },
+      {
+        "code": "V09",
+        "level": "HIGH",
+        "message": "评价数/平台有效订单数比>50%"
+      },
+      {
+        "code": "L01",
+        "level": "MEDIUM",
+        "message": "结果置信度低"
+      }
+    ],
+    "positive_reasons": [
+      "投诉风险控制表现良好（100.0分）",
+      "经营稳定性表现良好（95.5分）"
+    ],
+    "negative_reasons": [
+      "经营真实性需要关注（20.0分）",
+      "社媒活跃度需要关注（31.5分）",
+      "消费承接能力需要关注（32.0分）"
+    ],
+    "limit": {
+      "score_multiplier": 1.5,
+      "stability_factor": 0.955,
+      "capacity_factor": 0.964,
+      "growth_bonus": 0.0,
+      "recommended_limit": 131419
+    }
+  },
+  "anomaly": {
+    "merchant_id": "M005",
+    "evaluated_at": "2026-07-31T23:59:59",
+    "transaction_count": 130,
+    "recent_transaction_count": 20,
+    "anomaly_score": 100,
+    "risk_level": "HIGH",
+    "confidence": "MEDIUM",
+    "reason_codes": [
+      "REPEATED_ROUND_AMOUNT",
+      "OFF_HOURS_CONCENTRATION",
+      "COUNTERPARTY_CONCENTRATION",
+      "RAPID_IN_OUT_ROUNDTRIP",
+      "HIGH_REFUND_REVERSAL",
+      "MISSING_ORDER_LINK"
+    ],
+    "rule_hits": [
+      {
+        "code": "REPEATED_ROUND_AMOUNT",
+        "level": "HIGH",
+        "contribution": 25,
+        "message": "同日出现多笔相同整数金额入账",
+        "evidence_transaction_ids": [
+          "M005-T0121",
+          "M005-T0122",
+          "M005-T0123",
+          "M005-T0124",
+          "M005-T0125"
+        ]
+      },
+      {
+        "code": "OFF_HOURS_CONCENTRATION",
+        "level": "MEDIUM",
+        "contribution": 15,
+        "message": "非营业时段交易占比达到 30.0%",
+        "evidence_transaction_ids": [
+          "M005-T0121",
+          "M005-T0122",
+          "M005-T0123",
+          "M005-T0124",
+          "M005-T0125",
+          "M005-T0126"
+        ]
+      },
+      {
+        "code": "COUNTERPARTY_CONCENTRATION",
+        "level": "HIGH",
+        "contribution": 20,
+        "message": "单一对手方入账金额占比达到 100.0%",
+        "evidence_transaction_ids": [
+          "M005-T0111",
+          "M005-T0112",
+          "M005-T0113",
+          "M005-T0114",
+          "M005-T0115",
+          "M005-T0116",
+          "M005-T0117",
+          "M005-T0118",
+          "M005-T0121",
+          "M005-T0122",
+          "M005-T0123",
+          "M005-T0124",
+          "M005-T0125"
+        ]
+      },
+      {
+        "code": "RAPID_IN_OUT_ROUNDTRIP",
+        "level": "HIGH",
+        "contribution": 30,
+        "message": "发现入账后短时间内近等额转出",
+        "evidence_transaction_ids": [
+          "M005-T0121",
+          "M005-T0126",
+          "M005-T0122",
+          "M005-T0123",
+          "M005-T0124",
+          "M005-T0125"
+        ]
+      },
+      {
+        "code": "HIGH_REFUND_REVERSAL",
+        "level": "MEDIUM",
+        "contribution": 20,
+        "message": "退款、撤销或冲正交易占比达到 20.0%",
+        "evidence_transaction_ids": [
+          "M005-T0127",
+          "M005-T0128",
+          "M005-T0129",
+          "M005-T0130"
+        ]
+      },
+      {
+        "code": "MISSING_ORDER_LINK",
+        "level": "MEDIUM",
+        "contribution": 15,
+        "message": "收款交易缺少平台订单关联的占比达到 38.5%",
+        "evidence_transaction_ids": [
+          "M005-T0121",
+          "M005-T0122",
+          "M005-T0123",
+          "M005-T0124",
+          "M005-T0125"
+        ]
+      }
+    ],
+    "evidence_transaction_ids": [
+      "M005-T0121",
+      "M005-T0122",
+      "M005-T0123",
+      "M005-T0124",
+      "M005-T0125",
+      "M005-T0126",
+      "M005-T0111",
+      "M005-T0112",
+      "M005-T0113",
+      "M005-T0114",
+      "M005-T0115",
+      "M005-T0116",
+      "M005-T0117",
+      "M005-T0118",
+      "M005-T0127",
+      "M005-T0128",
+      "M005-T0129",
+      "M005-T0130"
+    ],
+    "model_version": "anomaly_hybrid_v1"
+  },
+  "cash_gap": {
+    "merchant_id": "M005",
+    "snapshot_date": "2026-07-31",
+    "horizon_months": 3,
+    "available_cash_at_snapshot": 65000.0,
+    "minimum_cash_balance": 45000.0,
+    "unused_credit": 50000.0,
+    "forecasts": [
+      {
+        "forecast_month": "2026-08-01",
+        "p50_operating_inflow": 97239.21,
+        "p50_operating_outflow": 63194.56,
+        "p50_ending_cash": 53044.65,
+        "p50_funding_gap": 0.0,
+        "p90_operating_inflow": 80375.48,
+        "p90_operating_outflow": 71649.51,
+        "p90_ending_cash": 27725.97,
+        "p90_funding_gap": 17274.03,
+        "planned_capex": 40000.0,
+        "debt_service": 6000.0
+      },
+      {
+        "forecast_month": "2026-09-01",
+        "p50_operating_inflow": 97923.38,
+        "p50_operating_outflow": 63504.25,
+        "p50_ending_cash": 61463.78,
+        "p50_funding_gap": 0.0,
+        "p90_operating_inflow": 80957.02,
+        "p90_operating_outflow": 71990.16,
+        "p90_ending_cash": 10692.82,
+        "p90_funding_gap": 34307.18,
+        "planned_capex": 20000.0,
+        "debt_service": 6000.0
+      },
+      {
+        "forecast_month": "2026-10-01",
+        "p50_operating_inflow": 98436.5,
+        "p50_operating_outflow": 63736.52,
+        "p50_ending_cash": 90163.76,
+        "p50_funding_gap": 0.0,
+        "p90_operating_inflow": 81393.17,
+        "p90_operating_outflow": 72245.66,
+        "p90_ending_cash": 13840.33,
+        "p90_funding_gap": 31159.67,
+        "planned_capex": 0.0,
+        "debt_service": 6000.0
+      }
+    ],
+    "max_p50_funding_gap": 0.0,
+    "max_p90_funding_gap": 34307.18,
+    "first_p50_gap_month": null,
+    "first_p90_gap_month": "2026-08-01",
+    "p90_need_after_unused_credit": 0.0,
+    "risk_level": "MEDIUM",
+    "confidence": "MEDIUM",
+    "drivers": [
+      "近6个月经营现金流出呈上升趋势",
+      "未来3个月存在还本付息安排",
+      "压力情景出现最低安全现金缺口"
+    ],
+    "model_version": "cash_gap_damped_trend_v1"
+  },
+  "api_version": "0.2.0"
+}
