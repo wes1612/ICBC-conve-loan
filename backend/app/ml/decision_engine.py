@@ -146,6 +146,17 @@ def evaluate_review_rules(
         add("V06", "HIGH", "三主体一致性异常")
     if structural.legal_credit_status == "异常":
         add("V07", "HIGH", "法人授信状态异常")
+    tax_reason = structural.tax_compliance_reason or ""
+    tax_data_missing = "资料缺失" in tax_reason or "未提供" in tax_reason
+    if (
+        profile["enable_tax_review_rule"]
+        and structural.tax_compliance_bool is False
+        and not tax_data_missing
+    ):
+        message = "纳税合规校验未通过"
+        if tax_reason:
+            message = f"{message}：{tax_reason}"
+        add("T01", "HIGH", message)
     if unstructured.keyword_risk_hits > KEYWORD_RISK_THRESHOLD:
         add("V08", "MEDIUM", "评价关键词风险命中数超过阈值")
     if (
