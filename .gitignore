@@ -21,6 +21,8 @@ backend/.pytest_cache/
 # --- 数据库/本地数据 ---
 *.sqlite3
 *.db
+!data/Structured/icbc_structured_tax_rules.db
+!data/Unstructured/icbc_unstructured_reviews.db
 
 # --- IDE ---
 .vscode/
