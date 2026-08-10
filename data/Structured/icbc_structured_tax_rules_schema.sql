@@ -1,18 +1,12 @@
-CREATE TABLE credit_limit_mapping_rules (
-    rule_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    section_name TEXT,
-    score_range TEXT,
-    limit_multiplier TEXT,
-    credit_conclusion TEXT
-);
+PRAGMA foreign_keys = ON;
 
-CREATE TABLE manual_review_rules (
-    rule_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    section_name TEXT,
-    rule_code TEXT,
-    trigger_condition TEXT,
-    risk_level TEXT,
-    description TEXT
+CREATE TABLE merchants (
+    merchant_id TEXT PRIMARY KEY,
+    merchant_no INTEGER NOT NULL UNIQUE,
+    merchant_name TEXT NOT NULL,
+    industry TEXT,
+    profile_type TEXT,
+    test_purpose TEXT
 );
 
 CREATE TABLE merchant_basic_facts (
@@ -34,8 +28,22 @@ CREATE TABLE merchant_financial_snapshots (
     total_liabilities REAL,
     current_assets REAL,
     current_liabilities REAL,
-    balance_sheet_provided TEXT
-, taxpayer_id TEXT, taxpayer_name TEXT, tax_period TEXT, tax_operating_income REAL, tax_operating_cost REAL, tax_total_profit REAL, tax_actual_profit REAL, tax_rate REAL, tax_payable REAL, tax_prepaid REAL, tax_current_due REAL, tax_revenue_invoice_gap_rate REAL, tax_compliance_bool INTEGER, tax_compliance_reason TEXT);
+    balance_sheet_provided TEXT,
+    taxpayer_id TEXT,
+    taxpayer_name TEXT,
+    tax_period TEXT,
+    tax_operating_income REAL,
+    tax_operating_cost REAL,
+    tax_total_profit REAL,
+    tax_actual_profit REAL,
+    tax_rate REAL,
+    tax_payable REAL,
+    tax_prepaid REAL,
+    tax_current_due REAL,
+    tax_revenue_invoice_gap_rate REAL,
+    tax_compliance_bool INTEGER,
+    tax_compliance_reason TEXT
+);
 
 CREATE TABLE merchant_invoice_validations (
     validation_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,49 +68,16 @@ CREATE TABLE merchant_monthly_series (
     UNIQUE (merchant_id, month)
 );
 
-CREATE TABLE merchants (
-    merchant_id TEXT PRIMARY KEY,
-    merchant_no INTEGER NOT NULL UNIQUE,
-    merchant_name TEXT NOT NULL,
-    industry TEXT,
-    profile_type TEXT,
-    test_purpose TEXT
-);
-
-CREATE TABLE scoring_rule_cards (
-    rule_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    section_name TEXT,
-    variable_name TEXT,
-    weight_text TEXT,
-    score_interval TEXT,
-    note TEXT
-);
-
-CREATE TABLE sqlite_sequence(name,seq);
-
-CREATE TABLE structured_scoring_results (
-    merchant_id TEXT PRIMARY KEY REFERENCES merchants(merchant_id) ON DELETE CASCADE,
-    merchant_name TEXT,
-    stability_score REAL,
-    growth_score REAL,
-    authenticity_score REAL,
-    capacity_score REAL,
-    structured_composite_score REAL,
-    suggested_limit REAL,
-    manual_review_required INTEGER,
-    manual_review_reasons TEXT
-);
-
 CREATE VIEW v_structural_tax_summary AS
-                SELECT
-                    m.merchant_id,
-                    m.merchant_name,
-                    fs.tax_operating_income,
-                    fs.tax_payable,
-                    fs.tax_prepaid,
-                    fs.tax_current_due,
-                    fs.tax_revenue_invoice_gap_rate,
-                    fs.tax_compliance_bool,
-                    fs.tax_compliance_reason
-                FROM merchants m
-                JOIN merchant_financial_snapshots fs ON fs.merchant_id = m.merchant_id;
+SELECT
+    m.merchant_id,
+    m.merchant_name,
+    fs.tax_operating_income,
+    fs.tax_payable,
+    fs.tax_prepaid,
+    fs.tax_current_due,
+    fs.tax_revenue_invoice_gap_rate,
+    fs.tax_compliance_bool,
+    fs.tax_compliance_reason
+FROM merchants AS m
+JOIN merchant_financial_snapshots AS fs ON fs.merchant_id = m.merchant_id;
