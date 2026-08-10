@@ -2,8 +2,9 @@ from pathlib import Path
 import csv
 import sqlite3
 
-DB_PATH = Path(r"E:\Codex\icbc_structured_tax_rules.db")
-OUT_CSV = Path(r"E:\Codex\structured_scoring_results.csv")
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "icbc_structured_tax_rules.db"
+OUT_CSV = BASE_DIR / "structured_scoring_results.csv"
 
 def clamp(x, low=0, high=100):
     return max(low, min(high, x))

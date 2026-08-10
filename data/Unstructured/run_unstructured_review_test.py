@@ -1,7 +1,8 @@
 from pathlib import Path
 import sqlite3
 
-DB_PATH = Path(r"C:\Users\13777\Documents\Codex\2026-08-01\new-chat\outputs\unstructured_reviews\icbc_unstructured_reviews.db")
+BASE_DIR = Path(__file__).resolve().parent
+DB_PATH = BASE_DIR / "icbc_unstructured_reviews.db"
 
 def main():
     conn = sqlite3.connect(DB_PATH)
