@@ -33,3 +33,14 @@
 - `cashflow_monthly.json`：五商户连续 12 个月现金流及未来三个月计划支出。
 
 上述文件用于异常识别、资金缺口预测的开发与接口验收。它们不是银行真实数据，不能用于声称已经训练真实违约或欺诈模型；生成方法和限制见 `ml_simulated/README.md`。
+
+## `Structured/`
+
+该目录只保存五个测试商户的结构化原始/中间数据，包括商户基础信息、财务与税务快照、发票校验和月度经营序列。
+
+- `icbc_structured_tax_rules.db`：SQLite 数据样本；
+- `icbc_structured_tax_rules_schema.sql`：与数据样本对应的表结构；
+- SQLite 不保存评分规则和评分结果，也不再提供独立评分脚本；
+- 需要使用这些数据评分时，应先映射为后端请求字段，再调用 v5 API。
+
+唯一正式评分实现位于 `backend/app/ml/`，统一入口是 `POST /api/v1/ml/score` 或 `POST /api/v1/ml/full-analysis`。

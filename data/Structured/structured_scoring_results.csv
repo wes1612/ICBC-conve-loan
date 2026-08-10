@@ -1,6 +1,0 @@
-﻿merchant_id,merchant_name,stability_score,growth_score,authenticity_score,capacity_score,structured_composite_score,suggested_limit,manual_review_required,manual_review_reasons
-M001,宜人美发生活馆,100,76.7,100,80.2,92.4,399600.0,0,未触发
-M002,旺仔宠物生活馆,92,100,62,71.1,81.5,207083.0,1,T01 纳税合规布尔值=FALSE
-M003,丽人美甲工作室,45,0,72,44.1,44.0,0.0,1,T01 纳税合规布尔值=FALSE
-M004,新起点宠物医院,43,81.1,62,61.2,59.1,74000.0,1,T01 纳税合规布尔值=FALSE；V05 合同发票匹配失败/待补充；V07 法人授信状态异常或未知
-M005,欣悦美发工作室,92,74.3,0,28.6,51.4,142750.0,1,T01 纳税合规布尔值=FALSE；V04 流水异常模式命中；V05 合同发票匹配失败/待补充；V07 法人授信状态异常或未知

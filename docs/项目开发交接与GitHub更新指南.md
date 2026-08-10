@@ -410,19 +410,12 @@ cd "D:\LQW\大一下\工行杯！\ICBC-conve-loan\backend"
 
 - `data/Data_Dictionary_Revised.xlsx`；
 - `data/Five_Testing_Merchants.xlsx`；
-- `data/Structured/`：结构化税务/发票 SQLite、SQL schema、评分脚本和 CSV 结果；
+- `data/Structured/`：结构化商户、财务税务、发票和月度经营 SQLite 数据及 SQL schema；
 - `data/Unstructured/`：评价 SQLite、SQL schema、五商户评论 CSV、Word 材料和词云 PNG。
 
 这些是其他队员的新成果，应通过 `git fetch/rebase` 保留，不应被当前后端目录覆盖。
 
 ### 7.1 已发现的可移植性问题
-
-`data/Structured/run_structured_scoring.py` 写死：
-
-```python
-DB_PATH = Path(r"E:\Codex\icbc_structured_tax_rules.db")
-OUT_CSV = Path(r"E:\Codex\structured_scoring_results.csv")
-```
 
 `data/Unstructured/run_unstructured_review_test.py` 写死：
 
@@ -430,22 +423,23 @@ OUT_CSV = Path(r"E:\Codex\structured_scoring_results.csv")
 DB_PATH = Path(r"C:\Users\13777\Documents\Codex\2026-08-01\new-chat\outputs\unstructured_reviews\icbc_unstructured_reviews.db")
 ```
 
-合并后这些脚本在其他电脑上不能直接运行。建议后续改为：
+该脚本在其他电脑上不能直接运行。建议后续改为：
 
 ```python
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "数据库文件名.db"
-OUT_CSV = BASE_DIR / "structured_scoring_results.csv"
 ```
 
 ### 7.2 与当前后端的口径关系
 
-最新 ZIP 的 `run_structured_scoring.py` 是一个独立简化评分原型，权重和额度公式与当前 v5 FastAPI 评分引擎不同。合并时应：
+团队已于 2026-08-10 决定删除独立简化评分原型，解决它与 v5 FastAPI 评分引擎的口径冲突。当前约定是：
 
-- 保留其数据库和 schema，作为结构化数据源/ETL 原型；
-- 暂时不要让前端同时调用它和 `/api/v1/ml/score`；
-- 以当前 v5 FastAPI 引擎作为统一评分输出；
-- 后续编写适配器，把 SQLite 字段转换成 `MerchantAnalysisRequest`，而不是维护第二套评分公式。
+- `data/Structured/` 只保留结构化数据和 schema，不包含评分规则或评分结果；
+- v5 FastAPI 引擎是唯一正式评分实现；
+- 前端只调用 `/api/v1/ml/score` 或 `/api/v1/ml/full-analysis`；
+- 后续如需接入 SQLite 数据，应把字段转换成 `MerchantAnalysisRequest`，不得维护第二套评分公式。
+
+完整决策见 `docs/v5评分口径统一说明.md`。
 
 非结构化评价数据库和词云可作为后续文本解析、报告和页面展示的数据源；当前后端接收的是已汇总的评价/社媒/投诉指标，尚未直接解析这些 `.docx` 和评论 CSV。
 
