@@ -4,19 +4,20 @@ import { Button, Eyebrow, InfoNote } from '../components/Ui'
 
 interface VerifyPageProps {
   legalName: string
+  verified: boolean
+  onVerifiedChange: (verified: boolean) => void
   onBack: () => void
   onNext: () => void
 }
 
-export function VerifyPage({ legalName, onBack, onNext }: VerifyPageProps) {
-  const [verified, setVerified] = useState(false)
+export function VerifyPage({ legalName, verified, onVerifiedChange, onBack, onNext }: VerifyPageProps) {
   const [scanning, setScanning] = useState(false)
 
   const startScan = () => {
     setScanning(true)
     window.setTimeout(() => {
       setScanning(false)
-      setVerified(true)
+      onVerifiedChange(true)
     }, 900)
   }
 

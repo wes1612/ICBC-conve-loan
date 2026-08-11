@@ -1,7 +1,22 @@
 import { useEffect, useState } from 'react'
-import { checkHealth, runFullAnalysis } from './api'
-import { buildAnalysisRequest, getMockResult } from './data/fixtures'
-import type { ApplicationDraft, DataSource, DemoCase, FullAnalysisResult } from './types'
+import { checkHealth, describeApiError, runFullAnalysis } from './api'
+import {
+  buildAnalysisRequest,
+  getDraftForCase,
+  getMerchantIdForCase,
+  getMockResult,
+} from './data/fixtures'
+import type {
+  AnalysisMode,
+  ApplicationDraft,
+  ConnectorId,
+  DataGroupId,
+  DataSource,
+  DemoCase,
+  FullAnalysisResult,
+  MaterialEvidence,
+  PortalMode,
+} from './types'
 import { Icon } from './components/Icon'
 import { HomePage } from './pages/HomePage'
 import { IdentityPage } from './pages/IdentityPage'
@@ -21,26 +36,31 @@ const steps = [
 
 type StepKey = (typeof steps)[number]['key']
 
-const initialDraft: ApplicationDraft = {
-  merchantName: '宜人美发生活馆',
-  industry: '美容美发',
-  socialCreditCode: '91310000MA1DEMO001',
-  address: '上海市示范区惠民路 88 号',
-  legalName: '李女士',
-  contactPhone: '13800000001',
-  requestedAmount: 500000,
-}
+const urlParameters = new URLSearchParams(window.location.search)
+const portal: PortalMode = urlParameters.get('portal') === 'reviewer' ? 'reviewer' : 'merchant'
+const demoControlsEnabled = portal === 'reviewer' || urlParameters.get('demo') === '1'
 
 function App() {
   const [step, setStep] = useState<StepKey>('home')
   const [furthest, setFurthest] = useState(0)
   const [demoCase, setDemoCase] = useState<DemoCase>('normal')
-  const [draft, setDraft] = useState<ApplicationDraft>(initialDraft)
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('api')
+  const [draft, setDraft] = useState<ApplicationDraft>(() => getDraftForCase('normal'))
+  const [identityVerified, setIdentityVerified] = useState(false)
+  const [materials, setMaterials] = useState<MaterialEvidence[]>([])
+  const [authorizedSources, setAuthorizedSources] = useState<ConnectorId[]>([])
+  const [consentConfirmed, setConsentConfirmed] = useState(false)
+  const [consentedAt, setConsentedAt] = useState<string | null>(null)
   const [apiOnline, setApiOnline] = useState<boolean | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [result, setResult] = useState<FullAnalysisResult | null>(null)
-  const [source, setSource] = useState<DataSource>('mock')
+  const [source, setSource] = useState<DataSource>('api')
+  const uploadedGroups = materials
+    .map((material) => material.group)
+    .filter((group): group is DataGroupId => ['cashflow', 'statement', 'tax', 'plan'].includes(group))
+  const dataReady = (['cashflow', 'statement', 'tax', 'plan'] as DataGroupId[])
+    .every((group) => uploadedGroups.includes(group))
 
   useEffect(() => {
     checkHealth().then(setApiOnline)
@@ -53,37 +73,94 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const resetWorkflow = (nextCase: DemoCase) => {
+    setDraft(getDraftForCase(nextCase))
+    setIdentityVerified(false)
+    setMaterials([])
+    setAuthorizedSources([])
+    setConsentConfirmed(false)
+    setConsentedAt(null)
+    setAnalysisError(null)
+    setResult(null)
+    setFurthest(0)
+  }
+
   const changeCase = (next: DemoCase) => {
     setDemoCase(next)
+    resetWorkflow(next)
+  }
+
+  const changeDraft = (next: ApplicationDraft) => {
+    if (
+      next.legalName !== draft.legalName
+      || next.socialCreditCode !== draft.socialCreditCode
+    ) {
+      setIdentityVerified(false)
+      setMaterials([])
+    }
+    setDraft(next)
     setResult(null)
-    setDraft((value) => ({
-      ...value,
-      merchantName: next === 'normal' ? '宜人美发生活馆' : '欣悦美发工作室',
-      socialCreditCode: next === 'normal' ? '91310000MA1DEMO001' : '91310000MA1DEMO005',
-      requestedAmount: next === 'normal' ? 500000 : 300000,
-    }))
+  }
+
+  const changeConsent = (confirmed: boolean) => {
+    setConsentConfirmed(confirmed)
+    setConsentedAt(confirmed ? new Date().toISOString() : null)
+  }
+
+  const changeAnalysisMode = (next: AnalysisMode) => {
+    setAnalysisMode(next)
+    setAnalysisError(null)
+    setResult(null)
   }
 
   const analyze = async () => {
     setAnalyzing(true)
     setAnalysisError(null)
-    const request = buildAnalysisRequest(demoCase, draft)
+    setResult(null)
+    const request = buildAnalysisRequest(
+      demoCase,
+      draft,
+      identityVerified,
+      uploadedGroups,
+      authorizedSources,
+      consentConfirmed,
+      consentedAt,
+      materials,
+    )
     const startedAt = Date.now()
+
     try {
-      if (!apiOnline) throw new Error('offline')
-      const response = await runFullAnalysis(request)
-      setResult(response)
-      setSource('api')
-    } catch (error) {
-      setResult(getMockResult(demoCase))
-      setSource('mock')
-      setAnalysisError(error instanceof Error && error.message !== 'offline' ? error.message : '本地后端当前未连接。')
-    }
-    const remaining = Math.max(0, 1250 - (Date.now() - startedAt))
-    window.setTimeout(() => {
+      if (analysisMode === 'mock') {
+        setResult(getMockResult(demoCase))
+        setSource('mock')
+      } else {
+        const online = await checkHealth()
+        setApiOnline(online)
+        if (!online) throw new Error('分析服务当前离线，请启动后端后重试。')
+        const response = await runFullAnalysis(request)
+        setResult(response)
+        setSource('api')
+      }
+
+      const remaining = Math.max(0, 900 - (Date.now() - startedAt))
+      if (remaining) await new Promise((resolve) => window.setTimeout(resolve, remaining))
       setAnalyzing(false)
       go('results')
-    }, remaining)
+    } catch (error) {
+      setAnalyzing(false)
+      setResult(null)
+      setAnalysisError(
+        error instanceof Error && error.message.startsWith('分析服务当前离线')
+          ? error.message
+          : describeApiError(error),
+      )
+    }
+  }
+
+  const restart = () => {
+    resetWorkflow(demoCase)
+    setStep('home')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const activeIndex = steps.findIndex((item) => item.key === step)
@@ -94,15 +171,15 @@ function App() {
         <div className="page-shell site-header__inner">
           <button className="brand" onClick={() => go('home')} aria-label="返回申请首页">
             <span className="brand__mark">融</span>
-            <span><strong>融策</strong><small>小微信用工作台</small></span>
+            <span><strong>融策</strong><small>{portal === 'merchant' ? '小微信用工作台' : '银行风险审核台'}</small></span>
           </button>
           <nav className="top-nav" aria-label="主要导航">
-            <button className={step === 'home' ? 'is-active' : ''} onClick={() => go('home')}>申请测算</button>
-            <button className={step === 'results' ? 'is-active' : ''} onClick={() => result && go('results')} disabled={!result}>分析报告</button>
+            <button className={step === 'home' ? 'is-active' : ''} onClick={() => go('home')}>{portal === 'merchant' ? '申请测算' : '审核案例'}</button>
+            <button className={step === 'results' ? 'is-active' : ''} onClick={() => result && go('results')} disabled={!result}>{portal === 'merchant' ? '分析报告' : '风险审核'}</button>
           </nav>
           <div className="header-meta">
-            <span className={`header-status ${apiOnline ? 'is-online' : ''}`}><i />{apiOnline === null ? '连接中' : apiOnline ? '服务在线' : '演示模式'}</span>
-            <span className="competition-tag">工商银行杯 · MVP</span>
+            <span className={`header-status ${apiOnline ? 'is-online' : ''}`}><i />{apiOnline === null ? '连接中' : apiOnline ? '服务在线' : '服务离线'}</span>
+            <span className="competition-tag">{portal === 'merchant' ? '商户端' : '银行端'} · MVP</span>
           </div>
         </div>
       </header>
@@ -127,15 +204,50 @@ function App() {
         </div>
       )}
 
-      {step === 'home' && <HomePage demoCase={demoCase} onCaseChange={changeCase} onStart={() => go('identity')} />}
-      {step === 'identity' && <IdentityPage value={draft} onChange={setDraft} onBack={() => go('home')} onNext={() => go('verify')} />}
-      {step === 'verify' && <VerifyPage legalName={draft.legalName} onBack={() => go('identity')} onNext={() => go('data')} />}
-      {step === 'data' && <DataPage onBack={() => go('verify')} onNext={() => go('authorize')} />}
-      {step === 'authorize' && <AuthorizePage demoCase={demoCase} analyzing={analyzing} apiOnline={apiOnline} error={analysisError} onBack={() => go('data')} onAnalyze={analyze} />}
-      {step === 'results' && result && <ResultsPage data={result} source={source} onRestart={() => go('home')} onBack={() => go('authorize')} />}
+      {step === 'home' && (
+        <HomePage
+          portal={portal}
+          demoCase={demoCase}
+          analysisMode={analysisMode}
+          showDemoControls={demoControlsEnabled}
+          onCaseChange={changeCase}
+          onModeChange={changeAnalysisMode}
+          onStart={() => go('identity')}
+        />
+      )}
+      {step === 'identity' && <IdentityPage value={draft} onChange={changeDraft} onBack={() => go('home')} onNext={() => go('verify')} />}
+      {step === 'verify' && <VerifyPage legalName={draft.legalName} verified={identityVerified} onVerifiedChange={setIdentityVerified} onBack={() => go('identity')} onNext={() => go('data')} />}
+      {step === 'data' && (
+        <DataPage
+          merchantId={getMerchantIdForCase(demoCase)}
+          demoCase={demoCase}
+          analysisMode={analysisMode}
+          materials={materials}
+          onChange={setMaterials}
+          onBack={() => go('verify')}
+          onNext={() => go('authorize')}
+        />
+      )}
+      {step === 'authorize' && (
+        <AuthorizePage
+          demoCase={demoCase}
+          analysisMode={analysisMode}
+          analyzing={analyzing}
+          apiOnline={apiOnline}
+          error={analysisError}
+          enabled={authorizedSources}
+          consentConfirmed={consentConfirmed}
+          prerequisitesReady={identityVerified && dataReady}
+          onEnabledChange={setAuthorizedSources}
+          onConsentChange={changeConsent}
+          onBack={() => go('data')}
+          onAnalyze={analyze}
+        />
+      )}
+      {step === 'results' && result && <ResultsPage data={result} source={source} portal={portal} onRestart={restart} onBack={() => go('authorize')} />}
 
       <footer className="site-footer">
-        <div className="page-shell"><span>融策 · 消费供给动态授信 MVP</span><span>可解释评分 · 异常证据 · 资金情景</span><span>仅供竞赛演示</span></div>
+        <div className="page-shell"><span>融策 · 消费供给动态授信 MVP</span><span>{portal === 'merchant' ? '商户申请与经营建议' : '风险证据与审核处置'}</span><span>仅供竞赛演示</span></div>
       </footer>
     </div>
   )

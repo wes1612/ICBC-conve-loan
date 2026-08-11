@@ -1,4 +1,229 @@
 {
+  "application": {
+    "social_credit_code": "91310000MA1DEMO005",
+    "operating_address": "上海市示范区惠民路88号",
+    "legal_name": "李女士",
+    "contact_phone": "13800000005",
+    "identity_verified": true,
+    "uploaded_data_groups": [
+      "cashflow",
+      "statement",
+      "tax",
+      "plan"
+    ],
+    "authorized_sources": [
+      "bank",
+      "meituan",
+      "enterprise"
+    ],
+    "consent_confirmed": true,
+    "consented_at": "2026-08-07T11:55:00Z",
+    "materials": [
+      {
+        "material_id": "MAT-M005-LICENSE-94d1f464",
+        "merchant_id": "M005",
+        "group": "license",
+        "file_name": "M005_business_license.pdf",
+        "media_type": "application/pdf",
+        "size_bytes": 3925,
+        "sha256": "94d1f464a843b75dee5795f42b0071f7f9db2ee5bf4972ef148132578e5b61fc",
+        "parse_status": "PARSED",
+        "simulated": true,
+        "completeness_score": 94,
+        "period_months": null,
+        "subject_match": true,
+        "extracted_metrics": [
+          {
+            "label": "主体状态",
+            "value": "存续",
+            "tone": "POSITIVE"
+          },
+          {
+            "label": "经营状态",
+            "value": "存在关注项",
+            "tone": "WARNING"
+          }
+        ],
+        "findings": [
+          "统一社会信用代码与申请信息一致",
+          "工商经营状态需结合其他材料复核"
+        ],
+        "warnings": [
+          "许可信息中存在待核实经营状态备注"
+        ]
+      },
+      {
+        "material_id": "MAT-M005-CASHFLOW-c8ea4299",
+        "merchant_id": "M005",
+        "group": "cashflow",
+        "file_name": "M005_cashflow_12m.xlsx",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size_bytes": 5739,
+        "sha256": "c8ea4299b2c592f226d5329706ed4c4372f6750b0cd6c9b60c486ba3f3d01ba5",
+        "parse_status": "PARSED",
+        "simulated": true,
+        "completeness_score": 82,
+        "period_months": 12,
+        "subject_match": false,
+        "extracted_metrics": [
+          {
+            "label": "月均经营流入",
+            "value": "¥87,417",
+            "tone": "NEUTRAL"
+          },
+          {
+            "label": "疑似异常交易",
+            "value": "17 笔",
+            "tone": "DANGER"
+          },
+          {
+            "label": "个人账户占比",
+            "value": "31%",
+            "tone": "WARNING"
+          }
+        ],
+        "findings": [
+          "识别到连续 12 个月流水",
+          "发现整数金额重复、夜间交易集中和快速进出"
+        ],
+        "warnings": [
+          "部分交易对手及收款账户与申请主体不一致"
+        ]
+      },
+      {
+        "material_id": "MAT-M005-STATEMENT-bd499e72",
+        "merchant_id": "M005",
+        "group": "statement",
+        "file_name": "M005_financial_statement.pdf",
+        "media_type": "application/pdf",
+        "size_bytes": 3752,
+        "sha256": "bd499e723273ddec53081799ee0b1a2ec11505fd6b48d0a03f53a50af9517f8f",
+        "parse_status": "PARSED",
+        "simulated": true,
+        "completeness_score": 78,
+        "period_months": null,
+        "subject_match": false,
+        "extracted_metrics": [
+          {
+            "label": "资产负债率",
+            "value": "68.4%",
+            "tone": "WARNING"
+          },
+          {
+            "label": "流动比率",
+            "value": "0.91",
+            "tone": "DANGER"
+          }
+        ],
+        "findings": [
+          "短期负债对流动资产形成压力",
+          "部分账户主体需补充说明"
+        ],
+        "warnings": [
+          "报表主体与部分流水账户名称不一致"
+        ]
+      },
+      {
+        "material_id": "MAT-M005-TAX-2b14db30",
+        "merchant_id": "M005",
+        "group": "tax",
+        "file_name": "M005_tax_invoice_12m.xlsx",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "size_bytes": 5780,
+        "sha256": "2b14db308a94b51d16bd50a0935db966986080a2d571c6359dad139abe2b4847",
+        "parse_status": "PARSED",
+        "simulated": true,
+        "completeness_score": 74,
+        "period_months": 10,
+        "subject_match": true,
+        "extracted_metrics": [
+          {
+            "label": "开票覆盖率",
+            "value": "62.3%",
+            "tone": "WARNING"
+          },
+          {
+            "label": "连续申报",
+            "value": "10 / 12 个月",
+            "tone": "WARNING"
+          }
+        ],
+        "findings": [
+          "开票收入低于经营流水",
+          "存在两个月申报资料缺口"
+        ],
+        "warnings": [
+          "建议补充缺失月份申报记录及未开票收入说明"
+        ]
+      },
+      {
+        "material_id": "MAT-M005-PLAN-4f4bcff7",
+        "merchant_id": "M005",
+        "group": "plan",
+        "file_name": "M005_business_plan.pdf",
+        "media_type": "application/pdf",
+        "size_bytes": 3866,
+        "sha256": "4f4bcff71bc221fad82fc306dad2d4c715b2cc1b8a0aab45792ca66d95172f26",
+        "parse_status": "PARSED",
+        "simulated": true,
+        "completeness_score": 80,
+        "period_months": 3,
+        "subject_match": true,
+        "extracted_metrics": [
+          {
+            "label": "计划资本开支",
+            "value": "¥150,000",
+            "tone": "WARNING"
+          },
+          {
+            "label": "未来偿债支出",
+            "value": "¥45,000",
+            "tone": "WARNING"
+          }
+        ],
+        "findings": [
+          "扩店投入与偿债支出同期发生",
+          "计划支出将放大 P90 资金缺口"
+        ],
+        "warnings": [
+          "建议补充订单回款安排和备用资金来源"
+        ]
+      },
+      {
+        "material_id": "MAT-M005-ASSET-eaf1b36d",
+        "merchant_id": "M005",
+        "group": "asset",
+        "file_name": "M005_lease_asset_proof.pdf",
+        "media_type": "application/pdf",
+        "size_bytes": 3778,
+        "sha256": "eaf1b36df4028491c77d44d3c513f15299dd87ec5da779e249dd43b421c0f642",
+        "parse_status": "PARSED",
+        "simulated": true,
+        "completeness_score": 68,
+        "period_months": null,
+        "subject_match": true,
+        "extracted_metrics": [
+          {
+            "label": "剩余租期",
+            "value": "4 个月",
+            "tone": "WARNING"
+          },
+          {
+            "label": "设备证明",
+            "value": "部分缺失",
+            "tone": "WARNING"
+          }
+        ],
+        "findings": [
+          "经营场所剩余租期较短",
+          "该材料仅作补充证据，不作为授信必备抵押物"
+        ],
+        "warnings": [
+          "建议补充续租意向或新经营场所安排"
+        ]
+      }
+    ]
+  },
   "merchant": {
     "merchant_id": "M005",
     "profile": "v5_current",

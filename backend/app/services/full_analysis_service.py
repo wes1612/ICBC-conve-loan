@@ -29,6 +29,16 @@ def _overall_risk(
     return "LOW"
 
 
+def _overall_decision(score_decision: str, overall_risk: str) -> str:
+    """把评分、异常和流动性风险汇总成唯一的前端授信动作。"""
+
+    if score_decision == "DECLINE":
+        return "DECLINE"
+    if score_decision == "MANUAL_REVIEW" or overall_risk != "LOW":
+        return "MANUAL_REVIEW"
+    return "APPROVE"
+
+
 def run_full_analysis(request: FullAnalysisRequest) -> FullAnalysisResult:
     score = analyze_merchant(request.merchant)
     anomaly = analyze_transactions(request.anomaly) if request.anomaly else None
@@ -46,10 +56,12 @@ def run_full_analysis(request: FullAnalysisRequest) -> FullAnalysisResult:
         anomaly.risk_level if anomaly else None,
         cash_gap.risk_level if cash_gap else None,
     )
+    overall_decision = _overall_decision(score.decision, overall_risk)
     return FullAnalysisResult(
         merchant_id=request.merchant.merchant_id,
         generated_at=datetime.now(timezone.utc),
         overall_risk=overall_risk,  # type: ignore[arg-type]
+        overall_decision=overall_decision,  # type: ignore[arg-type]
         module_states=ModuleStates(
             anomaly="READY" if anomaly else "NOT_PROVIDED",
             cash_gap="READY" if cash_gap else "NOT_PROVIDED",
@@ -58,5 +70,6 @@ def run_full_analysis(request: FullAnalysisRequest) -> FullAnalysisResult:
         score=score,
         anomaly=anomaly,
         cash_gap=cash_gap,
+        material_evidence=request.application.materials,
     )
 

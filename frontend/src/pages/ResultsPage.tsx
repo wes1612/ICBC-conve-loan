@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import type { DataSource, FullAnalysisResult, RiskLevel } from '../types'
+import type {
+  DataSource,
+  FullAnalysisResult,
+  MaterialEvidence,
+  MaterialGroupId,
+  PortalMode,
+  RiskLevel,
+} from '../types'
 import { CashGapChart, DimensionBars } from '../components/Charts'
 import { Icon } from '../components/Icon'
 import { Button, Eyebrow, InfoNote, Metric, RiskPill } from '../components/Ui'
@@ -7,6 +14,7 @@ import { Button, Eyebrow, InfoNote, Metric, RiskPill } from '../components/Ui'
 interface ResultsPageProps {
   data: FullAnalysisResult
   source: DataSource
+  portal: PortalMode
   onRestart: () => void
   onBack: () => void
 }
@@ -18,6 +26,14 @@ const decisionLabels = {
 }
 
 const confidenceLabels = { HIGH: '高', MEDIUM: '中', LOW: '低' }
+const materialLabels: Record<MaterialGroupId, string> = {
+  license: '经营主体证明',
+  cashflow: '经营现金流',
+  statement: '资产负债资料',
+  tax: '纳税与开票',
+  plan: '经营与资金计划',
+  asset: '租赁/经营资产',
+}
 
 function money(value: number) {
   return new Intl.NumberFormat('zh-CN', {
@@ -32,8 +48,7 @@ function riskCopy(risk: RiskLevel) {
   return '命中人工审核门槛，不自动作出授信结论'
 }
 
-export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProps) {
-  const [view, setView] = useState<'merchant' | 'reviewer'>('merchant')
+export function ResultsPage({ data, source, portal, onRestart, onBack }: ResultsPageProps) {
   const score = data.score
   const anomaly = data.anomaly
   const cash = data.cash_gap
@@ -49,7 +64,7 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
           </div>
           <div className="report-hero__decision">
             <RiskPill risk={data.overall_risk} />
-            <h2>{decisionLabels[score.decision]}</h2>
+            <h2>{decisionLabels[data.overall_decision]}</h2>
             <p>{riskCopy(data.overall_risk)}</p>
           </div>
           <div className="report-hero__source"><i className={source === 'api' ? 'is-live' : ''} />{source === 'api' ? '真实接口响应' : '固定联调样例'} · API {data.api_version}</div>
@@ -57,10 +72,7 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
       </section>
 
       <div className="report-toolbar page-shell">
-        <div className="segmented">
-          <button className={view === 'merchant' ? 'is-active' : ''} onClick={() => setView('merchant')}>商户摘要</button>
-          <button className={view === 'reviewer' ? 'is-active' : ''} onClick={() => setView('reviewer')}>银行审核台</button>
-        </div>
+        <div className="portal-badge"><Icon name={portal === 'merchant' ? 'building' : 'shield'} />{portal === 'merchant' ? '商户授信摘要' : '银行内部审核台'}</div>
         <div><Button variant="secondary" icon="download" onClick={() => window.print()}>打印结构化摘要</Button><Button variant="ghost" icon="refresh" onClick={onRestart}>切换案例</Button></div>
       </div>
 
@@ -68,7 +80,7 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
         <div className="page-shell report-warning"><InfoNote tone="warning">{data.data_warnings.join('；')}</InfoNote></div>
       )}
 
-      {view === 'merchant' ? (
+      {portal === 'merchant' ? (
         <div className="report-grid page-shell">
           <section className="score-card report-card">
             <div className="card-heading"><div><Eyebrow>经营信用</Eyebrow><h2>综合评分</h2></div><span>等级 {score.credit_grade}</span></div>
@@ -81,7 +93,7 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
                 <div><Metric label="数据置信度" value={confidenceLabels[score.confidence]} /><Metric label="建议额度" value={money(score.limit.recommended_limit)} /></div>
               </div>
             </div>
-            <InfoNote>真实 12 个月违约概率待历史数据校准，当前状态：<strong>{score.pd_status}</strong>。</InfoNote>
+            <InfoNote>真实 12 个月违约概率待历史数据校准，当前状态：<strong>待真实历史数据校准</strong>。</InfoNote>
           </section>
 
           <section className="limit-card report-card">
@@ -99,6 +111,11 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
           <section className="dimension-card report-card report-card--wide">
             <div className="card-heading"><div><Eyebrow>维度表现</Eyebrow><h2>经营画像</h2></div><span>后端输出 · 不在前端重算</span></div>
             <DimensionBars values={score.dimensions} />
+          </section>
+
+          <section className="report-card report-card--full">
+            <div className="card-heading"><div><Eyebrow>材料核验</Eyebrow><h2>已解析申请证据</h2></div><span>{data.material_evidence.length} 份 · 模拟解析</span></div>
+            <MaterialEvidencePanel materials={data.material_evidence} compact />
           </section>
 
           <section className="reason-card report-card">
@@ -149,20 +166,33 @@ function EmptyModule({ text }: { text: string }) {
 }
 
 function ReviewerView({ data }: { data: FullAnalysisResult }) {
+  const [reviewAction, setReviewAction] = useState<'APPROVE' | 'REQUEST_MORE' | 'KEEP_REVIEW' | null>(null)
   const score = data.score
   const anomaly = data.anomaly
   const cash = data.cash_gap
+  const needsManualReview = data.overall_decision === 'MANUAL_REVIEW'
+  const reviewSummary = score.review_rules.length
+    ? `命中 ${score.review_rules.length} 条评分审核规则`
+    : data.overall_risk !== 'LOW'
+      ? '由异常交易或流动性风险触发综合处置'
+      : '综合分析未发现需人工处置的风险'
   return (
     <div className="reviewer-layout page-shell">
       <aside className="reviewer-rail">
         <Eyebrow>审核清单</Eyebrow>
-        <h2>{score.review_required ? '需要人工处理' : '无需人工复核'}</h2>
-        <p>{score.review_required ? `命中 ${score.review_rules.length} 条评分审核规则` : '评分模块未命中人工审核规则。'}</p>
+        <h2>{data.overall_decision === 'DECLINE' ? '暂不建议授信' : needsManualReview ? '需要人工处理' : '无需人工复核'}</h2>
+        <p>{reviewSummary}</p>
         <div className="rail-stats"><Metric label="经营评分" value={score.operating_credit_score.toFixed(1)} /><Metric label="异常分" value={anomaly?.anomaly_score ?? '未运行'} /><Metric label="P90 最大缺口" value={cash ? money(cash.max_p90_funding_gap) : '未运行'} /></div>
         <InfoNote tone={data.overall_risk === 'LOW' ? 'positive' : 'warning'}>{riskCopy(data.overall_risk)}</InfoNote>
       </aside>
 
       <div className="reviewer-content">
+        <section className="report-card">
+          <div className="card-heading"><div><Eyebrow>材料证据链</Eyebrow><h2>申请材料与解析摘要</h2></div><span>{data.material_evidence.length} 份</span></div>
+          <InfoNote tone="warning">当前指标由竞赛模拟解析器生成；文件哈希、材料编号与主体匹配结果用于演示审核追溯。</InfoNote>
+          <MaterialEvidencePanel materials={data.material_evidence} />
+        </section>
+
         <section className="report-card">
           <div className="card-heading"><div><Eyebrow>评分门控</Eyebrow><h2>人工审核规则</h2></div><span>{score.review_rules.length} 条</span></div>
           {score.review_rules.length ? <div className="rule-list">{score.review_rules.map((rule) => <div key={rule.code}><b>{rule.code}</b><span>{rule.message}</span><em className={`level level--${rule.level.toLowerCase()}`}>{rule.level}</em></div>)}</div> : <EmptyModule text="未命中评分审核规则。" />}
@@ -181,10 +211,39 @@ function ReviewerView({ data }: { data: FullAnalysisResult }) {
         </section>
 
         <section className="review-decision report-card">
-          <div><Eyebrow>审核动作</Eyebrow><h2>记录处理意见</h2><p>原型仅展示交互，不会把意见写入数据库。</p></div>
-          <div className="decision-actions"><button><Icon name="check" />建议通过</button><button><Icon name="document" />要求补件</button><button className="is-danger"><Icon name="warning" />维持人工复核</button></div>
+          <div><Eyebrow>审核动作</Eyebrow><h2>记录处理意见</h2><p>当前选择会保存在本次浏览器会话；生产环境需接入审核记录接口。</p>{reviewAction && <InfoNote tone={reviewAction === 'APPROVE' ? 'positive' : 'warning'}>已记录：{reviewAction === 'APPROVE' ? '建议通过' : reviewAction === 'REQUEST_MORE' ? '要求补件' : '维持人工复核'}。</InfoNote>}</div>
+          <div className="decision-actions"><button className={reviewAction === 'APPROVE' ? 'is-selected' : ''} onClick={() => setReviewAction('APPROVE')}><Icon name="check" />建议通过</button><button className={reviewAction === 'REQUEST_MORE' ? 'is-selected' : ''} onClick={() => setReviewAction('REQUEST_MORE')}><Icon name="document" />要求补件</button><button className={`is-danger ${reviewAction === 'KEEP_REVIEW' ? 'is-selected' : ''}`} onClick={() => setReviewAction('KEEP_REVIEW')}><Icon name="warning" />维持人工复核</button></div>
         </section>
       </div>
+    </div>
+  )
+}
+
+function MaterialEvidencePanel({
+  materials,
+  compact = false,
+}: {
+  materials: MaterialEvidence[]
+  compact?: boolean
+}) {
+  return (
+    <div className={`report-materials ${compact ? 'is-compact' : ''}`}>
+      {materials.map((material) => (
+        <article className={`report-material ${material.warnings.length || !material.subject_match ? 'has-warning' : ''}`} key={material.material_id}>
+          <div className="report-material__top">
+            <div><Icon name="document" /><span><strong>{materialLabels[material.group]}</strong><small>{material.file_name}</small></span></div>
+            <em>{material.completeness_score}%</em>
+          </div>
+          <div className="report-material__metrics">
+            {material.extracted_metrics.slice(0, compact ? 2 : 3).map((metric) => (
+              <span key={`${material.material_id}-${metric.label}`}><small>{metric.label}</small><strong>{metric.value}</strong></span>
+            ))}
+          </div>
+          <p><Icon name={material.subject_match ? 'check' : 'warning'} size={14} />{material.subject_match ? '申请主体匹配' : '存在主体不一致项'} · {material.findings[0]}</p>
+          {!compact && material.warnings[0] && <p className="report-material__warning"><Icon name="warning" size={14} />{material.warnings[0]}</p>}
+          {!compact && <code>{material.material_id} · SHA256 {material.sha256.slice(0, 12)}…</code>}
+        </article>
+      ))}
     </div>
   )
 }

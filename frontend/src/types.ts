@@ -1,6 +1,21 @@
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'MANUAL_REVIEW'
 export type Confidence = 'LOW' | 'MEDIUM' | 'HIGH'
 export type ModuleState = 'READY' | 'NOT_PROVIDED'
+export type OverallDecision = 'APPROVE' | 'MANUAL_REVIEW' | 'DECLINE'
+export type AnalysisMode = 'api' | 'mock'
+export type PortalMode = 'merchant' | 'reviewer'
+export type DataGroupId = 'cashflow' | 'statement' | 'tax' | 'plan'
+export type MaterialGroupId = 'license' | DataGroupId | 'asset'
+export type MetricTone = 'NEUTRAL' | 'POSITIVE' | 'WARNING' | 'DANGER'
+export type ConnectorId =
+  | 'bank'
+  | 'unionpay'
+  | 'alipay'
+  | 'wechat'
+  | 'meituan'
+  | 'douyin'
+  | 'xiaohongshu'
+  | 'enterprise'
 
 export interface ReviewRule {
   code: string
@@ -104,6 +119,7 @@ export interface FullAnalysisResult {
   merchant_id: string
   generated_at: string
   overall_risk: RiskLevel
+  overall_decision: OverallDecision
   module_states: {
     score: 'READY'
     anomaly: ModuleState
@@ -113,7 +129,32 @@ export interface FullAnalysisResult {
   score: ScoreResult
   anomaly: AnomalyResult | null
   cash_gap: CashGapResult | null
+  material_evidence: MaterialEvidence[]
   api_version: string
+}
+
+export interface ExtractedMetric {
+  label: string
+  value: string
+  tone: MetricTone
+}
+
+export interface MaterialEvidence {
+  material_id: string
+  merchant_id: string
+  group: MaterialGroupId
+  file_name: string
+  media_type: string
+  size_bytes: number
+  sha256: string
+  parse_status: 'PARSED'
+  simulated: boolean
+  completeness_score: number
+  period_months: number | null
+  subject_match: boolean
+  extracted_metrics: ExtractedMetric[]
+  findings: string[]
+  warnings: string[]
 }
 
 export interface ApplicationDraft {
@@ -124,6 +165,26 @@ export interface ApplicationDraft {
   legalName: string
   contactPhone: string
   requestedAmount: number
+}
+
+export interface ApplicationContext {
+  social_credit_code: string
+  operating_address: string
+  legal_name: string
+  contact_phone: string
+  identity_verified: boolean
+  uploaded_data_groups: DataGroupId[]
+  authorized_sources: ConnectorId[]
+  consent_confirmed: boolean
+  consented_at: string | null
+  materials: MaterialEvidence[]
+}
+
+export interface FullAnalysisRequest {
+  application: ApplicationContext
+  merchant: Record<string, unknown>
+  anomaly?: Record<string, unknown> | null
+  cash_gap?: Record<string, unknown> | null
 }
 
 export type DemoCase = 'normal' | 'review'
