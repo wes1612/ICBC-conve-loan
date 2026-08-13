@@ -161,17 +161,29 @@ export interface ApplicationDraft {
   merchantName: string
   industry: string
   socialCreditCode: string
+  province: string
+  city: string
   address: string
   legalName: string
+  legalPhone: string
+  legalIdNumber: string
+  contactName: string
   contactPhone: string
+  contactIdNumber: string
   requestedAmount: number
 }
 
 export interface ApplicationContext {
   social_credit_code: string
+  province: string
+  city: string
   operating_address: string
   legal_name: string
+  legal_phone: string
+  legal_id_number: string | null
+  contact_name: string
   contact_phone: string
+  contact_id_number: string | null
   identity_verified: boolean
   uploaded_data_groups: DataGroupId[]
   authorized_sources: ConnectorId[]

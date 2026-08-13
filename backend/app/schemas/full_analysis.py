@@ -33,9 +33,15 @@ class ApplicationContext(BaseModel):
     """申请流程和授权证据；只用于校验与审计，不直接参与评分。"""
 
     social_credit_code: str = Field(pattern=r"^[0-9A-Z]{18}$")
+    province: str | None = Field(default=None, min_length=2, max_length=30)
+    city: str | None = Field(default=None, min_length=2, max_length=30)
     operating_address: str = Field(min_length=5, max_length=200)
     legal_name: str = Field(min_length=2, max_length=50)
+    legal_phone: str | None = Field(default=None, pattern=r"^1[3-9]\d{9}$")
+    legal_id_number: str | None = Field(default=None, pattern=r"^\d{17}[0-9X]$")
+    contact_name: str | None = Field(default=None, min_length=2, max_length=50)
     contact_phone: str = Field(pattern=r"^1[3-9]\d{9}$")
+    contact_id_number: str | None = Field(default=None, pattern=r"^\d{17}[0-9X]$")
     identity_verified: bool
     uploaded_data_groups: list[DataGroup]
     authorized_sources: list[AuthorizedSource]

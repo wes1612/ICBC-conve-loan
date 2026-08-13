@@ -333,3 +333,112 @@ h1, h2, h3, p { margin-top: 0; }
   .site-header, .stepper-wrap, .report-toolbar, .report-footer, .site-footer, .decision-actions { display: none !important; }
   .report-page { background: white; }.report-hero { color: #111; background: white; border-bottom: 2px solid #111; }.report-hero .eyebrow, .report-hero__inner p, .report-hero__source { color: #555; }.report-hero__decision { border-color: #bbb; }.report-grid, .reviewer-layout { width: 100%; padding: 20px 0; }.report-card { break-inside: avoid; box-shadow: none; }.reviewer-rail { position: static; color: #111; background: #eee; }.reviewer-rail .eyebrow, .reviewer-rail > p, .rail-stats .metric span, .rail-stats .metric strong { color: #111; }
 }
+
+/* UI-revised：主页与五步流程的队友版视觉 */
+.stepper li:not(:last-child)::after { left: calc(50% + 58px); right: calc(-50% + 58px); top: 16px; }
+.stepper button { position: relative; z-index: 1; gap: 9px; font-size: 14px; }
+.stepper button > span { width: 32px; height: 32px; font-size: 11px; }
+.stepper button strong { position: relative; z-index: 2; padding-inline: 3px; background: #f1efeb; }
+
+.bank-landing { background: linear-gradient(112deg, #f7f9fc 0%, #eef3f8 68%, #f7f7f7 100%); border-bottom: 1px solid #e1e5ea; }
+.bank-topbar { color: white; background: #b82322; }
+.bank-topbar__inner { height: 68px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 42px; }
+.bank-logo { display: flex; align-items: center; gap: 13px; font-size: 17px; font-weight: 700; }
+.bank-logo strong { font-size: 24px; letter-spacing: .03em; }
+.bank-topbar nav { display: flex; justify-content: center; gap: 54px; font-weight: 700; }
+.bank-tools { display: flex; align-items: center; gap: 18px; font-size: 14px; }
+.bank-tools > span { width: 260px; padding: 9px 15px; border-radius: 4px; color: rgba(255,255,255,.88); background: rgba(255,255,255,.18); }
+.bank-tools button { height: 34px; padding: 0 19px; border: 1px solid rgba(255,255,255,.55); border-radius: 4px; color: white; background: transparent; }
+.bank-hero { min-height: 250px; display: flex; align-items: center; justify-content: space-between; gap: 48px; }
+.bank-hero h1 { margin: 0 0 14px; color: #11233e; font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; font-size: 46px; letter-spacing: 0; }
+.bank-hero p { max-width: 660px; margin: 0; color: #45536a; font-size: 17px; line-height: 1.8; }
+.product-section { padding-block: 60px 56px; }
+.product-section h2 { margin: 0 0 28px; text-align: center; color: #11233e; font-size: 32px; }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.product-card { min-height: 188px; padding: 26px 28px; border: 1px solid #d9dee7; background: white; box-shadow: 0 14px 36px rgba(28,48,78,.045); }
+.product-card h3 { margin-bottom: 12px; color: #11233e; font-size: 24px; }
+.product-tags { min-height: 28px; display: flex; flex-wrap: wrap; gap: 8px; }
+.product-tags span { padding: 5px 10px; border-radius: 999px; color: #e11626; background: #fdebea; font-size: 13px; }
+.product-metrics { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.product-metrics strong { display: block; color: #e11626; font-size: 24px; line-height: 1.2; }
+.product-metrics small { display: block; margin-top: 8px; color: #3e4a61; font-size: 13px; }
+.product-card--featured { border-color: rgba(225,22,38,.28); background: linear-gradient(145deg, #fff, #fff7f7); }
+.product-card--featured p { margin: 18px 0 0; color: #5d6677; font-size: 13px; line-height: 1.7; }
+
+.workflow__intro--simple { align-items: flex-start; }
+.workflow__intro--simple .eyebrow { font-size: 24px; letter-spacing: .04em; font-weight: 900; }
+.workflow__intro--simple p { max-width: 960px; font-size: 17px; }
+.form-layout { grid-template-columns: 1fr 1fr; gap: 28px; }
+.form-card { padding: 36px; border-radius: 24px; }
+.form-section-title > span { width: 54px; height: 54px; border-radius: 13px; font-size: 16px; }
+.form-section-title h2 { font-size: 24px; }
+.form-section-title p { font-size: 14px; }
+.form-section-title b, .field b { color: #d71920; font-size: 18px; }
+.field > span { font-size: 15px; }
+.field input, .field select { height: 60px; padding: 0 18px; border-radius: 13px; font-size: 15px; }
+.field small { font-size: 12px; }
+.visually-hidden-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.upload-zone { min-height: 138px; padding: 28px 30px; }
+.upload-zone.is-selected { border-color: rgba(31,120,95,.42); background: var(--green-soft); }
+.upload-zone.is-selected svg { color: var(--green); }
+.upload-zone div strong { font-size: 21px; }
+.upload-zone div span, .upload-zone small { font-size: 13px; }
+.upload-zone button { padding: 11px 16px; font-size: 14px; }
+
+.verify-page--center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; text-align: center; }
+.verify-page--center > .eyebrow { align-self: center; font-size: 20px; letter-spacing: .06em; }
+.verify-page--center .verify-device { width: min(520px, 100%); padding: 34px; background: white; border-radius: 26px; }
+.verify-device > h1 { margin: 0 0 24px; font-size: 28px; }
+.verify-page--center .face-stage { min-height: 330px; background: #faf8f5; }
+.portrait-frame { width: 190px; height: 220px; position: relative; display: grid; place-items: center; color: white; border-radius: 34px; background: linear-gradient(180deg, #f7e4ea, #ead7dc); }
+.portrait-head { position: absolute; top: 42px; width: 72px; height: 72px; border-radius: 50%; background: #9f1d42; }
+.portrait-body { position: absolute; bottom: 34px; width: 132px; height: 76px; border-radius: 62px 62px 24px 24px; background: #9f1d42; }
+.qr-modal { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; background: rgba(26,20,22,.45); }
+.qr-card { position: relative; width: min(390px, 100%); padding: 30px; border-radius: 20px; background: white; box-shadow: 0 30px 90px rgba(0,0,0,.22); text-align: center; }
+.qr-close { position: absolute; right: 14px; top: 12px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #f1efeb; font-size: 24px; cursor: pointer; }
+.qr-card h2 { margin-bottom: 18px; font-size: 22px; }
+.qr-card p { margin: 18px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.qr-code { width: 210px; height: 210px; margin-inline: auto; padding: 14px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; border: 1px solid var(--line); border-radius: 14px; background: white; }
+.qr-code span { border-radius: 3px; background: #f0ece7; }
+.qr-code span.is-dark { background: #1f1b1c; }
+
+/* UI-revised：授信报告保持队友版本的全部元素与布局 */
+.report-grid--final { grid-template-columns: 1fr .72fr; align-items: start; }
+.report-grid--final .card-heading h2 { font-size: 22px; }
+.report-grid--final .card-heading .eyebrow { display: none; }
+.report-grid--final .score-card .info-note { display: none; }
+.report-grid--final .limit-card > p { margin-top: 12px; font-size: 13px; line-height: 1.7; }
+.report-grid--final .dimension-card .card-heading > span { display: none; }
+.recommendation-intro h2 { margin-bottom: 14px; font-size: 24px; }
+.recommendation-intro p { margin-bottom: 10px; color: #514d48; font-size: 13px; line-height: 1.8; }
+.recommendation-intro p:last-child { margin-bottom: 0; }
+.recommendation-stack { display: grid; gap: 14px; }
+.dark-rec-card { padding: 20px; display: grid; grid-template-columns: .95fr 1.25fr auto; align-items: center; gap: 18px; border-radius: 14px; color: #fff; background: linear-gradient(135deg, #3b2330, #801836); }
+.dark-rec-card--policy { background: linear-gradient(135deg, #26384d, #405b75); }
+.dark-rec-card h3 { margin-bottom: 9px; font-size: 19px; }
+.dark-rec-card p { margin: 0 0 9px; color: rgba(255,255,255,.78); font-size: 12px; line-height: 1.65; }
+.dark-rec-card a { color: #ffe1eb; font-size: 10px; overflow-wrap: anywhere; }
+.dark-rec-card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.dark-rec-card li { color: rgba(255,255,255,.9); font-size: 12px; line-height: 1.55; }
+.dark-rec-card button { min-width: 126px; min-height: 40px; border: 1px solid rgba(255,255,255,.5); border-radius: 10px; color: #fff; background: rgba(255,255,255,.12); cursor: pointer; font-size: 12px; font-weight: 700; }
+.report-closing-note { background: #f4f1ec; }
+.report-closing-note p { margin-bottom: 8px; color: #504c47; font-size: 12px; line-height: 1.75; }
+.report-closing-note strong { color: var(--red); font-size: 13px; }
+
+@media (max-width: 1040px) {
+  .bank-topbar__inner { grid-template-columns: 1fr; height: auto; padding-block: 16px; gap: 14px; }
+  .bank-topbar nav, .bank-tools { justify-content: flex-start; flex-wrap: wrap; }
+  .bank-hero { flex-direction: column; align-items: flex-start; padding-block: 42px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .report-grid--final { grid-template-columns: 1fr; }
+  .dark-rec-card { grid-template-columns: 1fr; align-items: start; }
+  .dark-rec-card button { justify-self: start; }
+}
+
+@media (max-width: 760px) {
+  .bank-topbar nav, .bank-tools { display: none; }
+  .bank-hero h1 { font-size: 36px; }
+  .product-grid { grid-template-columns: 1fr; }
+  .form-layout { grid-template-columns: 1fr; }
+  .field input, .field select { font-size: 16px; }
+}

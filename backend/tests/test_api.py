@@ -52,9 +52,15 @@ def _materials(merchant_id: str) -> list[dict]:
 
 APPLICATION = {
     "social_credit_code": "91310000MA1DEMO005",
+    "province": "上海市",
+    "city": "上海市",
     "operating_address": "上海市示范区惠民路88号",
     "legal_name": "李女士",
+    "legal_phone": "13800000001",
+    "legal_id_number": "310101199001010011",
+    "contact_name": "李女士",
     "contact_phone": "13800000001",
+    "contact_id_number": "310101199001010011",
     "identity_verified": True,
     "uploaded_data_groups": ["cashflow", "statement", "tax", "plan"],
     "authorized_sources": ["bank", "meituan", "enterprise"],

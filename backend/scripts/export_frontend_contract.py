@@ -70,9 +70,15 @@ def _full_payload(index: int) -> dict[str, Any]:
     return {
         "application": {
             "social_credit_code": f"91310000MA1DEMO{index + 1:03d}",
+            "province": "上海市",
+            "city": "上海市",
             "operating_address": "上海市示范区惠民路88号",
-            "legal_name": "李女士",
+            "legal_name": "李女士" if index == 0 else "王女士",
+            "legal_phone": f"1380000000{index + 1}",
+            "legal_id_number": "310101199001010011" if index == 0 else "310101199205050055",
+            "contact_name": "李女士" if index == 0 else "王女士",
             "contact_phone": f"1380000000{index + 1}",
+            "contact_id_number": "310101199001010011" if index == 0 else "310101199205050055",
             "identity_verified": True,
             "uploaded_data_groups": ["cashflow", "statement", "tax", "plan"],
             "authorized_sources": ["bank", "meituan", "enterprise"],

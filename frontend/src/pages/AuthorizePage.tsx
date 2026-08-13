@@ -115,7 +115,7 @@ export function AuthorizePage({
             <input type="checkbox" checked={consentConfirmed} onChange={(event) => onConsentChange(event.target.checked)} disabled={analyzing} />
             <span><strong>我已阅读并同意本次数据使用授权</strong><small>仅用于本次授信分析；取消授权后不能提交。</small></span>
           </label>
-          {!ready && <InfoNote tone="warning">{!prerequisitesReady ? '主体核验或四组经营资料已发生变更，请返回补齐。' : '请授权三项带 * 的当前可用来源，并主动勾选数据使用授权。'}</InfoNote>}
+          {!ready && <InfoNote tone="warning">{!prerequisitesReady ? '主体核验或五份必交材料已发生变更，请返回补齐。' : '请授权三项带 * 的当前可用来源，并主动勾选数据使用授权。'}</InfoNote>}
         </section>
 
         <section className="analysis-panel">

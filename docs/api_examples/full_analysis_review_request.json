@@ -1,9 +1,15 @@
 {
   "application": {
     "social_credit_code": "91310000MA1DEMO005",
+    "province": "上海市",
+    "city": "上海市",
     "operating_address": "上海市示范区惠民路88号",
-    "legal_name": "李女士",
+    "legal_name": "王女士",
+    "legal_phone": "13800000005",
+    "legal_id_number": "310101199205050055",
+    "contact_name": "王女士",
     "contact_phone": "13800000005",
+    "contact_id_number": "310101199205050055",
     "identity_verified": true,
     "uploaded_data_groups": [
       "cashflow",

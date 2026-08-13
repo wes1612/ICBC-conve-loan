@@ -21,18 +21,30 @@ const drafts: Record<DemoCase, ApplicationDraft> = {
     merchantName: '宜人美发生活馆',
     industry: '美容美发',
     socialCreditCode: '91310000MA1DEMO001',
-    address: '上海市示范区惠民路 88 号',
+    province: '上海市',
+    city: '上海市',
+    address: '示范区惠民路 88 号',
     legalName: '李女士',
+    legalPhone: '13800000001',
+    legalIdNumber: '310101199001010011',
+    contactName: '李女士',
     contactPhone: '13800000001',
+    contactIdNumber: '310101199001010011',
     requestedAmount: 500000,
   },
   review: {
     merchantName: '欣悦美发工作室',
     industry: '美容美发',
     socialCreditCode: '91310000MA1DEMO005',
-    address: '上海市示范区惠民路 188 号',
+    province: '上海市',
+    city: '上海市',
+    address: '示范区惠民路 188 号',
     legalName: '王女士',
+    legalPhone: '13800000005',
+    legalIdNumber: '310101199205050055',
+    contactName: '王女士',
     contactPhone: '13800000005',
+    contactIdNumber: '310101199205050055',
     requestedAmount: 300000,
   },
 }
@@ -56,7 +68,7 @@ export function buildAnalysisRequest(
   materials: MaterialEvidence[],
 ): FullAnalysisRequest {
   const source = demoCase === 'normal' ? normalRequestJson : reviewRequestJson
-  const request = structuredClone(source) as {
+  const request = structuredClone(source) as unknown as {
     merchant: {
       merchant_id: string
       profile: string
@@ -75,9 +87,15 @@ export function buildAnalysisRequest(
 
   request.application = {
     social_credit_code: draft.socialCreditCode.trim().toUpperCase(),
-    operating_address: draft.address.trim(),
+    province: draft.province.trim(),
+    city: draft.city.trim(),
+    operating_address: `${draft.province.trim()}${draft.city.trim()}${draft.address.trim()}`,
     legal_name: draft.legalName.trim(),
+    legal_phone: draft.legalPhone.trim(),
+    legal_id_number: draft.legalIdNumber.trim().toUpperCase() || null,
+    contact_name: draft.contactName.trim(),
     contact_phone: draft.contactPhone.trim(),
+    contact_id_number: draft.contactIdNumber.trim().toUpperCase() || null,
     identity_verified: identityVerified,
     uploaded_data_groups: uploadedDataGroups,
     authorized_sources: authorizedSources,

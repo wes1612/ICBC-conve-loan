@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { describeApiError, downloadDemoMaterial, parseMaterial } from '../api'
 import { Icon, type IconName } from '../components/Icon'
 import { Button, Eyebrow, InfoNote } from '../components/Ui'
@@ -17,6 +17,7 @@ interface DataPageProps {
   merchantId: string
   demoCase: DemoCase
   analysisMode: AnalysisMode
+  stagedLicenseFile: File | null
   materials: MaterialEvidence[]
   onChange: (materials: MaterialEvidence[]) => void
   onBack: () => void
@@ -53,6 +54,7 @@ export function DataPage({
   merchantId,
   demoCase,
   analysisMode,
+  stagedLicenseFile,
   materials,
   onChange,
   onBack,
@@ -60,6 +62,7 @@ export function DataPage({
 }: DataPageProps) {
   const [parsing, setParsing] = useState<MaterialGroupId | null>(null)
   const [errors, setErrors] = useState<Partial<Record<MaterialGroupId, string>>>({})
+  const stagedLicenseAttempt = useRef<string | null>(null)
   const completeCount = requiredGroups.filter((group) => materials.some((item) => item.group === group)).length
   const complete = completeCount === requiredGroups.length
 
@@ -83,6 +86,14 @@ export function DataPage({
       setParsing(null)
     }
   }
+
+  useEffect(() => {
+    if (!stagedLicenseFile || materials.some((item) => item.group === 'license') || parsing !== null) return
+    const key = `${stagedLicenseFile.name}:${stagedLicenseFile.size}:${stagedLicenseFile.lastModified}`
+    if (stagedLicenseAttempt.current === key) return
+    stagedLicenseAttempt.current = key
+    void processFile('license', stagedLicenseFile)
+  }, [stagedLicenseFile, materials, parsing])
 
   const loadDemo = async (group: MaterialGroupId) => {
     setParsing(group)
@@ -128,7 +139,7 @@ export function DataPage({
       <section className="material-toolbar" aria-label="材料提交说明">
         <div><Icon name="upload" /><span><strong>真实文件交互</strong>支持选择或拖拽，单个文件不超过 5 MB</span></div>
         <div><Icon name="spark" /><span><strong>一键演示</strong>自动下载仓库中的对应 PDF / Excel 再提交解析</span></div>
-        <div><Icon name="shield" /><span><strong>证据可追溯</strong>材料编号和摘要会随综合分析进入审核台</span></div>
+        <div><Icon name="shield" /><span><strong>证据可追溯</strong>材料编号和摘要会随综合分析进入后端审核证据</span></div>
       </section>
 
       <section className="upload-grid upload-grid--materials">

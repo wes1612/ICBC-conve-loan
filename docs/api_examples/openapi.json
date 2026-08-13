@@ -636,6 +636,32 @@
             "pattern": "^[0-9A-Z]{18}$",
             "title": "Social Credit Code"
           },
+          "province": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
           "operating_address": {
             "type": "string",
             "maxLength": 200,
@@ -648,10 +674,59 @@
             "minLength": 2,
             "title": "Legal Name"
           },
+          "legal_phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^1[3-9]\\d{9}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Phone"
+          },
+          "legal_id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{17}[0-9X]$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Id Number"
+          },
+          "contact_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Name"
+          },
           "contact_phone": {
             "type": "string",
             "pattern": "^1[3-9]\\d{9}$",
             "title": "Contact Phone"
+          },
+          "contact_id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{17}[0-9X]$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id Number"
           },
           "identity_verified": {
             "type": "boolean",
