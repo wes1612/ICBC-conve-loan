@@ -11,6 +11,7 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 - 阻尼趋势 + 压力情景的未来三个月 P50/P90 资金缺口预测；
 - 五商户 553 笔模拟交易和 60 个月度现金流记录；
 - 评分、异常、资金缺口三个版本化 ML 接口。
+- 真实文件上传校验、M001/M005 演示材料下载和明确标注的模拟解析接口。
 
 ## ML 接口
 
@@ -20,9 +21,15 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 | `POST /api/v1/ml/anomalies` | 交易异常分、原因码与证据交易 | 确定性规则 + MAD 稳健离群检测 |
 | `POST /api/v1/ml/cash-gap` | 未来三个月 P50/P90 资金缺口 | 加权基线 + 阻尼趋势 + 压力情景 |
 | `POST /api/v1/ml/full-analysis` | 一次返回三个模块，支持部分资料暂缺 | 聚合编排，不新增黑箱判断 |
+| `POST /api/v1/materials/parse` | 校验文件并生成材料证据摘要 | 文件签名/哈希校验 + 案例固定模拟解析 |
+| `GET /api/v1/materials/demo/{merchant_id}/{group}` | 下载仓库内置 PDF/Excel 演示材料 | 仅支持 M001、M005 |
 | `POST /api/v1/analyze` | 旧评分路径兼容接口 | 与 `/api/v1/ml/score` 相同 |
 
 当前没有真实贷后违约标签，因此 `pd_12m` 始终返回 `null`，`pd_status` 为 `UNCALIBRATED`。模拟明细用于开发和异常注入验收，不用于声称已经训练真实违约/欺诈模型。
+
+`/full-analysis` 当前契约版本为 v0.4.0。请求必须包含 `application`，用于校验法人核验、已解析材料、经营资料组、数据来源授权和授权时间。响应中的 `material_evidence` 原样回传材料编号、哈希、主体匹配和模拟解析摘要，供银行审核追溯；它用于完整性门控，不会偷偷改变 v5 评分公式。`overall_decision` 汇总评分、交易异常和资金缺口风险，是结果页唯一应展示的最终授信动作；`score.decision` 仅表示评分子模块自身结论。
+
+`/materials/parse` 会真实校验扩展名、大小、Base64 内容、PDF/Office/图片签名并计算 SHA256。当前 OCR 与指标提取是 M001/M005 的确定性竞赛模拟规则，响应始终返回 `simulated: true`，不能表述为已接入真实银行、税务或商用 OCR。
 
 ## 本地安装与启动
 

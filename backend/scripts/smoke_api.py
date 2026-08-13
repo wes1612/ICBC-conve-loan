@@ -15,6 +15,44 @@ SIMULATED_DATA = BACKEND_ROOT.parent / "data" / "ml_simulated"
 BASE_URL = "http://127.0.0.1:8765"
 
 
+def application_context(merchant_id: str) -> dict:
+    """Build the consent and data-scope context required by contract v0.4."""
+    materials = [
+        {
+            "material_id": f"MAT-{merchant_id}-{group.upper()}-{index:08d}",
+            "merchant_id": merchant_id,
+            "group": group,
+            "file_name": f"{merchant_id}_{group}.pdf",
+            "media_type": "application/pdf",
+            "size_bytes": 128,
+            "sha256": f"{index:064x}",
+            "parse_status": "PARSED",
+            "simulated": True,
+            "completeness_score": 95,
+            "period_months": 12 if group in {"cashflow", "tax"} else None,
+            "subject_match": True,
+            "extracted_metrics": [{"label": "文件校验", "value": "已通过"}],
+            "findings": ["冒烟测试材料已解析"],
+            "warnings": [],
+        }
+        for index, group in enumerate(
+            ["license", "cashflow", "statement", "tax", "plan"], start=1
+        )
+    ]
+    return {
+        "social_credit_code": f"91310000MA1DEMO{merchant_id[-3:]}",
+        "operating_address": "上海市示范区惠民路 88 号",
+        "legal_name": "李女士",
+        "contact_phone": "13800000005",
+        "identity_verified": True,
+        "uploaded_data_groups": ["cashflow", "statement", "tax", "plan"],
+        "authorized_sources": ["bank", "meituan", "enterprise"],
+        "consent_confirmed": True,
+        "consented_at": "2026-08-11T08:00:00Z",
+        "materials": materials,
+    }
+
+
 def wait_until_ready(client: httpx.Client, process: subprocess.Popen[str]) -> None:
     for _ in range(50):
         if process.poll() is not None:
@@ -69,6 +107,7 @@ def main() -> None:
             full_analysis = client.post(
                 "/api/v1/ml/full-analysis",
                 json={
+                    "application": application_context(merchant_5["merchant_id"]),
                     "merchant": merchant_5,
                     "anomaly": transaction_cases[4]["input"],
                     "cash_gap": cashflow_cases[4]["input"],
@@ -116,7 +155,13 @@ def main() -> None:
                 "max_p50_funding_gap": cash_gap_json["max_p50_funding_gap"],
                 "max_p90_funding_gap": cash_gap_json["max_p90_funding_gap"],
                 "full_analysis_overall_risk": full_analysis_json["overall_risk"],
+                "full_analysis_overall_decision": full_analysis_json[
+                    "overall_decision"
+                ],
                 "full_analysis_module_states": full_analysis_json["module_states"],
+                "full_analysis_material_count": len(
+                    full_analysis_json["material_evidence"]
+                ),
                 "cors_allow_origin": cors.headers.get("access-control-allow-origin"),
                 "docs_status": docs.status_code,
                 "ml_paths_in_openapi": all(
@@ -126,6 +171,7 @@ def main() -> None:
                         "/api/v1/ml/anomalies",
                         "/api/v1/ml/cash-gap",
                         "/api/v1/ml/full-analysis",
+                        "/api/v1/materials/parse",
                     )
                 ),
             }

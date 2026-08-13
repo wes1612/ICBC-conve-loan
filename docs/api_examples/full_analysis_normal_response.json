@@ -2,6 +2,7 @@
   "merchant_id": "M001",
   "generated_at": "2026-08-07T12:00:00Z",
   "overall_risk": "LOW",
+  "overall_decision": "APPROVE",
   "module_states": {
     "score": "READY",
     "anomaly": "READY",
@@ -153,5 +154,198 @@
     ],
     "model_version": "cash_gap_damped_trend_v1"
   },
-  "api_version": "0.2.0"
+  "material_evidence": [
+    {
+      "material_id": "MAT-M001-LICENSE-121f7852",
+      "merchant_id": "M001",
+      "group": "license",
+      "file_name": "M001_business_license.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3902,
+      "sha256": "121f78528a14168d69c564544315c19fc8fcc990cd4d0da3b635ee3e464ee96b",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 100,
+      "period_months": null,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "主体状态",
+          "value": "存续",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "证照有效期",
+          "value": "长期",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "统一社会信用代码与申请信息一致",
+        "经营主体与法人核验结果一致"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-CASHFLOW-7f5aec29",
+      "merchant_id": "M001",
+      "group": "cashflow",
+      "file_name": "M001_cashflow_12m.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size_bytes": 5693,
+      "sha256": "7f5aec299d2028a6f4a7b97dcb7eef6f485511c8ad6754e61e6f3c70470e93a5",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 98,
+      "period_months": 12,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "月均经营流入",
+          "value": "¥95,667",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "流水完整度",
+          "value": "98%",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "明显异常",
+          "value": "0 笔",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "识别到连续 12 个月经营流水",
+        "收款趋势稳定且主体一致"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-STATEMENT-ac631dce",
+      "merchant_id": "M001",
+      "group": "statement",
+      "file_name": "M001_financial_statement.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3740,
+      "sha256": "ac631dce2b05d6aeef3fc4af2612044f8f0ab058c40c5ae6adff167828457890",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 96,
+      "period_months": null,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "资产负债率",
+          "value": "34.2%",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "流动比率",
+          "value": "1.86",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "最近一期资产负债资料字段完整",
+        "短期偿债覆盖处于样例安全区间"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-TAX-9db923f5",
+      "merchant_id": "M001",
+      "group": "tax",
+      "file_name": "M001_tax_invoice_12m.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size_bytes": 5785,
+      "sha256": "9db923f54fc068d82b5f3c51d31efa329016ea57c0372d98e34915bc88aedf5d",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 97,
+      "period_months": 12,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "开票覆盖率",
+          "value": "95.1%",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "连续申报",
+          "value": "12 个月",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "开票收入与经营流水基本匹配",
+        "样例期间未发现断档申报"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-PLAN-1fd5f0c3",
+      "merchant_id": "M001",
+      "group": "plan",
+      "file_name": "M001_business_plan.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3820,
+      "sha256": "1fd5f0c315bbfcb0bf66866ec628f6c28f95d3aa1d18e88d12e447d7e007ff90",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 95,
+      "period_months": 3,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "计划资本开支",
+          "value": "¥20,000",
+          "tone": "NEUTRAL"
+        },
+        {
+          "label": "未来偿债支出",
+          "value": "¥8,000",
+          "tone": "NEUTRAL"
+        }
+      ],
+      "findings": [
+        "未来三个月资金用途清晰",
+        "计划支出已纳入资金缺口压力测试"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-ASSET-37421357",
+      "merchant_id": "M001",
+      "group": "asset",
+      "file_name": "M001_lease_asset_proof.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3778,
+      "sha256": "37421357b3e45f63c5152b725f90aab3146f066415089b2b5b156ab0c69da24b",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 92,
+      "period_months": null,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "剩余租期",
+          "value": "18 个月",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "设备账面价值",
+          "value": "¥160,000",
+          "tone": "NEUTRAL"
+        }
+      ],
+      "findings": [
+        "门店租赁关系与经营地址一致",
+        "该材料仅作补充证据，不作为授信必备抵押物"
+      ],
+      "warnings": []
+    }
+  ],
+  "api_version": "0.4.0"
 }

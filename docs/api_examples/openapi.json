@@ -3,7 +3,7 @@
   "info": {
     "title": "ICBC Consumer Supply Credit API",
     "description": "消费供给动态授信：经营评分、交易异常与资金缺口预测 MVP",
-    "version": "0.2.0"
+    "version": "0.4.0"
   },
   "paths": {
     "/api/v1/analyze": {
@@ -200,6 +200,106 @@
                 "schema": {
                   "$ref": "#/components/schemas/FullAnalysisResult"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materials/parse": {
+      "post": {
+        "tags": [
+          "application-materials"
+        ],
+        "summary": "Parse Uploaded Material",
+        "description": "校验真实上传文件，并按竞赛案例返回明确标注的模拟解析摘要。",
+        "operationId": "parse_uploaded_material_api_v1_materials_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaterialParseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialEvidence"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materials/demo/{merchant_id}/{group}": {
+      "get": {
+        "tags": [
+          "application-materials"
+        ],
+        "summary": "Download Demo Material",
+        "description": "下载仓库内置的 M001/M005 演示材料。",
+        "operationId": "download_demo_material_api_v1_materials_demo__merchant_id___group__get",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          },
+          {
+            "name": "group",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "license",
+                "cashflow",
+                "statement",
+                "tax",
+                "plan",
+                "asset"
+              ],
+              "type": "string",
+              "title": "Group"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -529,6 +629,178 @@
         ],
         "title": "AnomalyRuleHit"
       },
+      "ApplicationContext": {
+        "properties": {
+          "social_credit_code": {
+            "type": "string",
+            "pattern": "^[0-9A-Z]{18}$",
+            "title": "Social Credit Code"
+          },
+          "province": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "operating_address": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Operating Address"
+          },
+          "legal_name": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Legal Name"
+          },
+          "legal_phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^1[3-9]\\d{9}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Phone"
+          },
+          "legal_id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{17}[0-9X]$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Id Number"
+          },
+          "contact_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Name"
+          },
+          "contact_phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Contact Phone"
+          },
+          "contact_id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{17}[0-9X]$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id Number"
+          },
+          "identity_verified": {
+            "type": "boolean",
+            "title": "Identity Verified"
+          },
+          "uploaded_data_groups": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "cashflow",
+                "statement",
+                "tax",
+                "plan"
+              ]
+            },
+            "type": "array",
+            "title": "Uploaded Data Groups"
+          },
+          "authorized_sources": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "bank",
+                "unionpay",
+                "alipay",
+                "wechat",
+                "meituan",
+                "douyin",
+                "xiaohongshu",
+                "enterprise"
+              ]
+            },
+            "type": "array",
+            "title": "Authorized Sources"
+          },
+          "consent_confirmed": {
+            "type": "boolean",
+            "title": "Consent Confirmed"
+          },
+          "consented_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consented At"
+          },
+          "materials": {
+            "items": {
+              "$ref": "#/components/schemas/MaterialEvidence"
+            },
+            "type": "array",
+            "title": "Materials"
+          }
+        },
+        "type": "object",
+        "required": [
+          "social_credit_code",
+          "operating_address",
+          "legal_name",
+          "contact_phone",
+          "identity_verified",
+          "uploaded_data_groups",
+          "authorized_sources",
+          "consent_confirmed",
+          "materials"
+        ],
+        "title": "ApplicationContext",
+        "description": "申请流程和授权证据；只用于校验与审计，不直接参与评分。"
+      },
       "CashGapForecastRequest": {
         "properties": {
           "merchant_id": {
@@ -856,6 +1128,39 @@
         ],
         "title": "DimensionScores"
       },
+      "ExtractedMetric": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "NEUTRAL",
+              "POSITIVE",
+              "WARNING",
+              "DANGER"
+            ],
+            "title": "Tone",
+            "default": "NEUTRAL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "ExtractedMetric"
+      },
       "FeatureSnapshot": {
         "properties": {
           "receipts_6m": {
@@ -1149,6 +1454,9 @@
       },
       "FullAnalysisRequest": {
         "properties": {
+          "application": {
+            "$ref": "#/components/schemas/ApplicationContext"
+          },
           "merchant": {
             "$ref": "#/components/schemas/MerchantAnalysisRequest"
           },
@@ -1175,6 +1483,7 @@
         },
         "type": "object",
         "required": [
+          "application",
           "merchant"
         ],
         "title": "FullAnalysisRequest"
@@ -1199,6 +1508,15 @@
               "MANUAL_REVIEW"
             ],
             "title": "Overall Risk"
+          },
+          "overall_decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "MANUAL_REVIEW",
+              "DECLINE"
+            ],
+            "title": "Overall Decision"
           },
           "module_states": {
             "$ref": "#/components/schemas/ModuleStates"
@@ -1233,10 +1551,17 @@
               }
             ]
           },
+          "material_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/MaterialEvidence"
+            },
+            "type": "array",
+            "title": "Material Evidence"
+          },
           "api_version": {
             "type": "string",
             "title": "Api Version",
-            "default": "0.2.0"
+            "default": "0.4.0"
           }
         },
         "type": "object",
@@ -1244,11 +1569,13 @@
           "merchant_id",
           "generated_at",
           "overall_risk",
+          "overall_decision",
           "module_states",
           "data_warnings",
           "score",
           "anomaly",
-          "cash_gap"
+          "cash_gap",
+          "material_evidence"
         ],
         "title": "FullAnalysisResult"
       },
@@ -1304,6 +1631,172 @@
           "recommended_limit"
         ],
         "title": "LimitDecision"
+      },
+      "MaterialEvidence": {
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "title": "Material Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "license",
+              "cashflow",
+              "statement",
+              "tax",
+              "plan",
+              "asset"
+            ],
+            "title": "Group"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256"
+          },
+          "parse_status": {
+            "type": "string",
+            "const": "PARSED",
+            "title": "Parse Status",
+            "default": "PARSED"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated",
+            "default": true
+          },
+          "completeness_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Completeness Score"
+          },
+          "period_months": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 120.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Months"
+          },
+          "subject_match": {
+            "type": "boolean",
+            "title": "Subject Match"
+          },
+          "extracted_metrics": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedMetric"
+            },
+            "type": "array",
+            "title": "Extracted Metrics"
+          },
+          "findings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "material_id",
+          "merchant_id",
+          "group",
+          "file_name",
+          "media_type",
+          "size_bytes",
+          "sha256",
+          "completeness_score",
+          "subject_match",
+          "extracted_metrics",
+          "findings",
+          "warnings"
+        ],
+        "title": "MaterialEvidence"
+      },
+      "MaterialParseRequest": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{2,40}$",
+            "title": "Merchant Id"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "license",
+              "cashflow",
+              "statement",
+              "tax",
+              "plan",
+              "asset"
+            ],
+            "title": "Group"
+          },
+          "file_name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "File Name"
+          },
+          "media_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Media Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "maximum": 5242880.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "content_base64": {
+            "type": "string",
+            "minLength": 4,
+            "title": "Content Base64"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "group",
+          "file_name",
+          "media_type",
+          "size_bytes",
+          "content_base64"
+        ],
+        "title": "MaterialParseRequest"
       },
       "MerchantAnalysisRequest": {
         "properties": {
