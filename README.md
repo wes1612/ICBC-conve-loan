@@ -12,6 +12,7 @@
 - [项目开发交接与 GitHub 更新指南](docs/项目开发交接与GitHub更新指南.md)：已完成后端、目录与代码索引、前端注意事项、最新 ZIP 差异及安全提交/合并步骤。
 - [前后端联调说明](docs/前后端联调说明.md)：API 字段到 UI 的映射、状态语义、CORS、错误处理和联调顺序。
 - [后端运行说明](backend/README.md)：安装、启动、测试、Swagger 和脚本命令。
+- [AI MVP 实现说明](docs/AI-MVP-implementation.md)：两条 AI 工作流、配置、降级与审计边界。
 
 > 根 README 下方仍保留最初项目规划作为历史背景；当前实际进度以上述交接文档、后端 README 和项目看板为准。
 

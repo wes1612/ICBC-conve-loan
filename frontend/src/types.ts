@@ -201,3 +201,50 @@ export interface FullAnalysisRequest {
 
 export type DemoCase = 'normal' | 'review'
 export type DataSource = 'api' | 'mock'
+
+export type WorkflowStep = 'identity' | 'verify' | 'data' | 'authorize' | 'results'
+
+export interface AssistantHistoryMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface AssistantMaterialStatus {
+  material_id: string
+  group: MaterialGroupId
+  completeness_score: number
+  subject_match: boolean
+  warnings: string[]
+}
+
+export interface AssistantWorkflowContext {
+  merchant_id: string | null
+  identity_verified: boolean
+  materials: AssistantMaterialStatus[]
+  authorized_sources: ConnectorId[]
+  consent_confirmed: boolean
+  analysis: FullAnalysisResult | null
+}
+
+export interface AssistantMessageRequest {
+  message: string
+  current_step: WorkflowStep
+  context: AssistantWorkflowContext
+  history: AssistantHistoryMessage[]
+}
+
+export interface AssistantReply {
+  answer: string
+  evidence_refs: string[]
+  should_escalate: boolean
+}
+
+export interface AiReportSummary {
+  overall_summary: string
+  positive_factors: string[]
+  risk_factors: string[]
+  cash_gap_interpretation: string
+  recommended_actions: string[]
+  evidence_refs: string[]
+  disclaimer: 'AI仅解释既有分析结果，不参与评分与授信决策。'
+}

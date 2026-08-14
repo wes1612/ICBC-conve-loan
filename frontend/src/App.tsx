@@ -14,6 +14,7 @@ import type {
   MaterialEvidence,
 } from './types'
 import { Icon } from './components/Icon'
+import { AiAssistant } from './components/AiAssistant'
 import { HomePage } from './pages/HomePage'
 import { IdentityPage } from './pages/IdentityPage'
 import { VerifyPage } from './pages/VerifyPage'
@@ -229,6 +230,19 @@ function App() {
         />
       )}
       {step === 'results' && result && <ResultsPage data={result} source="api" onRestart={restart} onBack={() => go('authorize')} />}
+
+      {step !== 'home' && (
+        <AiAssistant
+          currentStep={step}
+          apiOnline={apiOnline}
+          merchantId={getMerchantIdForCase(demoCase)}
+          identityVerified={identityVerified}
+          materials={materials}
+          authorizedSources={authorizedSources}
+          consentConfirmed={consentConfirmed}
+          analysis={result}
+        />
+      )}
 
       <footer className="site-footer">
         <div className="page-shell"><span>融策 · 消费供给动态授信 MVP</span><span>可解释评分 · 异常证据 · 资金情景</span><span>仅供竞赛演示</span></div>

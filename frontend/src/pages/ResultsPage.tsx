@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { DataSource, FullAnalysisResult, RiskLevel } from '../types'
 import { CashGapChart, DimensionBars } from '../components/Charts'
 import { Icon } from '../components/Icon'
+import { AiSummaryCard } from '../components/AiSummaryCard'
 import { Button, Eyebrow, InfoNote, Metric, RiskPill } from '../components/Ui'
 
 interface ResultsPageProps {
@@ -195,6 +196,8 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
 
       {view === 'merchant' ? (
         <div className="report-grid report-grid--final page-shell">
+          <AiSummaryCard data={data} />
+
           <section className="score-card report-card">
             <div className="card-heading"><div><h2>综合评分：等级 {score.credit_grade}</h2></div></div>
             <div className="score-card__body">
