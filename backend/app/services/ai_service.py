@@ -6,6 +6,7 @@ only receives the existing deterministic FullAnalysisResult.
 
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 import json
 import logging
@@ -20,19 +21,29 @@ from app.schemas.ai import (
     AssistantReply,
 )
 from app.schemas.full_analysis import FullAnalysisResult
-from app.settings import ai_api_key, ai_base_url, ai_model, ai_timeout_seconds
-
-try:  # Keep the non-AI application bootable when the optional client is absent.
-    from openai import OpenAI
-except ImportError:  # pragma: no cover - exercised only in incomplete installations.
-    OpenAI = None  # type: ignore[assignment,misc]
+from app.services import llm_provider
+from app.services.report_context import build_report_context
+from app.settings import (
+    ai_assistant_model,
+    ai_max_output_tokens,
+    ai_provider,
+    ai_report_model,
+)
 
 
 LOGGER = logging.getLogger(__name__)
 KNOWLEDGE_ROOT = Path(__file__).resolve().parents[1] / "knowledge"
 ASSISTANT_PROMPT_VERSION = "workflow-assistant-v1.0"
-SUMMARY_PROMPT_VERSION = "report-summary-v1.0"
+SUMMARY_PROMPT_VERSION = "report-summary-v1.1"
 UNAVAILABLE_MESSAGE = "智能解读暂不可用，原有五步流程和授信报告不受影响。"
+NOT_CONFIGURED_MESSAGE = (
+    "DeepSeek API Key 尚未配置；请在项目根目录 .env 中填写后重启后端。"
+)
+INVALID_CREDENTIAL_MESSAGE = "DeepSeek API Key 无效或没有当前模型的访问权限。"
+QUOTA_MESSAGE = "DeepSeek 账户余额不足、并发受限或请求过于频繁，请检查控制台。"
+NETWORK_MESSAGE = "后端暂时无法连接 DeepSeek API，请检查网络后重试。"
+PROVIDER_MESSAGE = "DeepSeek API 请求失败，请检查模型配置和服务状态。"
+INVALID_OUTPUT_MESSAGE = "DeepSeek 返回内容未通过授信报告的结构化校验，请重试。"
 
 FORBIDDEN_COMMITMENTS = (
     "一定放款",
@@ -119,19 +130,6 @@ def allowed_report_refs(analysis: FullAnalysisResult) -> set[str]:
     return _analysis_refs(analysis)
 
 
-def _client() -> Any:
-    key = ai_api_key()
-    if OpenAI is None or not key:
-        raise AiNotConfiguredError(UNAVAILABLE_MESSAGE)
-    kwargs: dict[str, Any] = {
-        "api_key": key,
-        "timeout": ai_timeout_seconds(),
-    }
-    if base_url := ai_base_url():
-        kwargs["base_url"] = base_url
-    return OpenAI(**kwargs)
-
-
 def _validate_refs(refs: list[str], allowed: set[str]) -> None:
     unknown = set(refs) - allowed
     if unknown:
@@ -147,7 +145,16 @@ def _contains_forbidden_commitment(texts: list[str]) -> bool:
 
 def _numeric_tokens(text: str) -> set[str]:
     compact = re.sub(r"(?<=\d),(?=\d)", "", text)
-    return set(re.findall(r"(?<![A-Za-z])\d+(?:\.\d+)?(?![A-Za-z])", compact))
+    tokens = re.findall(r"(?<![A-Za-z])\d+(?:\.\d+)?(?![A-Za-z])", compact)
+    normalized: set[str] = set()
+    for token in tokens:
+        try:
+            # Treat harmless display differences such as 65000 and 65000.0
+            # as the same source number while still rejecting invented values.
+            normalized.add(format(Decimal(token).normalize(), "f"))
+        except InvalidOperation:
+            normalized.add(token)
+    return normalized
 
 
 def validate_report_summary(
@@ -180,7 +187,7 @@ def _record_audit(
     workflow: str,
     prompt_version: str,
     merchant_id: str | None,
-    response: Any,
+    response: llm_provider.StructuredLlmResult,
     source_versions: dict[str, str | None],
 ) -> None:
     LOGGER.info(
@@ -189,14 +196,51 @@ def _record_audit(
             {
                 "workflow": workflow,
                 "merchant_id": merchant_id,
-                "model": ai_model(),
+                "provider": ai_provider(),
+                "model": response.model,
                 "prompt_version": prompt_version,
                 "source_versions": source_versions,
-                "provider_response_id": getattr(response, "id", None),
+                "provider_response_id": response.response_id,
+                "prompt_tokens": response.prompt_tokens,
+                "completion_tokens": response.completion_tokens,
             },
             ensure_ascii=False,
         ),
     )
+
+
+def _generate_structured(
+    *,
+    model: str,
+    messages: list[dict[str, str]],
+    output_model: type[AssistantReply] | type[AiReportSummary],
+    max_output_tokens: int,
+) -> llm_provider.StructuredLlmResult:
+    try:
+        return llm_provider.generate_structured(
+            model=model,
+            messages=messages,
+            output_model=output_model,
+            max_output_tokens=max_output_tokens,
+        )
+    except llm_provider.LlmNotConfiguredError as exc:
+        raise AiNotConfiguredError(NOT_CONFIGURED_MESSAGE) from exc
+    except llm_provider.LlmProviderError as exc:
+        messages = {
+            "authentication": INVALID_CREDENTIAL_MESSAGE,
+            "quota_or_rate_limit": QUOTA_MESSAGE,
+            "timeout": NETWORK_MESSAGE,
+            "connection": NETWORK_MESSAGE,
+            "provider_request": PROVIDER_MESSAGE,
+        }
+        raise AiGenerationError(messages.get(exc.reason, PROVIDER_MESSAGE)) from exc
+    except llm_provider.LlmOutputError as exc:
+        LOGGER.warning(
+            "provider structured output rejected: %s; cause=%s",
+            exc,
+            exc.__cause__,
+        )
+        raise AiGenerationError(INVALID_OUTPUT_MESSAGE) from exc
 
 
 def answer_workflow_question(request: AssistantMessageRequest) -> AssistantReply:
@@ -204,6 +248,8 @@ def answer_workflow_question(request: AssistantMessageRequest) -> AssistantReply
     allowed_refs = allowed_assistant_refs(request)
     history = [item.model_dump() for item in request.history]
     safe_context = request.context.model_dump(mode="json")
+    if request.context.analysis is not None:
+        safe_context["analysis"] = build_report_context(request.context.analysis)
     developer_prompt = f"""
 你是“五步授信流程助手”，而不是授信审批人。提示词版本：{ASSISTANT_PROMPT_VERSION}。
 
@@ -236,14 +282,13 @@ ALLOWED_EVIDENCE_REFS:
         },
     ]
     try:
-        response = _client().responses.parse(
-            model=ai_model(),
-            input=input_messages,
-            text_format=AssistantReply,
+        response = _generate_structured(
+            model=ai_assistant_model(),
+            messages=input_messages,
+            output_model=AssistantReply,
+            max_output_tokens=ai_max_output_tokens("assistant"),
         )
-        if response.output_parsed is None:
-            raise AiGenerationError("AI response did not contain a parsed answer")
-        reply = AssistantReply.model_validate(response.output_parsed)
+        reply = AssistantReply.model_validate(response.parsed)
         _validate_refs(reply.evidence_refs, allowed_refs)
         if _contains_forbidden_commitment([reply.answer]):
             raise AiOutputValidationError("AI returned a prohibited lending commitment")
@@ -296,23 +341,54 @@ def generate_report_summary(analysis: FullAnalysisResult) -> AiReportSummary:
 ALLOWED_EVIDENCE_REFS:
 {json.dumps(sorted(allowed_refs), ensure_ascii=False)}
 """.strip()
+    report_context = json.dumps(
+        build_report_context(analysis),
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    messages = [
+        {"role": "developer", "content": developer_prompt},
+        {"role": "user", "content": report_context},
+    ]
     try:
-        response = _client().responses.parse(
-            model=ai_model(),
-            input=[
-                {"role": "developer", "content": developer_prompt},
-                {
-                    "role": "user",
-                    "content": analysis.model_dump_json(),
-                },
-            ],
-            text_format=AiReportSummary,
+        response = _generate_structured(
+            model=ai_report_model(),
+            messages=messages,
+            output_model=AiReportSummary,
+            max_output_tokens=ai_max_output_tokens("report"),
         )
-        if response.output_parsed is None:
-            raise AiGenerationError("AI response did not contain a parsed summary")
-        summary = validate_report_summary(
-            AiReportSummary.model_validate(response.output_parsed), analysis
-        )
+        try:
+            summary = validate_report_summary(
+                AiReportSummary.model_validate(response.parsed), analysis
+            )
+        except AiOutputValidationError as exc:
+            LOGGER.warning("report summary validation rejected provider output: %s", exc)
+            # One bounded repair pass keeps the hard validation boundary while
+            # handling common model formatting slips. The rejected draft is
+            # never returned to the browser.
+            response = _generate_structured(
+                model=ai_report_model(),
+                messages=[
+                    *messages,
+                    {
+                        "role": "assistant",
+                        "content": response.parsed.model_dump_json(),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            "上一版未通过本地校验，请只修正违规内容并重新返回完整 JSON。"
+                            "删除没有逐字出现在输入中的数字；证据编号只能使用允许列表；"
+                            "不要增加任何新事实。校验原因：" + str(exc)
+                        ),
+                    },
+                ],
+                output_model=AiReportSummary,
+                max_output_tokens=ai_max_output_tokens("report"),
+            )
+            summary = validate_report_summary(
+                AiReportSummary.model_validate(response.parsed), analysis
+            )
         _record_audit(
             workflow="report_summary",
             prompt_version=SUMMARY_PROMPT_VERSION,

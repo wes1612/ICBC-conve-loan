@@ -61,3 +61,11 @@ class AiReportSummary(BaseModel):
     recommended_actions: list[str] = Field(min_length=1, max_length=6)
     evidence_refs: list[str] = Field(min_length=1, max_length=12)
     disclaimer: Literal["AI仅解释既有分析结果，不参与评分与授信决策。"]
+
+
+class AiRuntimeStatus(BaseModel):
+    provider: Literal["deepseek", "openai", "local"]
+    assistant_model: str
+    report_model: str
+    configured: bool
+    inference_mode: Literal["hosted_api", "local_fine_tuned"]

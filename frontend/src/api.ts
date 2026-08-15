@@ -202,7 +202,7 @@ export function requestAssistantMessage(
 export function requestAiReportSummary(
   analysis: FullAnalysisResult,
 ): Promise<AiReportSummary> {
-  return postAi<AiReportSummary>('/api/v1/ai/report-summary', { analysis }, 40_000)
+  return postAi<AiReportSummary>('/api/v1/ai/report-summary', { analysis }, 75_000)
 }
 
 export function describeApiError(error: unknown): string {

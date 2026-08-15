@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+from io import BytesIO
 import json
 from pathlib import Path
 
@@ -161,7 +162,13 @@ def test_full_analysis_endpoint_returns_all_modules() -> None:
 
 
 def test_material_parse_endpoint_validates_and_returns_evidence() -> None:
-    content = b"%PDF-1.4\ncontest demo\n%%EOF"
+    from pypdf import PdfWriter
+
+    writer = PdfWriter()
+    writer.add_blank_page(width=300, height=300)
+    buffer = BytesIO()
+    writer.write(buffer)
+    content = buffer.getvalue()
     response = _request(
         "POST",
         "/api/v1/materials/parse",

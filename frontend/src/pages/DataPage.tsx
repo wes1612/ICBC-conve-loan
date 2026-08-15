@@ -133,7 +133,7 @@ export function DataPage({
       </div>
 
       <InfoNote tone="warning">
-        当前为<strong>竞赛模拟解析</strong>：文件会真实发送到后端完成格式、大小、签名和摘要校验；OCR 与指标提取使用 M001/M005 固定规则，不冒充真实银行或税务接口。
+        文件会在后端完成格式、签名和受限读取：CSV、Excel、文本型 PDF/Word 可真实提取；扫描图片仍需另接 OCR。M001/M005 的业务指标继续使用明确标注的竞赛样例规则。
       </InfoNote>
 
       <section className="material-toolbar" aria-label="材料提交说明">
@@ -168,7 +168,7 @@ export function DataPage({
                 <div className="material-result">
                   <div className="material-file-row">
                     <Icon name="document" size={17} />
-                    <span><strong>{evidence.file_name}</strong><small>{fileSize(evidence.size_bytes)} · {evidence.material_id}</small></span>
+                    <span><strong>{evidence.file_name}</strong><small>{fileSize(evidence.size_bytes)} · {evidence.material_id} · {evidence.simulated ? '竞赛样例' : '真实读取'}</small></span>
                     <em>{evidence.completeness_score}% 完整</em>
                   </div>
                   <div className="material-metrics">

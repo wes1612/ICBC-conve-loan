@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AI_UNAVAILABLE_MESSAGE, requestAiReportSummary } from '../api'
+import { AI_UNAVAILABLE_MESSAGE, ApiError, requestAiReportSummary } from '../api'
 import type { AiReportSummary, FullAnalysisResult } from '../types'
 import { Icon } from './Icon'
 
@@ -13,9 +13,9 @@ export function AiSummaryCard({ data }: { data: FullAnalysisResult }) {
     setError(null)
     try {
       setSummary(await requestAiReportSummary(data))
-    } catch {
+    } catch (requestError) {
       setSummary(null)
-      setError(AI_UNAVAILABLE_MESSAGE)
+      setError(requestError instanceof ApiError ? requestError.message : AI_UNAVAILABLE_MESSAGE)
     } finally {
       setLoading(false)
     }
@@ -39,7 +39,7 @@ export function AiSummaryCard({ data }: { data: FullAnalysisResult }) {
         </div>
       )}
       {loading && <div className="ai-summary-card__loading"><i /><span>正在核对结构化结果和证据编号</span></div>}
-      {error && <div className="ai-summary-card__error"><Icon name="warning" size={18} /><div><strong>智能解读暂不可用</strong><p>原有评分、授信报告和五步流程仍然完整可用。</p></div></div>}
+      {error && <div className="ai-summary-card__error"><Icon name="warning" size={18} /><div><strong>智能解读暂不可用</strong><p>{error}</p><p>原有评分、授信报告和五步流程仍然完整可用。</p></div></div>}
 
       {summary && (
         <div className="ai-summary-card__body">
