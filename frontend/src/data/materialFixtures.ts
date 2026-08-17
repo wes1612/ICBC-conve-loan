@@ -1,5 +1,5 @@
 import type {
-  DemoCase,
+  DemoMerchantId,
   ExtractedMetric,
   MaterialEvidence,
   MaterialGroupId,
@@ -27,7 +27,7 @@ export const sampleFileNames: Record<MaterialGroupId, string> = {
   asset: 'lease_asset_proof.pdf',
 }
 
-const presets: Record<DemoCase, Record<MaterialGroupId, Preset>> = {
+const presets: Record<'normal' | 'review', Record<MaterialGroupId, Preset>> = {
   normal: {
     license: { completeness: 100, subjectMatch: true, metrics: [{ label: '主体状态', value: '存续', tone: 'POSITIVE' }, { label: '证照有效期', value: '长期', tone: 'POSITIVE' }], findings: ['统一社会信用代码与申请信息一致', '经营主体与法人核验结果一致'] },
     cashflow: { completeness: 98, period: 12, subjectMatch: true, metrics: [{ label: '月均经营流入', value: '¥95,667', tone: 'POSITIVE' }, { label: '流水完整度', value: '98%', tone: 'POSITIVE' }, { label: '明显异常', value: '0 笔', tone: 'POSITIVE' }], findings: ['识别到连续 12 个月经营流水', '收款趋势稳定且主体一致'] },
@@ -47,12 +47,12 @@ const presets: Record<DemoCase, Record<MaterialGroupId, Preset>> = {
 }
 
 export function mockMaterialEvidence(
-  demoCase: DemoCase,
+  merchantId: DemoMerchantId,
   group: MaterialGroupId,
   file?: Pick<File, 'name' | 'size' | 'type'>,
 ): MaterialEvidence {
-  const merchantId = demoCase === 'normal' ? 'M001' : 'M005'
-  const preset = presets[demoCase][group]
+  const presetKey = merchantId === 'M001' || merchantId === 'M002' ? 'normal' : 'review'
+  const preset = presets[presetKey][group]
   const ordinal = materialGroups.indexOf(group) + 1
   const fileName = file?.name || `${merchantId}_${sampleFileNames[group]}`
   return {

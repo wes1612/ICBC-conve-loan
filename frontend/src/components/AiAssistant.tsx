@@ -43,6 +43,34 @@ const QUICK_QUESTIONS: Record<WorkflowStep, string[]> = {
   results: ['为什么进入这个风险等级？', '资金缺口结果怎么理解？'],
 }
 
+function AssistantContent({ content }: { content: string }) {
+  const lines = content.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)
+  return (
+    <div className="ai-message__content">
+      {lines.map((line, index) => {
+        const section = line.match(/^(【[^】]+】)\s*(.*)$/)
+        if (section) {
+          return (
+            <div className="ai-message__section" key={`${index}-${line}`}>
+              <strong className="ai-message__section-title">{section[1]}</strong>
+              {section[2] && <p>{section[2]}</p>}
+            </div>
+          )
+        }
+        const bullet = line.match(/^[-•]\s*(.+)$/)
+        if (bullet) {
+          return <div className="ai-message__bullet" key={`${index}-${line}`}><span>•</span><p>{bullet[1]}</p></div>
+        }
+        const numbered = line.match(/^(\d+)[.、]\s*(.+)$/)
+        if (numbered) {
+          return <div className="ai-message__bullet" key={`${index}-${line}`}><span>{numbered[1]}.</span><p>{numbered[2]}</p></div>
+        }
+        return <p key={`${index}-${line}`}>{line}</p>
+      })}
+    </div>
+  )
+}
+
 export function AiAssistant({
   currentStep,
   apiOnline,
@@ -127,7 +155,9 @@ export function AiAssistant({
             )}
             {messages.map((message) => (
               <div className={`ai-message ai-message--${message.role}`} key={message.id}>
-                <p>{message.content}</p>
+                {message.role === 'assistant'
+                  ? <AssistantContent content={message.content} />
+                  : <p>{message.content}</p>}
                 {!!message.evidenceRefs?.length && (
                   <div className="ai-evidence">依据：{message.evidenceRefs.join('、')}</div>
                 )}

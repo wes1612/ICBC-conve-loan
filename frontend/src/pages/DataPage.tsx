@@ -1,21 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import { describeApiError, downloadDemoMaterial, parseMaterial } from '../api'
+import { describeApiError, parseMaterial } from '../api'
 import { Icon, type IconName } from '../components/Icon'
 import { Button, Eyebrow, InfoNote } from '../components/Ui'
 import {
   mockMaterialEvidence,
-  sampleFileNames,
 } from '../data/materialFixtures'
 import type {
   AnalysisMode,
-  DemoCase,
+  DemoMerchantId,
   MaterialEvidence,
   MaterialGroupId,
 } from '../types'
 
 interface DataPageProps {
-  merchantId: string
-  demoCase: DemoCase
+  merchantId: DemoMerchantId
+  demoMaterials: MaterialEvidence[]
   analysisMode: AnalysisMode
   stagedLicenseFile: File | null
   materials: MaterialEvidence[]
@@ -52,7 +51,7 @@ function fileSize(bytes: number) {
 
 export function DataPage({
   merchantId,
-  demoCase,
+  demoMaterials,
   analysisMode,
   stagedLicenseFile,
   materials,
@@ -76,7 +75,7 @@ export function DataPage({
     try {
       const evidence = analysisMode === 'mock'
         ? await new Promise<MaterialEvidence>((resolve) => {
-          window.setTimeout(() => resolve(mockMaterialEvidence(demoCase, group, file)), 550)
+          window.setTimeout(() => resolve(mockMaterialEvidence(merchantId, group, file)), 550)
         })
         : await parseMaterial(merchantId, group, file)
       replaceMaterial(evidence)
@@ -101,11 +100,12 @@ export function DataPage({
     try {
       if (analysisMode === 'mock') {
         await new Promise((resolve) => window.setTimeout(resolve, 500))
-        replaceMaterial(mockMaterialEvidence(demoCase, group))
+        replaceMaterial(mockMaterialEvidence(merchantId, group))
       } else {
-        const file = await downloadDemoMaterial(merchantId, group, sampleFileNames[group])
-        const evidence = await parseMaterial(merchantId, group, file)
-        replaceMaterial(evidence)
+        const evidence = demoMaterials.find((item) => item.group === group)
+        if (!evidence) throw new Error('当前随机案例缺少该组模拟记录')
+        await new Promise((resolve) => window.setTimeout(resolve, 350))
+        replaceMaterial(structuredClone(evidence))
       }
     } catch (error) {
       setErrors((value) => ({ ...value, [group]: describeApiError(error) }))
@@ -125,7 +125,7 @@ export function DataPage({
         <div>
           <Eyebrow>步骤 03 · 材料提交与解析</Eyebrow>
           <h1>让每个结论，都能回到一份材料。</h1>
-          <p>上传真实文件或载入仓库内置样例。系统先校验文件，再生成可追溯的结构化摘要。</p>
+          <p>上传真实文件或载入本轮随机案例的模拟数据库记录。系统生成可追溯的结构化摘要。</p>
         </div>
         <div className="completion-ring" style={{ '--progress': `${(completeCount / requiredGroups.length) * 360}deg` } as React.CSSProperties}>
           <strong>{completeCount}<small> / {requiredGroups.length}</small></strong><span>必交材料</span>
@@ -133,12 +133,12 @@ export function DataPage({
       </div>
 
       <InfoNote tone="warning">
-        文件会在后端完成格式、签名和受限读取：CSV、Excel、文本型 PDF/Word 可真实提取；扫描图片仍需另接 OCR。M001/M005 的业务指标继续使用明确标注的竞赛样例规则。
+        真实文件会在后端完成格式、签名和受限读取；一键演示记录来自 M001–M005 模拟数据库，并明确标注为竞赛样例。扫描图片仍需另接 OCR。
       </InfoNote>
 
       <section className="material-toolbar" aria-label="材料提交说明">
         <div><Icon name="upload" /><span><strong>真实文件交互</strong>支持选择或拖拽，单个文件不超过 5 MB</span></div>
-        <div><Icon name="spark" /><span><strong>一键演示</strong>自动下载仓库中的对应 PDF / Excel 再提交解析</span></div>
+        <div><Icon name="spark" /><span><strong>一键演示</strong>载入本轮随机商户对应的模拟数据库记录</span></div>
         <div><Icon name="shield" /><span><strong>证据可追溯</strong>材料编号和摘要会随综合分析进入后端审核证据</span></div>
       </section>
 
@@ -206,7 +206,7 @@ export function DataPage({
                           event.currentTarget.value = ''
                         }} />
                       </label>
-                      <button type="button" className="material-demo-button" onClick={() => void loadDemo(item.id)}>载入 {merchantId} 样例</button>
+                      <button type="button" className="material-demo-button" onClick={() => void loadDemo(item.id)}>载入 {merchantId} 模拟记录</button>
                     </div>
                   )}
                 </div>

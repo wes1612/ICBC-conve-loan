@@ -44,7 +44,14 @@ class AssistantMessageRequest(BaseModel):
 
 
 class AssistantReply(BaseModel):
-    answer: str = Field(min_length=1, max_length=1200)
+    answer: str = Field(
+        min_length=1,
+        max_length=1200,
+        description=(
+            "Readable Chinese explanation with 【简要结论】 and 【要点】 sections; "
+            "key points use lines beginning with '- '."
+        ),
+    )
     evidence_refs: list[str] = Field(default_factory=list, max_length=8)
     should_escalate: bool = False
 

@@ -2,6 +2,8 @@ import type {
   AiReportSummary,
   AssistantMessageRequest,
   AssistantReply,
+  DemoCasePayload,
+  DemoMerchantId,
   FullAnalysisRequest,
   FullAnalysisResult,
   MaterialEvidence,
@@ -162,6 +164,29 @@ export async function downloadDemoMaterial(
   if (!response.ok) throw await materialError(response)
   const blob = await response.blob()
   return new File([blob], `${merchantId}_${fileName}`, { type: blob.type })
+}
+
+export async function getRandomDemoCase(
+  exclude?: DemoMerchantId,
+): Promise<DemoCasePayload> {
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), 6_000)
+  const query = exclude ? `?exclude=${encodeURIComponent(exclude)}` : ''
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/demo/cases/random${query}`, {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+    if (!response.ok) {
+      throw new ApiError('暂时无法抽取模拟案例，请稍后重试。', response.status)
+    }
+    return (await response.json()) as DemoCasePayload
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError('暂时无法抽取模拟案例，已保留默认案例。', 0)
+  } finally {
+    window.clearTimeout(timeout)
+  }
 }
 
 async function aiError(response: Response): Promise<ApiError> {

@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.analysis import router as analysis_router
 from app.api.ai import router as ai_router
+from app.api.demo import router as demo_router
 from app.api.ml import router as ml_router
 from app.api.materials import router as materials_router
 from app.settings import cors_origins
@@ -27,6 +28,7 @@ app.include_router(analysis_router)
 app.include_router(ml_router)
 app.include_router(materials_router)
 app.include_router(ai_router)
+app.include_router(demo_router)
 
 
 @app.get("/health")

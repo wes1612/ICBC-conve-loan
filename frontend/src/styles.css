@@ -107,6 +107,20 @@ h1, h2, h3, p { margin-top: 0; }
 .segmented--large strong { font-size: 13px; }
 .mode-switch { justify-self: end; }.mode-switch button { min-width: 135px; display: flex; flex-direction: column; align-items: flex-start; }.mode-switch small { margin-top: 3px; font-size: 8px; font-weight: 400; }
 .segmented--large small { font-size: 10px; color: var(--muted); }
+.demo-random-card { min-width: 590px; padding: 18px; display: grid; grid-template-columns: 1fr 1fr auto; align-items: center; gap: 18px; border: 1px solid #ded9d2; border-radius: 16px; background: #fff; box-shadow: 0 10px 28px rgba(36,31,30,.055); }
+.demo-random-card.is-loading { opacity: .72; }
+.demo-random-card__identity { display: flex; align-items: center; gap: 12px; }
+.demo-random-card__identity > span { width: 48px; height: 48px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 12px; color: var(--red); background: var(--red-soft); font-size: 11px; font-weight: 900; }
+.demo-random-card__identity strong, .demo-random-card__identity small, .demo-random-card__result span, .demo-random-card__result strong, .demo-random-card__result small { display: block; }
+.demo-random-card__identity strong { color: #282324; font-size: 14px; }
+.demo-random-card__identity small { margin-top: 5px; color: var(--muted); font-size: 10px; }
+.demo-random-card__result { padding-left: 18px; border-left: 1px solid var(--line); }
+.demo-random-card__result span { color: var(--red); font-size: 10px; font-weight: 800; }
+.demo-random-card__result strong { margin-top: 4px; font-size: 13px; }
+.demo-random-card__result small { max-width: 240px; margin-top: 4px; color: var(--muted); font-size: 9px; line-height: 1.5; }
+.demo-random-card > button { min-height: 40px; padding: 0 15px; border: 1px solid #8c2342; border-radius: 10px; color: #7d1737; background: #fff; cursor: pointer; font-size: 11px; font-weight: 800; }
+.demo-random-card > button:disabled { cursor: wait; opacity: .55; }
+.demo-random-error { grid-column: 1 / -1; margin: -24px 0 0; color: #a33c1e; font-size: 11px; }
 .capabilities { padding-bottom: 110px; }
 .section-heading { max-width: 620px; margin-bottom: 32px; }
 .section-heading h2 { margin: 9px 0 8px; font-family: 'Songti SC', 'SimSun', serif; font-size: 36px; }
@@ -442,6 +456,13 @@ h1, h2, h3, p { margin-top: 0; }
 .ai-assistant__empty p { max-width: 250px; margin: 10px auto 0; font-size: 12px; line-height: 1.6; }
 .ai-message { max-width: 88%; padding: 11px 13px; border-radius: 14px; font-size: 13px; line-height: 1.65; }
 .ai-message p { margin: 0; white-space: pre-wrap; }
+.ai-message__content { display: grid; gap: 7px; }
+.ai-message__section { display: grid; gap: 4px; }
+.ai-message__section:not(:first-child) { margin-top: 3px; padding-top: 7px; border-top: 1px solid #f0eaec; }
+.ai-message__section-title { color: #6e2940; font-size: 12px; }
+.ai-message__bullet { display: grid; grid-template-columns: 13px 1fr; align-items: start; gap: 3px; }
+.ai-message__bullet > span { color: #9b3152; font-weight: 900; }
+.ai-message__bullet p { line-height: 1.55; }
 .ai-message--user { align-self: flex-end; color: #fff; background: #7d1737; border-bottom-right-radius: 4px; }
 .ai-message--assistant { align-self: flex-start; color: #332e30; background: #fff; border: 1px solid #ece5e7; border-bottom-left-radius: 4px; }
 .ai-evidence { margin-top: 8px; color: #7d6e73; font-size: 10px; overflow-wrap: anywhere; }
@@ -497,6 +518,8 @@ h1, h2, h3, p { margin-top: 0; }
   .report-grid--final { grid-template-columns: 1fr; }
   .dark-rec-card { grid-template-columns: 1fr; align-items: start; }
   .dark-rec-card button { justify-self: start; }
+  .demo-random-card { min-width: 0; grid-template-columns: 1fr 1fr; }
+  .demo-random-card > button { grid-column: 1 / -1; justify-self: start; }
 }
 
 @media (max-width: 760px) {
@@ -509,4 +532,7 @@ h1, h2, h3, p { margin-top: 0; }
   .ai-assistant__panel { max-height: calc(100vh - 84px); }
   .ai-summary-card__header { align-items: flex-start; flex-direction: column; }
   .ai-summary-card__columns { grid-template-columns: 1fr; }
+  .demo-random-card { grid-template-columns: 1fr; }
+  .demo-random-card__result { padding: 14px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .demo-random-card > button { grid-column: auto; justify-self: stretch; }
 }

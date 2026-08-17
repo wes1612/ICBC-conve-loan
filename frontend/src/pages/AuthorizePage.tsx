@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import type { AnalysisMode, ConnectorId, DemoCase } from '../types'
+import type { AnalysisMode, ConnectorId, DemoMerchantId } from '../types'
 import { Icon } from '../components/Icon'
 import { Button, Eyebrow, InfoNote } from '../components/Ui'
 
 interface AuthorizePageProps {
-  demoCase: DemoCase
+  merchantId: DemoMerchantId
+  caseLabel: string
   analysisMode: AnalysisMode
   analyzing: boolean
   apiOnline: boolean | null
@@ -39,7 +40,8 @@ const requiredSourceIds = connectors.filter((item) => item.required).map((item) 
 const availableCount = connectors.filter((item) => item.available).length
 
 export function AuthorizePage({
-  demoCase,
+  merchantId,
+  caseLabel,
   analysisMode,
   analyzing,
   apiOnline,
@@ -119,7 +121,7 @@ export function AuthorizePage({
         </section>
 
         <section className="analysis-panel">
-          <div className="analysis-panel__case"><span>当前测试数据</span><strong>{demoCase === 'normal' ? 'M001 · 正常案例' : 'M005 · 人工复核案例'}</strong><small>{analysisMode === 'api' ? '真实请求 FastAPI · profile: v5_current' : '显式固定样例 · 不代表接口成功'}</small></div>
+          <div className="analysis-panel__case"><span>本轮随机数据</span><strong>{merchantId} · {caseLabel}</strong><small>{analysisMode === 'api' ? '模拟数据库 → FastAPI · profile: v5_current' : '显式固定样例 · 不代表接口成功'}</small></div>
           <div className={`analysis-core ${analyzing ? 'is-running' : ''}`}>
             <div className="analysis-core__mark"><Icon name={analyzing ? 'refresh' : 'spark'} size={34} /></div>
             <h2>{analyzing ? '正在汇总三类分析…' : ready ? '资料与授权已准备完成' : '等待完成授权'}</h2>

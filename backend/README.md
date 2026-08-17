@@ -10,6 +10,7 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 - 规则 + MAD 的交易异常识别及证据链；
 - 阻尼趋势 + 压力情景的未来三个月 P50/P90 资金缺口预测；
 - 五商户 553 笔模拟交易和 60 个月度现金流记录；
+- M001–M005 模拟数据库随机抽取接口，并将同一商户的数据贯穿完整分析；
 - 评分、异常、资金缺口三个版本化 ML 接口。
 - 真实文件上传校验、CSV/Excel/文本型 PDF/Word 本地读取、M001/M005 演示材料下载和明确标注的模拟业务指标。
 - DeepSeek 托管 API、OpenAI API 与本地 LoRA 模型三种可切换推理模式。
@@ -25,6 +26,8 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 | `POST /api/v1/ml/full-analysis` | 一次返回三个模块，支持部分资料暂缺 | 聚合编排，不新增黑箱判断 |
 | `POST /api/v1/materials/parse` | 校验文件并生成材料证据摘要 | 本地文档读取 + 案例固定业务指标 |
 | `GET /api/v1/materials/demo/{merchant_id}/{group}` | 下载仓库内置 PDF/Excel 演示材料 | 仅支持 M001、M005 |
+| `GET /api/v1/demo/cases/random` | 随机抽取完整模拟商户记录；可用 `exclude=M001` 排除当前组 | M001–M005 模拟数据库 |
+| `GET /api/v1/demo/cases/{merchant_id}` | 读取指定模拟商户的完整演示输入 | M001–M005 模拟数据库 |
 | `POST /api/v1/analyze` | 旧评分路径兼容接口 | 与 `/api/v1/ml/score` 相同 |
 
 当前没有真实贷后违约标签，因此 `pd_12m` 始终返回 `null`，`pd_status` 为 `UNCALIBRATED`。模拟明细用于开发和异常注入验收，不用于声称已经训练真实违约/欺诈模型。

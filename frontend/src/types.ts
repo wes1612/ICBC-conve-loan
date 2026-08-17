@@ -199,7 +199,37 @@ export interface FullAnalysisRequest {
   cash_gap?: Record<string, unknown> | null
 }
 
-export type DemoCase = 'normal' | 'review'
+export type DemoMerchantId = 'M001' | 'M002' | 'M003' | 'M004' | 'M005'
+
+export interface DemoApplicant {
+  merchant_name: string
+  industry: string
+  social_credit_code: string
+  province: string
+  city: string
+  address: string
+  legal_name: string
+  legal_phone: string
+  legal_id_number: string
+  contact_name: string
+  contact_phone: string
+  contact_id_number: string
+  requested_amount: number
+}
+
+export interface DemoCasePayload {
+  merchant_id: DemoMerchantId
+  case_label: string
+  case_description: string
+  expected_risk: RiskLevel
+  expected_decision: OverallDecision
+  applicant: DemoApplicant
+  merchant: Record<string, unknown>
+  anomaly: Record<string, unknown>
+  cash_gap: Record<string, unknown>
+  materials: MaterialEvidence[]
+}
+
 export type DataSource = 'api' | 'mock'
 
 export type WorkflowStep = 'identity' | 'verify' | 'data' | 'authorize' | 'results'

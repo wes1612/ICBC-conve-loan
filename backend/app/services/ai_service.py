@@ -33,7 +33,7 @@ from app.settings import (
 
 LOGGER = logging.getLogger(__name__)
 KNOWLEDGE_ROOT = Path(__file__).resolve().parents[1] / "knowledge"
-ASSISTANT_PROMPT_VERSION = "workflow-assistant-v1.0"
+ASSISTANT_PROMPT_VERSION = "workflow-assistant-v1.1"
 SUMMARY_PROMPT_VERSION = "report-summary-v1.1"
 UNAVAILABLE_MESSAGE = "智能解读暂不可用，原有五步流程和授信报告不受影响。"
 NOT_CONFIGURED_MESSAGE = (
@@ -182,6 +182,32 @@ def validate_report_summary(
     return summary
 
 
+def validate_assistant_reply(
+    reply: AssistantReply,
+    *,
+    allowed_refs: set[str],
+    source_text: str,
+) -> AssistantReply:
+    """Keep explanations readable without weakening evidence and number controls."""
+    _validate_refs(reply.evidence_refs, allowed_refs)
+    if _contains_forbidden_commitment([reply.answer]):
+        raise AiOutputValidationError("AI returned a prohibited lending commitment")
+
+    unsupported_numbers = _numeric_tokens(reply.answer) - _numeric_tokens(source_text)
+    if unsupported_numbers:
+        raise AiOutputValidationError(
+            f"AI returned unsupported numeric values: {sorted(unsupported_numbers)}"
+        )
+
+    if "【简要结论】" not in reply.answer or "【要点】" not in reply.answer:
+        raise AiOutputValidationError("AI answer is missing required readable sections")
+    if len(re.findall(r"(?m)^\s*[-•]\s+\S+", reply.answer)) < 2:
+        raise AiOutputValidationError("AI answer does not contain enough bullet points")
+    if any(len(line) > 180 for line in reply.answer.splitlines()):
+        raise AiOutputValidationError("AI answer contains an unreadably long paragraph")
+    return reply
+
+
 def _record_audit(
     *,
     workflow: str,
@@ -260,7 +286,17 @@ def answer_workflow_question(request: AssistantMessageRequest) -> AssistantReply
 2. 可以解释为什么进入人工复核，但不能承诺银行是否放款、获批或给出最终审批结论。
 3. 不得修改、重算或覆盖评分、额度、异常、资金缺口和审核门控。
 4. 找不到可靠依据时，明确说明目前无法确认，并将 should_escalate 设为 true。
-5. 使用简洁中文；evidence_refs 只能从 ALLOWED_EVIDENCE_REFS 中选择。
+5. 先说结论，再分点解释；使用日常、易懂的中文，不可避免的专业词要随即解释。
+6. answer 必须按以下纯文本格式输出，标题单独一行，不能写成一大段，也不要使用表格或原始 JSON：
+【简要结论】
+用一到两句话直接回答用户。
+【要点】
+- 两到五条要点，每条只表达一个意思
+- 明确区分已知事实、规则解释和暂时无法确认的内容
+【下一步】
+- 只有存在可执行动作时才提供一到三条；否则可省略本节
+7. answer 中的所有阿拉伯数字必须直接来自审核知识或当前结构化流程状态，不能自行计算、取整或补造。
+8. evidence_refs 只能从 ALLOWED_EVIDENCE_REFS 中选择；没有可靠依据时宁可说明无法确认。
 
 APPROVED_KNOWLEDGE:
 {json.dumps(knowledge, ensure_ascii=False)}
@@ -281,6 +317,11 @@ ALLOWED_EVIDENCE_REFS:
             "content": json.dumps(user_payload, ensure_ascii=False),
         },
     ]
+    assistant_source_text = json.dumps(
+        {"approved_knowledge": knowledge, "workflow_context": safe_context},
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
     try:
         response = _generate_structured(
             model=ai_assistant_model(),
@@ -289,9 +330,40 @@ ALLOWED_EVIDENCE_REFS:
             max_output_tokens=ai_max_output_tokens("assistant"),
         )
         reply = AssistantReply.model_validate(response.parsed)
-        _validate_refs(reply.evidence_refs, allowed_refs)
-        if _contains_forbidden_commitment([reply.answer]):
-            raise AiOutputValidationError("AI returned a prohibited lending commitment")
+        try:
+            reply = validate_assistant_reply(
+                reply,
+                allowed_refs=allowed_refs,
+                source_text=assistant_source_text,
+            )
+        except AiOutputValidationError as first_error:
+            LOGGER.warning("assistant output validation failed; retrying: %s", first_error)
+            repair_messages = [
+                *input_messages,
+                {
+                    "role": "assistant",
+                    "content": reply.model_dump_json(),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        "上一版没有通过格式或事实校验。请只依据最初提供的审核知识与结构化状态重写；"
+                        "必须包含【简要结论】和【要点】，至少两条以 '- ' 开头的要点，"
+                        "删除无来源数字、长段落和承诺性表达。"
+                    ),
+                },
+            ]
+            response = _generate_structured(
+                model=ai_assistant_model(),
+                messages=repair_messages,
+                output_model=AssistantReply,
+                max_output_tokens=ai_max_output_tokens("assistant"),
+            )
+            reply = validate_assistant_reply(
+                AssistantReply.model_validate(response.parsed),
+                allowed_refs=allowed_refs,
+                source_text=assistant_source_text,
+            )
         _record_audit(
             workflow="workflow_assistant",
             prompt_version=ASSISTANT_PROMPT_VERSION,

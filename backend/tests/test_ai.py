@@ -170,6 +170,56 @@ def test_report_summary_rejects_lending_commitment() -> None:
         )
 
 
+def test_assistant_reply_accepts_readable_evidence_based_structure() -> None:
+    reply = AssistantReply(
+        answer=(
+            "【简要结论】\n这些材料用于规则计算和交叉核验。\n"
+            "【要点】\n- 现金流材料应覆盖连续 12 个月。\n- 财务和纳税资料用于核对经营真实性。\n"
+            "【下一步】\n- 按页面缺失提示补齐材料。"
+        ),
+        evidence_refs=["STEP-DATA-PURPOSE", "MAT-REQ-CASHFLOW"],
+        should_escalate=False,
+    )
+
+    validated = ai_service.validate_assistant_reply(
+        reply,
+        allowed_refs={"STEP-DATA-PURPOSE", "MAT-REQ-CASHFLOW"},
+        source_text='{"period_months":12}',
+    )
+
+    assert validated is reply
+
+
+def test_assistant_reply_rejects_invented_number() -> None:
+    reply = AssistantReply(
+        answer="【简要结论】\n目前无法确认。\n【要点】\n- 建议额度为 999999 元。\n- 需要人工核对。",
+        evidence_refs=["SCORE"],
+        should_escalate=True,
+    )
+
+    with pytest.raises(ai_service.AiOutputValidationError, match="numeric"):
+        ai_service.validate_assistant_reply(
+            reply,
+            allowed_refs={"SCORE"},
+            source_text='{"suggested_limit":500000}',
+        )
+
+
+def test_assistant_reply_rejects_wall_of_text() -> None:
+    reply = AssistantReply(
+        answer="材料用于规则计算、真实性核查和资金缺口预测。",
+        evidence_refs=["STEP-DATA-PURPOSE"],
+        should_escalate=False,
+    )
+
+    with pytest.raises(ai_service.AiOutputValidationError, match="readable sections"):
+        ai_service.validate_assistant_reply(
+            reply,
+            allowed_refs={"STEP-DATA-PURPOSE"},
+            source_text="{}",
+        )
+
+
 def test_ai_failure_does_not_break_existing_health_or_report(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
