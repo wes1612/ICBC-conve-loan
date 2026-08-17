@@ -10,8 +10,11 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 - 规则 + MAD 的交易异常识别及证据链；
 - 阻尼趋势 + 压力情景的未来三个月 P50/P90 资金缺口预测；
 - 五商户 553 笔模拟交易和 60 个月度现金流记录；
+- M001–M005 模拟数据库随机抽取接口，并将同一商户的数据贯穿完整分析；
 - 评分、异常、资金缺口三个版本化 ML 接口。
-- 真实文件上传校验、M001/M005 演示材料下载和明确标注的模拟解析接口。
+- 真实文件上传校验、CSV/Excel/文本型 PDF/Word 本地读取、M001/M005 演示材料下载和明确标注的模拟业务指标。
+- DeepSeek 托管 API、OpenAI API 与本地 LoRA 模型三种可切换推理模式。
+- 可复现的训练数据构建、LoRA/QLoRA 训练与本地兼容推理服务。
 
 ## ML 接口
 
@@ -21,15 +24,21 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 | `POST /api/v1/ml/anomalies` | 交易异常分、原因码与证据交易 | 确定性规则 + MAD 稳健离群检测 |
 | `POST /api/v1/ml/cash-gap` | 未来三个月 P50/P90 资金缺口 | 加权基线 + 阻尼趋势 + 压力情景 |
 | `POST /api/v1/ml/full-analysis` | 一次返回三个模块，支持部分资料暂缺 | 聚合编排，不新增黑箱判断 |
-| `POST /api/v1/materials/parse` | 校验文件并生成材料证据摘要 | 文件签名/哈希校验 + 案例固定模拟解析 |
+| `POST /api/v1/materials/parse` | 校验文件并生成材料证据摘要 | 本地文档读取 + 案例固定业务指标 |
 | `GET /api/v1/materials/demo/{merchant_id}/{group}` | 下载仓库内置 PDF/Excel 演示材料 | 仅支持 M001、M005 |
+| `GET /api/v1/demo/cases/random` | 随机抽取完整模拟商户记录；可用 `exclude=M001` 排除当前组 | M001–M005 模拟数据库 |
+| `GET /api/v1/demo/cases/{merchant_id}` | 读取指定模拟商户的完整演示输入 | M001–M005 模拟数据库 |
 | `POST /api/v1/analyze` | 旧评分路径兼容接口 | 与 `/api/v1/ml/score` 相同 |
 
 当前没有真实贷后违约标签，因此 `pd_12m` 始终返回 `null`，`pd_status` 为 `UNCALIBRATED`。模拟明细用于开发和异常注入验收，不用于声称已经训练真实违约/欺诈模型。
 
 `/full-analysis` 当前契约版本为 v0.4.0。请求必须包含 `application`，用于校验法人核验、已解析材料、经营资料组、数据来源授权和授权时间。响应中的 `material_evidence` 原样回传材料编号、哈希、主体匹配和模拟解析摘要，供银行审核追溯；它用于完整性门控，不会偷偷改变 v5 评分公式。`overall_decision` 汇总评分、交易异常和资金缺口风险，是结果页唯一应展示的最终授信动作；`score.decision` 仅表示评分子模块自身结论。
 
-`/materials/parse` 会真实校验扩展名、大小、Base64 内容、PDF/Office/图片签名并计算 SHA256。当前 OCR 与指标提取是 M001/M005 的确定性竞赛模拟规则，响应始终返回 `simulated: true`，不能表述为已接入真实银行、税务或商用 OCR。
+`/materials/parse` 会真实校验扩展名、大小、Base64 内容、PDF/Office/图片签名并计算 SHA256。非预置商户的 CSV、Excel、文本型 PDF/Word 会返回 `simulated: false` 的受限真实读取摘要；图片和扫描 PDF 仍明确提示需要 OCR。M001/M005 的业务指标继续使用确定性竞赛模拟规则并返回 `simulated: true`，不能表述为已接入真实银行、税务或商用 OCR。
+
+## AI 推理与训练
+
+默认推理供应商已切换为 DeepSeek。配置方法、数据边界和本地模型切换见 `../docs/AI-MVP-implementation.md`。真正的 LoRA/QLoRA 训练入口见 `training/README.md`。
 
 ## 本地安装与启动
 

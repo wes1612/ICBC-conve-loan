@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+from io import BytesIO
 import json
 from pathlib import Path
 
@@ -93,6 +94,62 @@ def test_health_endpoint() -> None:
     assert response.json() == {"status": "ok"}
 
 
+def test_random_demo_case_uses_five_merchant_simulated_database() -> None:
+    response = _request("GET", "/api/v1/demo/cases/random?exclude=M001")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["merchant_id"] in {"M002", "M003", "M004", "M005"}
+    assert payload["merchant"]["merchant_id"] == payload["merchant_id"]
+    assert payload["anomaly"]["merchant_id"] == payload["merchant_id"]
+    assert payload["cash_gap"]["merchant_id"] == payload["merchant_id"]
+    assert {item["group"] for item in payload["materials"]} == {
+        "license", "cashflow", "statement", "tax", "plan", "asset"
+    }
+    assert response.headers["cache-control"] == "no-store"
+
+
+@pytest.mark.parametrize("merchant_id", ["M001", "M002", "M003", "M004", "M005"])
+def test_each_demo_case_can_generate_its_corresponding_result(merchant_id: str) -> None:
+    case_response = _request("GET", f"/api/v1/demo/cases/{merchant_id}")
+    assert case_response.status_code == 200
+    case = case_response.json()
+    applicant = case["applicant"]
+    request = {
+        "application": {
+            "social_credit_code": applicant["social_credit_code"],
+            "province": applicant["province"],
+            "city": applicant["city"],
+            "operating_address": f"{applicant['province']}{applicant['city']}{applicant['address']}",
+            "legal_name": applicant["legal_name"],
+            "legal_phone": applicant["legal_phone"],
+            "legal_id_number": applicant["legal_id_number"],
+            "contact_name": applicant["contact_name"],
+            "contact_phone": applicant["contact_phone"],
+            "contact_id_number": applicant["contact_id_number"],
+            "identity_verified": True,
+            "uploaded_data_groups": ["cashflow", "statement", "tax", "plan"],
+            "authorized_sources": ["bank", "meituan", "enterprise"],
+            "consent_confirmed": True,
+            "consented_at": "2026-08-17T08:00:00Z",
+            "materials": case["materials"],
+        },
+        "merchant": case["merchant"],
+        "anomaly": case["anomaly"],
+        "cash_gap": case["cash_gap"],
+    }
+
+    analysis_response = _request(
+        "POST", "/api/v1/ml/full-analysis", json_body=request
+    )
+
+    assert analysis_response.status_code == 200
+    result = analysis_response.json()
+    assert result["merchant_id"] == merchant_id
+    assert result["overall_risk"] == case["expected_risk"]
+    assert result["overall_decision"] == case["expected_decision"]
+
+
 def test_analyze_endpoint() -> None:
     response = _request("POST", "/api/v1/analyze", json_body=MERCHANT_1)
     assert response.status_code == 200
@@ -161,7 +218,13 @@ def test_full_analysis_endpoint_returns_all_modules() -> None:
 
 
 def test_material_parse_endpoint_validates_and_returns_evidence() -> None:
-    content = b"%PDF-1.4\ncontest demo\n%%EOF"
+    from pypdf import PdfWriter
+
+    writer = PdfWriter()
+    writer.add_blank_page(width=300, height=300)
+    buffer = BytesIO()
+    writer.write(buffer)
+    content = buffer.getvalue()
     response = _request(
         "POST",
         "/api/v1/materials/parse",

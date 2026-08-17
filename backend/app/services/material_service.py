@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from app.schemas.material import MaterialEvidence, MaterialParseRequest
+from app.services.document_reader import DocumentExtraction, read_document
 
 
 ALLOWED_EXTENSIONS = {
@@ -139,9 +140,11 @@ def parse_material(request: MaterialParseRequest) -> MaterialEvidence:
     content = _decode_and_validate(request)
     digest = hashlib.sha256(content).hexdigest()
     preset = PRESETS.get(request.merchant_id, {}).get(request.group, {})
+    extraction = read_document(content, request.file_name)
     warnings = list(preset.get("warnings", []))
+    warnings.extend(extraction.warnings)
     if request.merchant_id not in PRESETS:
-        warnings.append("非预置竞赛案例，仅完成文件级校验，未运行真实 OCR")
+        return _real_extraction_evidence(request, digest, extraction, warnings)
     return MaterialEvidence(
         material_id=f"MAT-{request.merchant_id}-{request.group.upper()}-{digest[:8]}",
         merchant_id=request.merchant_id,
@@ -160,6 +163,53 @@ def parse_material(request: MaterialParseRequest) -> MaterialEvidence:
             )
         ],
         findings=preset.get("findings", ["文件格式、大小与内容签名已通过校验"]),
+        warnings=warnings,
+    )
+
+
+def _real_extraction_evidence(
+    request: MaterialParseRequest,
+    digest: str,
+    extraction: DocumentExtraction,
+    warnings: list[str],
+) -> MaterialEvidence:
+    metrics: list[dict[str, str]] = [
+        {"label": "读取类型", "value": extraction.document_type, "tone": "NEUTRAL"},
+        {
+            "label": "可读取字符",
+            "value": str(extraction.extracted_characters),
+            "tone": "POSITIVE" if extraction.has_content else "WARNING",
+        },
+    ]
+    if extraction.page_count:
+        metrics.append({"label": "页数", "value": str(extraction.page_count), "tone": "NEUTRAL"})
+    elif extraction.sheet_count:
+        metrics.append({"label": "工作表", "value": str(extraction.sheet_count), "tone": "NEUTRAL"})
+    elif extraction.row_count:
+        metrics.append({"label": "有效行数", "value": str(extraction.row_count), "tone": "NEUTRAL"})
+
+    findings = [
+        f"已真实读取 {extraction.document_type} 文件并生成受限结构化摘要",
+        "原始文件全文未写入日志，也未直接发送给大模型供应商",
+    ]
+    if extraction.numeric_cells:
+        findings.append(f"检测到 {extraction.numeric_cells} 个数值单元格")
+    warnings.append("尚未自动核验文件中的经营主体与申请主体是否一致")
+    completeness = 85 if extraction.has_content else 45
+    return MaterialEvidence(
+        material_id=f"MAT-{request.merchant_id}-{request.group.upper()}-{digest[:8]}",
+        merchant_id=request.merchant_id,
+        group=request.group,
+        file_name=Path(request.file_name).name,
+        media_type=request.media_type,
+        size_bytes=request.size_bytes,
+        sha256=digest,
+        simulated=False,
+        completeness_score=completeness,
+        period_months=extraction.period_months,
+        subject_match=False,
+        extracted_metrics=metrics[:3],
+        findings=findings,
         warnings=warnings,
     )
 

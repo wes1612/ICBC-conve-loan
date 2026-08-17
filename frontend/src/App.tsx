@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react'
-import { checkHealth, describeApiError, runFullAnalysis } from './api'
+import { checkHealth, describeApiError, getRandomDemoCase, runFullAnalysis } from './api'
 import {
   buildAnalysisRequest,
+  fallbackDemoCase,
   getDraftForCase,
-  getMerchantIdForCase,
 } from './data/fixtures'
 import type {
   ApplicationDraft,
   ConnectorId,
   DataGroupId,
-  DemoCase,
+  DemoCasePayload,
   FullAnalysisResult,
   MaterialEvidence,
 } from './types'
 import { Icon } from './components/Icon'
+import { AiAssistant } from './components/AiAssistant'
 import { HomePage } from './pages/HomePage'
 import { IdentityPage } from './pages/IdentityPage'
 import { VerifyPage } from './pages/VerifyPage'
@@ -35,8 +36,10 @@ type StepKey = (typeof steps)[number]['key']
 function App() {
   const [step, setStep] = useState<StepKey>('home')
   const [furthest, setFurthest] = useState(0)
-  const [demoCase, setDemoCase] = useState<DemoCase>('normal')
-  const [draft, setDraft] = useState<ApplicationDraft>(() => getDraftForCase('normal'))
+  const [demoCase, setDemoCase] = useState<DemoCasePayload>(fallbackDemoCase)
+  const [caseLoading, setCaseLoading] = useState(true)
+  const [caseError, setCaseError] = useState<string | null>(null)
+  const [draft, setDraft] = useState<ApplicationDraft>(() => getDraftForCase(fallbackDemoCase))
   const [identityLicenseFile, setIdentityLicenseFile] = useState<File | null>(null)
   const [identityVerified, setIdentityVerified] = useState(false)
   const [materials, setMaterials] = useState<MaterialEvidence[]>([])
@@ -55,6 +58,21 @@ function App() {
 
   useEffect(() => {
     checkHealth().then(setApiOnline)
+    let active = true
+    getRandomDemoCase()
+      .then((nextCase) => {
+        if (!active) return
+        setDemoCase(nextCase)
+        setDraft(getDraftForCase(nextCase))
+        setCaseError(null)
+      })
+      .catch((error) => {
+        if (active) setCaseError(describeApiError(error))
+      })
+      .finally(() => {
+        if (active) setCaseLoading(false)
+      })
+    return () => { active = false }
   }, [])
 
   const go = (next: StepKey) => {
@@ -64,7 +82,7 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const resetWorkflow = (nextCase: DemoCase) => {
+  const resetWorkflow = (nextCase: DemoCasePayload) => {
     setDraft(getDraftForCase(nextCase))
     setIdentityLicenseFile(null)
     setIdentityVerified(false)
@@ -77,9 +95,21 @@ function App() {
     setFurthest(0)
   }
 
-  const changeCase = (next: DemoCase) => {
-    setDemoCase(next)
-    resetWorkflow(next)
+  const randomizeCase = async () => {
+    if (caseLoading) return
+    setCaseLoading(true)
+    setCaseError(null)
+    try {
+      const nextCase = await getRandomDemoCase(demoCase.merchant_id)
+      setDemoCase(nextCase)
+      resetWorkflow(nextCase)
+      setStep('home')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (error) {
+      setCaseError(describeApiError(error))
+    } finally {
+      setCaseLoading(false)
+    }
   }
 
   const changeDraft = (next: ApplicationDraft) => {
@@ -145,9 +175,7 @@ function App() {
   }
 
   const restart = () => {
-    resetWorkflow(demoCase)
-    setStep('home')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    void randomizeCase()
   }
 
   const activeIndex = steps.findIndex((item) => item.key === step)
@@ -194,7 +222,9 @@ function App() {
       {step === 'home' && (
         <HomePage
           demoCase={demoCase}
-          onCaseChange={changeCase}
+          caseLoading={caseLoading}
+          caseError={caseError}
+          onRandomize={() => void randomizeCase()}
           onStart={() => go('identity')}
         />
       )}
@@ -202,8 +232,8 @@ function App() {
       {step === 'verify' && <VerifyPage legalName={draft.legalName} verified={identityVerified} onVerifiedChange={setIdentityVerified} onBack={() => go('identity')} onNext={() => go('data')} />}
       {step === 'data' && (
         <DataPage
-          merchantId={getMerchantIdForCase(demoCase)}
-          demoCase={demoCase}
+          merchantId={demoCase.merchant_id}
+          demoMaterials={demoCase.materials}
           analysisMode="api"
           stagedLicenseFile={identityLicenseFile}
           materials={materials}
@@ -214,7 +244,8 @@ function App() {
       )}
       {step === 'authorize' && (
         <AuthorizePage
-          demoCase={demoCase}
+          merchantId={demoCase.merchant_id}
+          caseLabel={demoCase.case_label}
           analysisMode="api"
           analyzing={analyzing}
           apiOnline={apiOnline}
@@ -229,6 +260,19 @@ function App() {
         />
       )}
       {step === 'results' && result && <ResultsPage data={result} source="api" onRestart={restart} onBack={() => go('authorize')} />}
+
+      {step !== 'home' && (
+        <AiAssistant
+          currentStep={step}
+          apiOnline={apiOnline}
+          merchantId={demoCase.merchant_id}
+          identityVerified={identityVerified}
+          materials={materials}
+          authorizedSources={authorizedSources}
+          consentConfirmed={consentConfirmed}
+          analysis={result}
+        />
+      )}
 
       <footer className="site-footer">
         <div className="page-shell"><span>融策 · 消费供给动态授信 MVP</span><span>可解释评分 · 异常证据 · 资金情景</span><span>仅供竞赛演示</span></div>

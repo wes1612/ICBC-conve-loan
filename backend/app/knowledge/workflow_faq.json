@@ -1,0 +1,92 @@
+{
+  "version": "workflow-faq-1.0.0",
+  "common": [
+    {
+      "id": "FAQ-SCOPE",
+      "question": "AI助手能做什么？",
+      "answer": "助手只解释五步流程、所需资料、授权用途和既有分析结果，不参与评分或授信决策。"
+    },
+    {
+      "id": "FAQ-HUMAN-REVIEW",
+      "question": "什么时候需要人工处理？",
+      "answer": "无法从审核知识确认的问题、身份或主体矛盾、材料缺失、异常交易解释以及命中审核门控的情况，应转人工处理。"
+    }
+  ],
+  "steps": {
+    "identity": {
+      "name": "第一步：基本信息上传",
+      "entries": [
+        {
+          "id": "STEP-IDENTITY-FIELDS",
+          "question": "这一步要填写什么？",
+          "answer": "填写经营主体、统一社会信用代码、经营地址、法人和联系人信息，并提交经营主体证明。字段应与正式材料保持一致。"
+        },
+        {
+          "id": "STEP-IDENTITY-NOTICE",
+          "question": "要注意什么？",
+          "answer": "重点检查统一社会信用代码、法人姓名和联系方式；主体信息发生变化时，后续核验和材料状态会重新确认。"
+        }
+      ]
+    },
+    "verify": {
+      "name": "第二步：身份核验",
+      "entries": [
+        {
+          "id": "STEP-VERIFY-PURPOSE",
+          "question": "为什么核验身份？",
+          "answer": "用于确认申请操作人与经营主体之间的关系，并降低冒用身份和未经授权提交的风险。"
+        },
+        {
+          "id": "STEP-VERIFY-FAIL",
+          "question": "核验失败怎么办？",
+          "answer": "请检查法人姓名和证件信息是否与第一步一致；多次失败或主体关系异常时应转人工核验。"
+        }
+      ]
+    },
+    "data": {
+      "name": "第三步：经营材料",
+      "entries": [
+        {
+          "id": "STEP-DATA-PURPOSE",
+          "question": "为什么需要这些材料？",
+          "answer": "现有规则需要现金流、财务、纳税开票和经营计划等结构化结果，用于经营评分、真实性核查和资金缺口预测。"
+        },
+        {
+          "id": "STEP-DATA-RESULT",
+          "question": "解析结果表示什么？",
+          "answer": "解析状态、完整度、主体匹配和警告用于判断材料能否进入现有规则计算；助手不会读取原始文件全文。"
+        }
+      ]
+    },
+    "authorize": {
+      "name": "第四步：数据授权",
+      "entries": [
+        {
+          "id": "STEP-AUTH-PURPOSE",
+          "question": "授权有什么用途？",
+          "answer": "授权用于在明确同意范围内调用银行流水、平台经营和企业信息等数据，支持既有评分与核验模块。"
+        },
+        {
+          "id": "STEP-AUTH-NOTICE",
+          "question": "授权时要注意什么？",
+          "answer": "确认授权来源、用途和同意状态；缺少规则所需来源时，完整分析不能启动。"
+        }
+      ]
+    },
+    "results": {
+      "name": "第五步：授信报告",
+      "entries": [
+        {
+          "id": "STEP-RESULTS-SCOPE",
+          "question": "报告结论代表什么？",
+          "answer": "报告展示现有代码生成的评分、额度、异常、资金缺口和审核门控结果；AI只负责解释这些结果。"
+        },
+        {
+          "id": "STEP-RESULTS-REVIEW",
+          "question": "为什么进入人工复核？",
+          "answer": "可能因为评分审核规则、交易异常、流动性风险或资料警告触发门控；应以报告中的具体规则和证据编号为准。"
+        }
+      ]
+    }
+  }
+}

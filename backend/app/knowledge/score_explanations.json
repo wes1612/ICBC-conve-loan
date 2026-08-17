@@ -1,0 +1,30 @@
+{
+  "version": "score-explanations-1.0.0",
+  "entries": [
+    {
+      "id": "SCORE-OPERATING",
+      "name": "经营信用评分",
+      "explanation": "评分由现有特征工程、评分卡和审核规则代码计算，AI不能修改。"
+    },
+    {
+      "id": "SCORE-LIMIT",
+      "name": "建议额度",
+      "explanation": "额度由评分倍数、稳定系数、承接能力和成长加成等现有规则计算，不是AI建议。"
+    },
+    {
+      "id": "SCORE-REVIEW",
+      "name": "人工复核",
+      "explanation": "命中审核规则、显著异常或流动性风险时，系统门控会要求人工复核，不自动作出最终授信结论。"
+    },
+    {
+      "id": "SCORE-ANOMALY",
+      "name": "异常交易",
+      "explanation": "异常模块返回规则、贡献和证据交易编号；证据需要结合业务背景由人工核查。"
+    },
+    {
+      "id": "SCORE-CASH-GAP",
+      "name": "资金缺口",
+      "explanation": "资金缺口模块展示情景预测和驱动因素；模块未运行时不能解释为零缺口。"
+    }
+  ]
+}

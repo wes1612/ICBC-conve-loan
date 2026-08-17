@@ -316,6 +316,111 @@
         }
       }
     },
+    "/api/v1/ai/status": {
+      "get": {
+        "tags": [
+          "ai-explanations"
+        ],
+        "summary": "Ai Status",
+        "operationId": "ai_status_api_v1_ai_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiRuntimeStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/messages": {
+      "post": {
+        "tags": [
+          "ai-explanations"
+        ],
+        "summary": "Assistant Message",
+        "description": "Answer a bounded question about the current five-step workflow.",
+        "operationId": "assistant_message_api_v1_assistant_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/report-summary": {
+      "post": {
+        "tags": [
+          "ai-explanations"
+        ],
+        "summary": "Report Summary",
+        "description": "Explain an existing FullAnalysisResult without changing its decisions.",
+        "operationId": "report_summary_api_v1_ai_report_summary_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportSummaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiReportSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -341,6 +446,116 @@
   },
   "components": {
     "schemas": {
+      "AiReportSummary": {
+        "properties": {
+          "overall_summary": {
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 1,
+            "title": "Overall Summary"
+          },
+          "positive_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Positive Factors"
+          },
+          "risk_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Risk Factors"
+          },
+          "cash_gap_interpretation": {
+            "type": "string",
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Cash Gap Interpretation"
+          },
+          "recommended_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Recommended Actions"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Evidence Refs"
+          },
+          "disclaimer": {
+            "type": "string",
+            "const": "AI仅解释既有分析结果，不参与评分与授信决策。",
+            "title": "Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "overall_summary",
+          "positive_factors",
+          "risk_factors",
+          "cash_gap_interpretation",
+          "recommended_actions",
+          "evidence_refs",
+          "disclaimer"
+        ],
+        "title": "AiReportSummary"
+      },
+      "AiRuntimeStatus": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "deepseek",
+              "openai",
+              "local"
+            ],
+            "title": "Provider"
+          },
+          "assistant_model": {
+            "type": "string",
+            "title": "Assistant Model"
+          },
+          "report_model": {
+            "type": "string",
+            "title": "Report Model"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "inference_mode": {
+            "type": "string",
+            "enum": [
+              "hosted_api",
+              "local_fine_tuned"
+            ],
+            "title": "Inference Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "assistant_model",
+          "report_model",
+          "configured",
+          "inference_mode"
+        ],
+        "title": "AiRuntimeStatus"
+      },
       "AnalysisResult": {
         "properties": {
           "merchant_id": {
@@ -800,6 +1015,209 @@
         ],
         "title": "ApplicationContext",
         "description": "申请流程和授权证据；只用于校验与审计，不直接参与评分。"
+      },
+      "AssistantHistoryMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "AssistantHistoryMessage"
+      },
+      "AssistantMaterialStatus": {
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Material Id"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "license",
+              "cashflow",
+              "statement",
+              "tax",
+              "plan",
+              "asset"
+            ],
+            "title": "Group"
+          },
+          "completeness_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Completeness Score"
+          },
+          "subject_match": {
+            "type": "boolean",
+            "title": "Subject Match"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "material_id",
+          "group",
+          "completeness_score",
+          "subject_match"
+        ],
+        "title": "AssistantMaterialStatus"
+      },
+      "AssistantMessageRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "current_step": {
+            "type": "string",
+            "enum": [
+              "identity",
+              "verify",
+              "data",
+              "authorize",
+              "results"
+            ],
+            "title": "Current Step"
+          },
+          "context": {
+            "$ref": "#/components/schemas/AssistantWorkflowContext"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantHistoryMessage"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "current_step",
+          "context"
+        ],
+        "title": "AssistantMessageRequest"
+      },
+      "AssistantReply": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Answer"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Evidence Refs"
+          },
+          "should_escalate": {
+            "type": "boolean",
+            "title": "Should Escalate",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AssistantReply"
+      },
+      "AssistantWorkflowContext": {
+        "properties": {
+          "merchant_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant Id"
+          },
+          "identity_verified": {
+            "type": "boolean",
+            "title": "Identity Verified",
+            "default": false
+          },
+          "materials": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantMaterialStatus"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Materials"
+          },
+          "authorized_sources": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "bank",
+                "unionpay",
+                "alipay",
+                "wechat",
+                "meituan",
+                "douyin",
+                "xiaohongshu",
+                "enterprise"
+              ]
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Authorized Sources"
+          },
+          "consent_confirmed": {
+            "type": "boolean",
+            "title": "Consent Confirmed",
+            "default": false
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FullAnalysisResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "AssistantWorkflowContext"
       },
       "CashGapForecastRequest": {
         "properties": {
@@ -1885,6 +2303,18 @@
           "operating_outflow"
         ],
         "title": "MonthlyCashflow"
+      },
+      "ReportSummaryRequest": {
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/FullAnalysisResult"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analysis"
+        ],
+        "title": "ReportSummaryRequest"
       },
       "ReviewRuleHit": {
         "properties": {

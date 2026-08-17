@@ -1,9 +1,16 @@
 import type {
+  AiReportSummary,
+  AssistantMessageRequest,
+  AssistantReply,
+  DemoCasePayload,
+  DemoMerchantId,
   FullAnalysisRequest,
   FullAnalysisResult,
   MaterialEvidence,
   MaterialGroupId,
 } from './types'
+
+export const AI_UNAVAILABLE_MESSAGE = '智能解读暂不可用，原有五步流程和授信报告不受影响。'
 
 const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
@@ -157,6 +164,70 @@ export async function downloadDemoMaterial(
   if (!response.ok) throw await materialError(response)
   const blob = await response.blob()
   return new File([blob], `${merchantId}_${fileName}`, { type: blob.type })
+}
+
+export async function getRandomDemoCase(
+  exclude?: DemoMerchantId,
+): Promise<DemoCasePayload> {
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), 6_000)
+  const query = exclude ? `?exclude=${encodeURIComponent(exclude)}` : ''
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/demo/cases/random${query}`, {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+    if (!response.ok) {
+      throw new ApiError('暂时无法抽取模拟案例，请稍后重试。', response.status)
+    }
+    return (await response.json()) as DemoCasePayload
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError('暂时无法抽取模拟案例，已保留默认案例。', 0)
+  } finally {
+    window.clearTimeout(timeout)
+  }
+}
+
+async function aiError(response: Response): Promise<ApiError> {
+  const payload = await response.json().catch(() => null) as { detail?: unknown } | null
+  const detail = typeof payload?.detail === 'string' ? payload.detail : null
+  return new ApiError(detail || AI_UNAVAILABLE_MESSAGE, response.status)
+}
+
+async function postAi<T>(path: string, body: unknown, timeoutMs: number): Promise<T> {
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    })
+    if (!response.ok) throw await aiError(response)
+    return (await response.json()) as T
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError(AI_UNAVAILABLE_MESSAGE, 0)
+    }
+    throw new ApiError(AI_UNAVAILABLE_MESSAGE, 0)
+  } finally {
+    window.clearTimeout(timeout)
+  }
+}
+
+export function requestAssistantMessage(
+  request: AssistantMessageRequest,
+): Promise<AssistantReply> {
+  return postAi<AssistantReply>('/api/v1/assistant/messages', request, 30_000)
+}
+
+export function requestAiReportSummary(
+  analysis: FullAnalysisResult,
+): Promise<AiReportSummary> {
+  return postAi<AiReportSummary>('/api/v1/ai/report-summary', { analysis }, 75_000)
 }
 
 export function describeApiError(error: unknown): string {
