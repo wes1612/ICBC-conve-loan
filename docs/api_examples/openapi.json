@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "ICBC Consumer Supply Credit API",
-    "description": "消费供给动态授信：经营评分、交易异常与资金缺口预测 MVP",
-    "version": "0.4.0"
+    "description": "消费供给动态授信：首次授信、贷后月度复评与动态额度管理 MVP",
+    "version": "0.5.0"
   },
   "paths": {
     "/api/v1/analyze": {
@@ -414,6 +414,468 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/cases/random": {
+      "get": {
+        "tags": [
+          "simulated-demonstrations"
+        ],
+        "summary": "Random Case",
+        "operationId": "random_case_api_v1_demo_cases_random_get",
+        "parameters": [
+          {
+            "name": "exclude",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "M001",
+                    "M002",
+                    "M003",
+                    "M004",
+                    "M005"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exclude"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoCasePayload"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/demo/cases/{merchant_id}": {
+      "get": {
+        "tags": [
+          "simulated-demonstrations"
+        ],
+        "summary": "Case By Id",
+        "operationId": "case_by_id_api_v1_demo_cases__merchant_id__get",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "M001",
+                "M002",
+                "M003",
+                "M004",
+                "M005"
+              ],
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoCasePayload"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/merchants/{merchant_id}/timeline": {
+      "get": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "Merchant Timeline",
+        "description": "返回当前已推进月份内的贷款账户、模型结果、额度历史和数据来源。",
+        "operationId": "merchant_timeline_api_v1_post_loan_merchants__merchant_id__timeline_get",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "M001",
+                "M002",
+                "M003",
+                "M004",
+                "M005"
+              ],
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostLoanTimeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/merchants/{merchant_id}/advance-month": {
+      "post": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "Advance Month",
+        "description": "竞赛演示专用：推进一个月并运行三引擎复评和额度状态机。",
+        "operationId": "advance_month_api_v1_post_loan_merchants__merchant_id__advance_month_post",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "M001",
+                "M002",
+                "M003",
+                "M004",
+                "M005"
+              ],
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostLoanTimeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/merchants/{merchant_id}/reset": {
+      "post": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "Reset Timeline",
+        "description": "将指定商户恢复到贷后第一个月。",
+        "operationId": "reset_timeline_api_v1_post_loan_merchants__merchant_id__reset_post",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "M001",
+                "M002",
+                "M003",
+                "M004",
+                "M005"
+              ],
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostLoanTimeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/merchants/{merchant_id}/submissions": {
+      "post": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "Submit Supplement",
+        "description": "商户补充系统无法自动取得的材料或异常说明。",
+        "operationId": "submit_supplement_api_v1_post_loan_merchants__merchant_id__submissions_post",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "M001",
+                "M002",
+                "M003",
+                "M004",
+                "M005"
+              ],
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantSubmissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostLoanTimeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/merchants/{merchant_id}/sources/{source_id}/authorization": {
+      "post": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "Update Source Authorization",
+        "description": "模拟外部经营平台授权续期或撤销。",
+        "operationId": "update_source_authorization_api_v1_post_loan_merchants__merchant_id__sources__source_id__authorization_post",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "M001",
+                "M002",
+                "M003",
+                "M004",
+                "M005"
+              ],
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          },
+          {
+            "name": "source_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Source Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceAuthorizationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostLoanTimeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/reviews/{review_id}/decision": {
+      "post": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "Decide Review",
+        "description": "银行审核端批准调整、维持原额度或升级人工复核。",
+        "operationId": "decide_review_api_v1_post_loan_reviews__review_id__decision_post",
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostLoanTimeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/post-loan/alerts": {
+      "get": {
+        "tags": [
+          "post-loan-monitoring"
+        ],
+        "summary": "All Alerts",
+        "operationId": "all_alerts_api_v1_post_loan_alerts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PostLoanAlert"
+                  },
+                  "type": "array",
+                  "title": "Response All Alerts Api V1 Post Loan Alerts Get"
                 }
               }
             }
@@ -1133,7 +1595,8 @@
             "type": "string",
             "maxLength": 1200,
             "minLength": 1,
-            "title": "Answer"
+            "title": "Answer",
+            "description": "Readable Chinese explanation with 【简要结论】 and 【要点】 sections; key points use lines beginning with '- '."
           },
           "evidence_refs": {
             "items": {
@@ -1497,6 +1960,270 @@
           "debt_service"
         ],
         "title": "CashGapMonthForecast"
+      },
+      "CreditReviewResult": {
+        "properties": {
+          "review_id": {
+            "type": "string",
+            "title": "Review Id"
+          },
+          "review_month": {
+            "type": "string",
+            "format": "date",
+            "title": "Review Month"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "INCREASE",
+              "MAINTAIN",
+              "DECREASE",
+              "FREEZE",
+              "MANUAL_REVIEW"
+            ],
+            "title": "Action"
+          },
+          "current_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Current Limit"
+          },
+          "candidate_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Candidate Limit"
+          },
+          "proposed_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Proposed Limit"
+          },
+          "outstanding_principal": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Outstanding Principal"
+          },
+          "alert_level": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Alert Level"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AUTO_APPLIED",
+              "PENDING_REVIEW",
+              "APPROVED",
+              "REJECTED"
+            ],
+            "title": "Status"
+          },
+          "next_review_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Next Review Date"
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "default": "postloan_competition_policy_v1"
+          },
+          "reviewer_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "review_id",
+          "review_month",
+          "action",
+          "current_limit",
+          "candidate_limit",
+          "proposed_limit",
+          "outstanding_principal",
+          "alert_level",
+          "reason_codes",
+          "reasons",
+          "status",
+          "next_review_date"
+        ],
+        "title": "CreditReviewResult"
+      },
+      "DemoApplicant": {
+        "properties": {
+          "merchant_name": {
+            "type": "string",
+            "title": "Merchant Name"
+          },
+          "industry": {
+            "type": "string",
+            "title": "Industry"
+          },
+          "social_credit_code": {
+            "type": "string",
+            "pattern": "^[0-9A-Z]{18}$",
+            "title": "Social Credit Code"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "legal_name": {
+            "type": "string",
+            "title": "Legal Name"
+          },
+          "legal_phone": {
+            "type": "string",
+            "title": "Legal Phone"
+          },
+          "legal_id_number": {
+            "type": "string",
+            "title": "Legal Id Number"
+          },
+          "contact_name": {
+            "type": "string",
+            "title": "Contact Name"
+          },
+          "contact_phone": {
+            "type": "string",
+            "title": "Contact Phone"
+          },
+          "contact_id_number": {
+            "type": "string",
+            "title": "Contact Id Number"
+          },
+          "requested_amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Requested Amount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_name",
+          "industry",
+          "social_credit_code",
+          "province",
+          "city",
+          "address",
+          "legal_name",
+          "legal_phone",
+          "legal_id_number",
+          "contact_name",
+          "contact_phone",
+          "contact_id_number",
+          "requested_amount"
+        ],
+        "title": "DemoApplicant"
+      },
+      "DemoCasePayload": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "enum": [
+              "M001",
+              "M002",
+              "M003",
+              "M004",
+              "M005"
+            ],
+            "title": "Merchant Id"
+          },
+          "case_label": {
+            "type": "string",
+            "title": "Case Label"
+          },
+          "case_description": {
+            "type": "string",
+            "title": "Case Description"
+          },
+          "expected_risk": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "MANUAL_REVIEW"
+            ],
+            "title": "Expected Risk"
+          },
+          "expected_decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "MANUAL_REVIEW",
+              "DECLINE"
+            ],
+            "title": "Expected Decision"
+          },
+          "applicant": {
+            "$ref": "#/components/schemas/DemoApplicant"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantAnalysisRequest"
+          },
+          "anomaly": {
+            "$ref": "#/components/schemas/AnomalyAnalysisRequest"
+          },
+          "cash_gap": {
+            "$ref": "#/components/schemas/CashGapForecastRequest"
+          },
+          "materials": {
+            "items": {
+              "$ref": "#/components/schemas/MaterialEvidence"
+            },
+            "type": "array",
+            "title": "Materials"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "case_label",
+          "case_description",
+          "expected_risk",
+          "expected_decision",
+          "applicant",
+          "merchant",
+          "anomaly",
+          "cash_gap",
+          "materials"
+        ],
+        "title": "DemoCasePayload"
       },
       "DimensionScores": {
         "properties": {
@@ -2050,6 +2777,70 @@
         ],
         "title": "LimitDecision"
       },
+      "LoanAccountSnapshot": {
+        "properties": {
+          "loan_id": {
+            "type": "string",
+            "title": "Loan Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "initial_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Initial Limit"
+          },
+          "current_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Current Limit"
+          },
+          "used_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Used Limit"
+          },
+          "outstanding_principal": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Outstanding Principal"
+          },
+          "available_limit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Available Limit"
+          },
+          "disbursed_at": {
+            "type": "string",
+            "format": "date",
+            "title": "Disbursed At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "FROZEN",
+              "CLOSED"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loan_id",
+          "merchant_id",
+          "initial_limit",
+          "current_limit",
+          "used_limit",
+          "outstanding_principal",
+          "available_limit",
+          "disbursed_at",
+          "status"
+        ],
+        "title": "LoanAccountSnapshot"
+      },
       "MaterialEvidence": {
         "properties": {
           "material_id": {
@@ -2246,6 +3037,111 @@
         ],
         "title": "MerchantAnalysisRequest"
       },
+      "MerchantSubmission": {
+        "properties": {
+          "submission_id": {
+            "type": "string",
+            "title": "Submission Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "OFF_BANK_STATEMENT",
+              "CONTRACT",
+              "PURPOSE_PROOF",
+              "EXPLANATION"
+            ],
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "source_type": {
+            "type": "string",
+            "const": "MERCHANT_SUBMITTED_SIMULATED",
+            "title": "Source Type",
+            "default": "MERCHANT_SUBMITTED_SIMULATED"
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "VERIFIED",
+              "REJECTED"
+            ],
+            "title": "Verification Status",
+            "default": "PENDING"
+          }
+        },
+        "type": "object",
+        "required": [
+          "submission_id",
+          "merchant_id",
+          "category",
+          "description",
+          "submitted_at"
+        ],
+        "title": "MerchantSubmission"
+      },
+      "MerchantSubmissionRequest": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "OFF_BANK_STATEMENT",
+              "CONTRACT",
+              "PURPOSE_PROOF",
+              "EXPLANATION"
+            ],
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Description"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "description"
+        ],
+        "title": "MerchantSubmissionRequest"
+      },
       "ModuleStates": {
         "properties": {
           "score": {
@@ -2304,6 +3200,545 @@
         ],
         "title": "MonthlyCashflow"
       },
+      "MonthlyOperatingMetrics": {
+        "properties": {
+          "receipts": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Receipts"
+          },
+          "receipt_mom_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Mom Growth"
+          },
+          "orders": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Orders"
+          },
+          "refund_rate": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Refund Rate"
+          },
+          "complaint_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Complaint Count"
+          },
+          "cash_balance": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Cash Balance"
+          },
+          "limit_utilization": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Limit Utilization"
+          },
+          "compliant_use_ratio": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Compliant Use Ratio"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receipts",
+          "orders",
+          "refund_rate",
+          "complaint_count",
+          "cash_balance",
+          "limit_utilization",
+          "compliant_use_ratio"
+        ],
+        "title": "MonthlyOperatingMetrics"
+      },
+      "PostLoanAlert": {
+        "properties": {
+          "alert_id": {
+            "type": "string",
+            "title": "Alert Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Level"
+          },
+          "alert_type": {
+            "type": "string",
+            "title": "Alert Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ACKNOWLEDGED",
+              "CLOSED"
+            ],
+            "title": "Status",
+            "default": "OPEN"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alert_id",
+          "merchant_id",
+          "occurred_at",
+          "level",
+          "alert_type",
+          "title",
+          "description"
+        ],
+        "title": "PostLoanAlert"
+      },
+      "PostLoanModelSnapshot": {
+        "properties": {
+          "operating_credit_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Operating Credit Score"
+          },
+          "credit_grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "title": "Credit Grade"
+          },
+          "anomaly_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Anomaly Score"
+          },
+          "anomaly_risk": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Anomaly Risk"
+          },
+          "max_p90_funding_gap": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Max P90 Funding Gap"
+          },
+          "cash_gap_risk": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Cash Gap Risk"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Confidence"
+          },
+          "score_model_version": {
+            "type": "string",
+            "title": "Score Model Version"
+          },
+          "anomaly_model_version": {
+            "type": "string",
+            "title": "Anomaly Model Version"
+          },
+          "cash_gap_model_version": {
+            "type": "string",
+            "title": "Cash Gap Model Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operating_credit_score",
+          "credit_grade",
+          "anomaly_score",
+          "anomaly_risk",
+          "max_p90_funding_gap",
+          "cash_gap_risk",
+          "confidence",
+          "score_model_version",
+          "anomaly_model_version",
+          "cash_gap_model_version"
+        ],
+        "title": "PostLoanModelSnapshot"
+      },
+      "PostLoanMonthlySnapshot": {
+        "properties": {
+          "month_index": {
+            "type": "integer",
+            "maximum": 12.0,
+            "minimum": 1.0,
+            "title": "Month Index"
+          },
+          "month": {
+            "type": "string",
+            "format": "date",
+            "title": "Month"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Observed At"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Received At"
+          },
+          "repayment": {
+            "$ref": "#/components/schemas/RepaymentPerformance"
+          },
+          "operating": {
+            "$ref": "#/components/schemas/MonthlyOperatingMetrics"
+          },
+          "models": {
+            "$ref": "#/components/schemas/PostLoanModelSnapshot"
+          },
+          "review": {
+            "$ref": "#/components/schemas/CreditReviewResult"
+          },
+          "source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Ids"
+          },
+          "data_quality_status": {
+            "type": "string",
+            "enum": [
+              "VERIFIED",
+              "REPORTED",
+              "MISSING",
+              "CONFLICT"
+            ],
+            "title": "Data Quality Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month_index",
+          "month",
+          "observed_at",
+          "received_at",
+          "repayment",
+          "operating",
+          "models",
+          "review",
+          "source_ids",
+          "data_quality_status"
+        ],
+        "title": "PostLoanMonthlySnapshot"
+      },
+      "PostLoanSourceStatus": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "BANK_INTERNAL_SIMULATED",
+              "PLATFORM_AUTHORIZED_SIMULATED",
+              "MERCHANT_SUBMITTED_SIMULATED",
+              "MANUAL_VERIFIED_SIMULATED"
+            ],
+            "title": "Source Type"
+          },
+          "authorization_status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "EXPIRED",
+              "REVOKED",
+              "NOT_REQUIRED"
+            ],
+            "title": "Authorization Status"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scopes"
+          },
+          "last_synced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Synced At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "freshness_hours": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freshness Hours"
+          },
+          "quality_status": {
+            "type": "string",
+            "enum": [
+              "VERIFIED",
+              "REPORTED",
+              "MISSING",
+              "CONFLICT"
+            ],
+            "title": "Quality Status"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified"
+          },
+          "record_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Record Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "display_name",
+          "source_type",
+          "authorization_status",
+          "scopes",
+          "quality_status",
+          "verified"
+        ],
+        "title": "PostLoanSourceStatus"
+      },
+      "PostLoanTimeline": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "merchant_name": {
+            "type": "string",
+            "title": "Merchant Name"
+          },
+          "scenario_name": {
+            "type": "string",
+            "title": "Scenario Name"
+          },
+          "scenario_description": {
+            "type": "string",
+            "title": "Scenario Description"
+          },
+          "simulated": {
+            "type": "boolean",
+            "const": true,
+            "title": "Simulated",
+            "default": true
+          },
+          "as_of_month": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of Month"
+          },
+          "current_month_index": {
+            "type": "integer",
+            "maximum": 12.0,
+            "minimum": 1.0,
+            "title": "Current Month Index"
+          },
+          "total_months": {
+            "type": "integer",
+            "const": 12,
+            "title": "Total Months",
+            "default": 12
+          },
+          "loan_account": {
+            "$ref": "#/components/schemas/LoanAccountSnapshot"
+          },
+          "source_statuses": {
+            "items": {
+              "$ref": "#/components/schemas/PostLoanSourceStatus"
+            },
+            "type": "array",
+            "title": "Source Statuses"
+          },
+          "snapshots": {
+            "items": {
+              "$ref": "#/components/schemas/PostLoanMonthlySnapshot"
+            },
+            "type": "array",
+            "title": "Snapshots"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/PostLoanAlert"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "submissions": {
+            "items": {
+              "$ref": "#/components/schemas/MerchantSubmission"
+            },
+            "type": "array",
+            "title": "Submissions"
+          },
+          "current_review": {
+            "$ref": "#/components/schemas/CreditReviewResult"
+          },
+          "policy_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Policy Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "merchant_name",
+          "scenario_name",
+          "scenario_description",
+          "as_of_month",
+          "current_month_index",
+          "loan_account",
+          "source_statuses",
+          "snapshots",
+          "alerts",
+          "submissions",
+          "current_review",
+          "policy_notes"
+        ],
+        "title": "PostLoanTimeline"
+      },
+      "RepaymentPerformance": {
+        "properties": {
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date"
+          },
+          "scheduled_amount": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Scheduled Amount"
+          },
+          "paid_amount": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Paid Amount"
+          },
+          "payment_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Date"
+          },
+          "days_past_due": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Days Past Due"
+          },
+          "on_time": {
+            "type": "boolean",
+            "title": "On Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "due_date",
+          "scheduled_amount",
+          "paid_amount",
+          "days_past_due",
+          "on_time"
+        ],
+        "title": "RepaymentPerformance"
+      },
       "ReportSummaryRequest": {
         "properties": {
           "analysis": {
@@ -2315,6 +3750,48 @@
           "analysis"
         ],
         "title": "ReportSummaryRequest"
+      },
+      "ReviewDecisionRequest": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "MAINTAIN",
+              "ESCALATE"
+            ],
+            "title": "Decision"
+          },
+          "approved_limit": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved Limit"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ReviewDecisionRequest"
       },
       "ReviewRuleHit": {
         "properties": {
@@ -2342,6 +3819,35 @@
           "message"
         ],
         "title": "ReviewRuleHit"
+      },
+      "SourceAuthorizationRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "RENEW",
+              "REVOKE"
+            ],
+            "title": "Action"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "SourceAuthorizationRequest"
       },
       "StructuralData": {
         "properties": {

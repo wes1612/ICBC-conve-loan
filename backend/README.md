@@ -15,6 +15,7 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 - 真实文件上传校验、CSV/Excel/文本型 PDF/Word 本地读取、M001/M005 演示材料下载和明确标注的模拟业务指标。
 - DeepSeek 托管 API、OpenAI API 与本地 LoRA 模型三种可切换推理模式。
 - 可复现的训练数据构建、LoRA/QLoRA 训练与本地兼容推理服务。
+- 5 个商户各 12 个月的确定性贷后轨迹、三引擎月度复评、动态额度状态机、来源授权、补件和银行审核接口。
 
 ## ML 接口
 
@@ -29,6 +30,9 @@ Python + FastAPI 的消费供给动态授信后端。当前已实现：
 | `GET /api/v1/demo/cases/random` | 随机抽取完整模拟商户记录；可用 `exclude=M001` 排除当前组 | M001–M005 模拟数据库 |
 | `GET /api/v1/demo/cases/{merchant_id}` | 读取指定模拟商户的完整演示输入 | M001–M005 模拟数据库 |
 | `POST /api/v1/analyze` | 旧评分路径兼容接口 | 与 `/api/v1/ml/score` 相同 |
+| `GET /api/v1/post-loan/merchants/{merchant_id}/timeline` | 贷后账户、来源、快照、预警和额度历史 | 三引擎月度复评 + 竞赛动态政策 v1 |
+| `POST /api/v1/post-loan/merchants/{merchant_id}/advance-month` | 推进一个模拟月份 | 确定性 12 个月轨迹 |
+| `POST /api/v1/post-loan/reviews/{review_id}/decision` | 银行批准调整、维持或人工升级 | 审核后生效且不低于未偿本金 |
 
 当前没有真实贷后违约标签，因此 `pd_12m` 始终返回 `null`，`pd_status` 为 `UNCALIBRATED`。模拟明细用于开发和异常注入验收，不用于声称已经训练真实违约/欺诈模型。
 

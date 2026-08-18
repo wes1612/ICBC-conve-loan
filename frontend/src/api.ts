@@ -8,6 +8,7 @@ import type {
   FullAnalysisResult,
   MaterialEvidence,
   MaterialGroupId,
+  PostLoanTimeline,
 } from './types'
 
 export const AI_UNAVAILABLE_MESSAGE = '智能解读暂不可用，原有五步流程和授信报告不受影响。'
@@ -228,6 +229,100 @@ export function requestAiReportSummary(
   analysis: FullAnalysisResult,
 ): Promise<AiReportSummary> {
   return postAi<AiReportSummary>('/api/v1/ai/report-summary', { analysis }, 75_000)
+}
+
+async function postLoanRequest(
+  path: string,
+  init?: RequestInit,
+): Promise<PostLoanTimeline> {
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), 15_000)
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      cache: 'no-store',
+      ...init,
+      headers: init?.body
+        ? { 'Content-Type': 'application/json', ...init.headers }
+        : init?.headers,
+      signal: controller.signal,
+    })
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null) as { detail?: unknown } | null
+      const detail = typeof payload?.detail === 'string' ? payload.detail : null
+      throw new ApiError(detail || '贷后监测请求失败，请稍后重试。', response.status)
+    }
+    return (await response.json()) as PostLoanTimeline
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiError('贷后监测请求超时，请检查后端服务。', 0)
+    }
+    throw new ApiError('无法连接贷后监测服务，请确认后端已经启动。', 0)
+  } finally {
+    window.clearTimeout(timeout)
+  }
+}
+
+export function getPostLoanTimeline(merchantId: DemoMerchantId): Promise<PostLoanTimeline> {
+  return postLoanRequest(`/api/v1/post-loan/merchants/${merchantId}/timeline`)
+}
+
+export function advancePostLoanMonth(merchantId: DemoMerchantId): Promise<PostLoanTimeline> {
+  return postLoanRequest(`/api/v1/post-loan/merchants/${merchantId}/advance-month`, {
+    method: 'POST',
+  })
+}
+
+export function resetPostLoanTimeline(merchantId: DemoMerchantId): Promise<PostLoanTimeline> {
+  return postLoanRequest(`/api/v1/post-loan/merchants/${merchantId}/reset`, {
+    method: 'POST',
+  })
+}
+
+export function submitPostLoanSupplement(
+  merchantId: DemoMerchantId,
+  payload: {
+    category: 'OFF_BANK_STATEMENT' | 'CONTRACT' | 'PURPOSE_PROOF' | 'EXPLANATION'
+    description: string
+    file_name?: string | null
+  },
+): Promise<PostLoanTimeline> {
+  return postLoanRequest(`/api/v1/post-loan/merchants/${merchantId}/submissions`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function renewPostLoanSource(
+  merchantId: DemoMerchantId,
+  sourceId: string,
+): Promise<PostLoanTimeline> {
+  return postLoanRequest(
+    `/api/v1/post-loan/merchants/${merchantId}/sources/${sourceId}/authorization`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ action: 'RENEW', expires_at: '2027-12-31' }),
+    },
+  )
+}
+
+export function decidePostLoanReview(
+  reviewId: string,
+  decision: 'APPROVE' | 'MAINTAIN' | 'ESCALATE',
+  approvedLimit?: number,
+): Promise<PostLoanTimeline> {
+  return postLoanRequest(`/api/v1/post-loan/reviews/${reviewId}/decision`, {
+    method: 'POST',
+    body: JSON.stringify({
+      decision,
+      approved_limit: decision === 'APPROVE' ? approvedLimit : null,
+      note: decision === 'APPROVE'
+        ? '竞赛演示：银行审核员确认系统建议与证据链。'
+        : decision === 'MAINTAIN'
+          ? '竞赛演示：本期维持原额度继续观察。'
+          : '竞赛演示：升级客户经理人工核查。',
+    }),
+  })
 }
 
 export function describeApiError(error: unknown): string {

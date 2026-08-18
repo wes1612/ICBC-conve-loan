@@ -278,3 +278,136 @@ export interface AiReportSummary {
   evidence_refs: string[]
   disclaimer: 'AI仅解释既有分析结果，不参与评分与授信决策。'
 }
+
+export type PostLoanAction = 'INCREASE' | 'MAINTAIN' | 'DECREASE' | 'FREEZE' | 'MANUAL_REVIEW'
+export type PostLoanAlertLevel = 'LOW' | 'MEDIUM' | 'HIGH'
+export type AuthorizationStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'NOT_REQUIRED'
+export type DataQualityStatus = 'VERIFIED' | 'REPORTED' | 'MISSING' | 'CONFLICT'
+export type ReviewStatus = 'AUTO_APPLIED' | 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED'
+export type PostLoanSourceType =
+  | 'BANK_INTERNAL_SIMULATED'
+  | 'PLATFORM_AUTHORIZED_SIMULATED'
+  | 'MERCHANT_SUBMITTED_SIMULATED'
+  | 'MANUAL_VERIFIED_SIMULATED'
+
+export interface PostLoanSourceStatus {
+  source_id: string
+  display_name: string
+  source_type: PostLoanSourceType
+  authorization_status: AuthorizationStatus
+  scopes: string[]
+  last_synced_at: string | null
+  expires_at: string | null
+  freshness_hours: number | null
+  quality_status: DataQualityStatus
+  verified: boolean
+  record_count: number
+}
+
+export interface PostLoanReview {
+  review_id: string
+  review_month: string
+  action: PostLoanAction
+  current_limit: number
+  candidate_limit: number
+  proposed_limit: number
+  outstanding_principal: number
+  alert_level: PostLoanAlertLevel
+  reason_codes: string[]
+  reasons: string[]
+  status: ReviewStatus
+  next_review_date: string
+  policy_version: string
+  reviewer_note: string | null
+}
+
+export interface PostLoanSnapshot {
+  month_index: number
+  month: string
+  observed_at: string
+  received_at: string
+  repayment: {
+    due_date: string
+    scheduled_amount: number
+    paid_amount: number
+    payment_date: string | null
+    days_past_due: number
+    on_time: boolean
+  }
+  operating: {
+    receipts: number
+    receipt_mom_growth: number | null
+    orders: number
+    refund_rate: number
+    complaint_count: number
+    cash_balance: number
+    limit_utilization: number
+    compliant_use_ratio: number
+  }
+  models: {
+    operating_credit_score: number
+    credit_grade: 'A' | 'B' | 'C' | 'D' | 'E'
+    anomaly_score: number
+    anomaly_risk: 'LOW' | 'MEDIUM' | 'HIGH'
+    max_p90_funding_gap: number
+    cash_gap_risk: 'LOW' | 'MEDIUM' | 'HIGH'
+    confidence: Confidence
+    score_model_version: string
+    anomaly_model_version: string
+    cash_gap_model_version: string
+  }
+  review: PostLoanReview
+  source_ids: string[]
+  data_quality_status: DataQualityStatus
+}
+
+export interface PostLoanAlert {
+  alert_id: string
+  merchant_id: string
+  occurred_at: string
+  level: PostLoanAlertLevel
+  alert_type: string
+  title: string
+  description: string
+  status: 'OPEN' | 'ACKNOWLEDGED' | 'CLOSED'
+  evidence_refs: string[]
+}
+
+export interface MerchantSubmission {
+  submission_id: string
+  merchant_id: string
+  category: 'OFF_BANK_STATEMENT' | 'CONTRACT' | 'PURPOSE_PROOF' | 'EXPLANATION'
+  description: string
+  file_name: string | null
+  submitted_at: string
+  source_type: 'MERCHANT_SUBMITTED_SIMULATED'
+  verification_status: 'PENDING' | 'VERIFIED' | 'REJECTED'
+}
+
+export interface PostLoanTimeline {
+  merchant_id: DemoMerchantId
+  merchant_name: string
+  scenario_name: string
+  scenario_description: string
+  simulated: true
+  as_of_month: string
+  current_month_index: number
+  total_months: 12
+  loan_account: {
+    loan_id: string
+    merchant_id: string
+    initial_limit: number
+    current_limit: number
+    used_limit: number
+    outstanding_principal: number
+    available_limit: number
+    disbursed_at: string
+    status: 'ACTIVE' | 'FROZEN' | 'CLOSED'
+  }
+  source_statuses: PostLoanSourceStatus[]
+  snapshots: PostLoanSnapshot[]
+  alerts: PostLoanAlert[]
+  submissions: MerchantSubmission[]
+  current_review: PostLoanReview
+  policy_notes: string[]
+}

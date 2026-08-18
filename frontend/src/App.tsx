@@ -21,6 +21,7 @@ import { VerifyPage } from './pages/VerifyPage'
 import { DataPage } from './pages/DataPage'
 import { AuthorizePage } from './pages/AuthorizePage'
 import { ResultsPage } from './pages/ResultsPage'
+import { PostLoanPage } from './pages/PostLoanPage'
 
 const steps = [
   { key: 'home', label: '申请首页' },
@@ -31,7 +32,7 @@ const steps = [
   { key: 'results', label: '授信报告' },
 ] as const
 
-type StepKey = (typeof steps)[number]['key']
+type StepKey = (typeof steps)[number]['key'] | 'postloan'
 
 function App() {
   const [step, setStep] = useState<StepKey>('home')
@@ -76,6 +77,11 @@ function App() {
   }, [])
 
   const go = (next: StepKey) => {
+    if (next === 'postloan') {
+      setStep(next)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     const index = steps.findIndex((item) => item.key === next)
     setFurthest((value) => Math.max(value, index))
     setStep(next)
@@ -191,6 +197,7 @@ function App() {
           <nav className="top-nav" aria-label="主要导航">
             <button className={step === 'home' ? 'is-active' : ''} onClick={() => go('home')}>申请测算</button>
             <button className={step === 'results' ? 'is-active' : ''} onClick={() => result && go('results')} disabled={!result}>分析报告</button>
+            <button className={step === 'postloan' ? 'is-active' : ''} onClick={() => go('postloan')}>贷后监测</button>
           </nav>
           <div className="header-meta">
             <span className={`header-status ${apiOnline ? 'is-online' : ''}`}><i />{apiOnline === null ? '连接中' : apiOnline ? '服务在线' : '服务离线'}</span>
@@ -199,7 +206,7 @@ function App() {
         </div>
       </header>
 
-      {step !== 'home' && (
+      {step !== 'home' && step !== 'postloan' && (
         <div className="stepper-wrap">
           <ol className="stepper page-shell">
             {steps.slice(1).map((item, index) => {
@@ -260,8 +267,9 @@ function App() {
         />
       )}
       {step === 'results' && result && <ResultsPage data={result} source="api" onRestart={restart} onBack={() => go('authorize')} />}
+      {step === 'postloan' && <PostLoanPage initialMerchantId={demoCase.merchant_id} />}
 
-      {step !== 'home' && (
+      {step !== 'home' && step !== 'postloan' && (
         <AiAssistant
           currentStep={step}
           apiOnline={apiOnline}

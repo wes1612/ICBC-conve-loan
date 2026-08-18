@@ -14,6 +14,7 @@
 - [后端运行说明](backend/README.md)：安装、启动、测试、Swagger 和脚本命令。
 - [AI MVP 实现说明](docs/AI-MVP-implementation.md)：两条 AI 工作流、配置、降级与审计边界。
 - [网站 AI 功能使用说明](AI-FEATURES-README.md)：DeepSeek 配置、启动命令、网页操作、费用与常见错误。
+- [贷后全周期动态授信使用说明](docs/贷后全周期动态授信使用说明.md)：12 个月复评轨迹、动态额度状态机、数据来源、授权续期、商户补件、银行审核和接口说明。
 
 > 根 README 下方仍保留最初项目规划作为历史背景；当前实际进度以上述交接文档、后端 README 和项目看板为准。
 
@@ -29,8 +30,8 @@
 
 ```
 .
-├── frontend/       # 前端项目（React/Next.js，队员A负责初始化）
-├── backend/        # 后端项目（Python + FastAPI，队员B负责初始化）
+├── frontend/       # React + TypeScript + Vite 前端
+├── backend/        # Python + FastAPI 后端、评分与贷后策略
 ├── data/           # 数据字典与测试商户数据（已就绪，见 data/README.md）
 ├── docs/           # 产品文档、开发计划、流程图
 └── .github/        # Issue模板等协作配置
@@ -69,6 +70,7 @@ uvicorn main:app --reload
 - [x] 5个测试商户（结构化+非结构化全量数据，见 `data/`）
 - [ ] 页面低保真原型
 - [x] GitHub仓库骨架（本仓库）
-- [ ] 前端/后端项目初始化（队员A/B）
+- [x] 前端/后端项目初始化与联调
+- [x] 贷后 12 个月动态复评、额度状态机、预警、授权和补件演示
 
 详细任务清单见 `docs/PROJECT_BOARD.md`，建议直接搬进 GitHub Projects 看板。
