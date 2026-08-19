@@ -1,0 +1,568 @@
+{
+  "merchant_id": "M001",
+  "generated_at": "2026-08-07T12:00:00Z",
+  "overall_risk": "LOW",
+  "overall_decision": "APPROVE",
+  "module_states": {
+    "score": "READY",
+    "anomaly": "READY",
+    "cash_gap": "READY"
+  },
+  "data_warnings": [],
+  "score": {
+    "merchant_id": "M001",
+    "merchant_name": "宜人美发生活馆",
+    "profile": "v5_current",
+    "score_version": "scorecard_v5_2026_08",
+    "features": {
+      "receipts_6m": 532800.0,
+      "receipts_12m": 1018000.0,
+      "average_receipt_6m": 88800.0,
+      "receipt_mom_growth": 0.013215859030837107,
+      "receipt_cagr_6m": 0.014762342970856546,
+      "receipt_volatility": 0.02517255064459308,
+      "max_month_receipt_share": 0.17267267267267267,
+      "active_months_6m": 6,
+      "operating_cashflow_margin_6m": 0.2893401015228426,
+      "debt_ratio": 0.3333333333333333,
+      "current_ratio": 2.3333333333333335,
+      "platform_orders_6m": 2135.0,
+      "platform_order_growth_6m": 0.05797101449275366,
+      "redemption_rate_6m": 0.96,
+      "refund_rate_6m": 0.027,
+      "effective_orders_6m": 1994.2607999999998,
+      "estimated_ticket_6m": 267.1666614517018,
+      "invoice_receipt_diff": 0.022593320235756387,
+      "cashflow_receipt_diff": 0.015,
+      "order_receipt_correlation": 0.9963919667002814,
+      "valid_invoice_ratio": 0.9833333333333333,
+      "subject_consistency": "通过",
+      "data_completeness": 1.0,
+      "structured_inconsistency_count": 0,
+      "final_inconsistency_count": 0,
+      "review_order_ratio": 0.09326764082210312,
+      "monthly_orders_6m": 355.8333333333333,
+      "capacity_utilization": 0.6842948717948718,
+      "peak_season_order_growth": 0.0735
+    },
+    "dimensions": {
+      "stability": 100.0,
+      "growth": 53.8,
+      "authenticity": 100.0,
+      "capacity": 72.0,
+      "online_reputation": 98.8,
+      "social_activity": 100.0,
+      "complaint_risk": 100.0,
+      "unstructured": 99.4
+    },
+    "operating_credit_score": 90.7,
+    "credit_grade": "A",
+    "risk_band": "LOW",
+    "pd_12m": null,
+    "pd_status": "UNCALIBRATED",
+    "confidence": "HIGH",
+    "decision": "APPROVE",
+    "review_required": false,
+    "review_rules": [],
+    "positive_reasons": [
+      "经营稳定性表现良好（100.0分）",
+      "经营真实性表现良好（100.0分）",
+      "社媒活跃度表现良好（100.0分）"
+    ],
+    "negative_reasons": [
+      "经营成长性需要关注（53.8分）"
+    ],
+    "limit": {
+      "score_multiplier": 4.5,
+      "stability_factor": 1.0,
+      "capacity_factor": 1.044,
+      "growth_bonus": 0.05,
+      "recommended_limit": 438042
+    }
+  },
+  "anomaly": {
+    "merchant_id": "M001",
+    "evaluated_at": "2026-07-31T23:59:59",
+    "transaction_count": 120,
+    "recent_transaction_count": 10,
+    "anomaly_score": 0,
+    "risk_level": "LOW",
+    "confidence": "MEDIUM",
+    "reason_codes": [],
+    "rule_hits": [],
+    "evidence_transaction_ids": [],
+    "model_version": "anomaly_hybrid_v1"
+  },
+  "cash_gap": {
+    "merchant_id": "M001",
+    "snapshot_date": "2026-07-31",
+    "horizon_months": 3,
+    "available_cash_at_snapshot": 155000.0,
+    "minimum_cash_balance": 50000.0,
+    "unused_credit": 80000.0,
+    "forecasts": [
+      {
+        "forecast_month": "2026-08-01",
+        "p50_operating_inflow": 90739.61,
+        "p50_operating_outflow": 63828.23,
+        "p50_ending_cash": 173911.38,
+        "p50_funding_gap": 0.0,
+        "p90_operating_inflow": 74733.12,
+        "p90_operating_outflow": 72525.78,
+        "p90_ending_cash": 149207.34,
+        "p90_funding_gap": 0.0,
+        "planned_capex": 0.0,
+        "debt_service": 8000.0
+      },
+      {
+        "forecast_month": "2026-09-01",
+        "p50_operating_inflow": 91464.64,
+        "p50_operating_outflow": 64202.78,
+        "p50_ending_cash": 183173.24,
+        "p50_funding_gap": 0.0,
+        "p90_operating_inflow": 75349.39,
+        "p90_operating_outflow": 72937.78,
+        "p90_ending_cash": 133618.95,
+        "p90_funding_gap": 0.0,
+        "planned_capex": 10000.0,
+        "debt_service": 8000.0
+      },
+      {
+        "forecast_month": "2026-10-01",
+        "p50_operating_inflow": 92008.41,
+        "p50_operating_outflow": 64483.69,
+        "p50_ending_cash": 202697.96,
+        "p50_funding_gap": 0.0,
+        "p90_operating_inflow": 75811.6,
+        "p90_operating_outflow": 73246.79,
+        "p90_ending_cash": 128183.76,
+        "p90_funding_gap": 0.0,
+        "planned_capex": 0.0,
+        "debt_service": 8000.0
+      }
+    ],
+    "max_p50_funding_gap": 0.0,
+    "max_p90_funding_gap": 0.0,
+    "first_p50_gap_month": null,
+    "first_p90_gap_month": null,
+    "p90_need_after_unused_credit": 0.0,
+    "risk_level": "LOW",
+    "confidence": "MEDIUM",
+    "drivers": [
+      "近6个月经营现金流出呈上升趋势",
+      "未来3个月存在还本付息安排"
+    ],
+    "model_version": "cash_gap_damped_trend_v1"
+  },
+  "material_evidence": [
+    {
+      "material_id": "MAT-M001-LICENSE-121f7852",
+      "merchant_id": "M001",
+      "group": "license",
+      "file_name": "M001_business_license.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3902,
+      "sha256": "121f78528a14168d69c564544315c19fc8fcc990cd4d0da3b635ee3e464ee96b",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 100,
+      "period_months": null,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "主体状态",
+          "value": "存续",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "证照有效期",
+          "value": "长期",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "统一社会信用代码与申请信息一致",
+        "经营主体与法人核验结果一致"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-CASHFLOW-7f5aec29",
+      "merchant_id": "M001",
+      "group": "cashflow",
+      "file_name": "M001_cashflow_12m.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size_bytes": 5693,
+      "sha256": "7f5aec299d2028a6f4a7b97dcb7eef6f485511c8ad6754e61e6f3c70470e93a5",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 98,
+      "period_months": 12,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "月均经营流入",
+          "value": "¥95,667",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "流水完整度",
+          "value": "98%",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "明显异常",
+          "value": "0 笔",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "识别到连续 12 个月经营流水",
+        "收款趋势稳定且主体一致"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-STATEMENT-ac631dce",
+      "merchant_id": "M001",
+      "group": "statement",
+      "file_name": "M001_financial_statement.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3740,
+      "sha256": "ac631dce2b05d6aeef3fc4af2612044f8f0ab058c40c5ae6adff167828457890",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 96,
+      "period_months": null,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "资产负债率",
+          "value": "34.2%",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "流动比率",
+          "value": "1.86",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "最近一期资产负债资料字段完整",
+        "短期偿债覆盖处于样例安全区间"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-TAX-9db923f5",
+      "merchant_id": "M001",
+      "group": "tax",
+      "file_name": "M001_tax_invoice_12m.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size_bytes": 5785,
+      "sha256": "9db923f54fc068d82b5f3c51d31efa329016ea57c0372d98e34915bc88aedf5d",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 97,
+      "period_months": 12,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "开票覆盖率",
+          "value": "95.1%",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "连续申报",
+          "value": "12 个月",
+          "tone": "POSITIVE"
+        }
+      ],
+      "findings": [
+        "开票收入与经营流水基本匹配",
+        "样例期间未发现断档申报"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-PLAN-1fd5f0c3",
+      "merchant_id": "M001",
+      "group": "plan",
+      "file_name": "M001_business_plan.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3820,
+      "sha256": "1fd5f0c315bbfcb0bf66866ec628f6c28f95d3aa1d18e88d12e447d7e007ff90",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 95,
+      "period_months": 3,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "计划资本开支",
+          "value": "¥20,000",
+          "tone": "NEUTRAL"
+        },
+        {
+          "label": "未来偿债支出",
+          "value": "¥8,000",
+          "tone": "NEUTRAL"
+        }
+      ],
+      "findings": [
+        "未来三个月资金用途清晰",
+        "计划支出已纳入资金缺口压力测试"
+      ],
+      "warnings": []
+    },
+    {
+      "material_id": "MAT-M001-ASSET-37421357",
+      "merchant_id": "M001",
+      "group": "asset",
+      "file_name": "M001_lease_asset_proof.pdf",
+      "media_type": "application/pdf",
+      "size_bytes": 3778,
+      "sha256": "37421357b3e45f63c5152b725f90aab3146f066415089b2b5b156ab0c69da24b",
+      "parse_status": "PARSED",
+      "simulated": true,
+      "completeness_score": 92,
+      "period_months": null,
+      "subject_match": true,
+      "extracted_metrics": [
+        {
+          "label": "剩余租期",
+          "value": "18 个月",
+          "tone": "POSITIVE"
+        },
+        {
+          "label": "设备账面价值",
+          "value": "¥160,000",
+          "tone": "NEUTRAL"
+        }
+      ],
+      "findings": [
+        "门店租赁关系与经营地址一致",
+        "该材料仅作补充证据，不作为授信必备抵押物"
+      ],
+      "warnings": []
+    }
+  ],
+  "eligibility": {
+    "status": "ELIGIBLE",
+    "conclusion": "符合试点客群",
+    "pilot_industry": true,
+    "reasons": [
+      "所属行业：美容美发",
+      "经营信用等级：A",
+      "数据置信度：HIGH"
+    ],
+    "warnings": []
+  },
+  "loan_terms": {
+    "requested_amount": 500000,
+    "recommended_limit": 438000,
+    "limit_range": [
+      350000,
+      438000
+    ],
+    "tenor_months": 12,
+    "repayment_method": "按月付息，到期还本；支持随借随还",
+    "is_revolving": true,
+    "drawdown_rule": "单笔提款不超过建议额度的30%，资金用途需匹配本次经营计划",
+    "renewal_rule": "连续三个月无逾期且订单、流水、退款投诉未恶化，可进入续贷或提额评估",
+    "limit_adjustment_rule": "触发异常交易、授权中断、P90资金缺口恶化或重大投诉时，进入降额、冻结或人工复核",
+    "use_of_funds": "设备采购",
+    "use_of_funds_match": "匹配",
+    "use_of_funds_warnings": [
+      "核查设备采购合同或报价单",
+      "关注设备投入后服务承接能力提升"
+    ],
+    "expected_repayment_source": "工行账户自动扣款",
+    "repayment_source_note": "还款来源由申请人填写，并结合现金流、订单和授权流水交叉验证。"
+  },
+  "repayment_capacity": {
+    "conclusion": "经营现金流对拟授信具备基础覆盖能力",
+    "confidence": "HIGH",
+    "monthly_operating_inflow": 91404.22,
+    "monthly_operating_outflow": 64171.566666666666,
+    "fixed_cost_coverage": 1.42,
+    "p90_funding_gap": 0.0,
+    "debt_pressure_level": "LOW",
+    "refund_complaint_pressure": "由退款率、投诉风险和异常交易规则共同观察",
+    "evidence": [
+      "经营信用分 90.7，等级 A",
+      "评分风险带 LOW，数据置信度 HIGH",
+      "未来三个月 P90 最大资金缺口约 0 元"
+    ]
+  },
+  "audit_trail": {
+    "consent_version": "consent_v1_2026_08",
+    "consent_timestamp": "2026-08-07T11:55:00Z",
+    "authorized_sources": [
+      "bank",
+      "meituan",
+      "enterprise"
+    ],
+    "material_hashes": {
+      "MAT-M001-LICENSE-121f7852": "121f78528a14168d69c564544315c19fc8fcc990cd4d0da3b635ee3e464ee96b",
+      "MAT-M001-CASHFLOW-7f5aec29": "7f5aec299d2028a6f4a7b97dcb7eef6f485511c8ad6754e61e6f3c70470e93a5",
+      "MAT-M001-STATEMENT-ac631dce": "ac631dce2b05d6aeef3fc4af2612044f8f0ab058c40c5ae6adff167828457890",
+      "MAT-M001-TAX-9db923f5": "9db923f54fc068d82b5f3c51d31efa329016ea57c0372d98e34915bc88aedf5d",
+      "MAT-M001-PLAN-1fd5f0c3": "1fd5f0c315bbfcb0bf66866ec628f6c28f95d3aa1d18e88d12e447d7e007ff90",
+      "MAT-M001-ASSET-37421357": "37421357b3e45f63c5152b725f90aab3146f066415089b2b5b156ab0c69da24b"
+    },
+    "material_ids": [
+      "MAT-M001-LICENSE-121f7852",
+      "MAT-M001-CASHFLOW-7f5aec29",
+      "MAT-M001-STATEMENT-ac631dce",
+      "MAT-M001-TAX-9db923f5",
+      "MAT-M001-PLAN-1fd5f0c3",
+      "MAT-M001-ASSET-37421357"
+    ],
+    "score_version": "scorecard_v5_2026_08",
+    "rules_version": "v5_current",
+    "model_version": "scorecard_v5 + anomaly_hybrid_v1 + cash_gap_baseline_v1",
+    "generated_at": "2026-08-17T06:55:29.537521Z",
+    "ai_used": false
+  },
+  "policy_recommendations": [
+    {
+      "policy_id": "POL-NAT-2026-001",
+      "policy_name": "服务业经营主体贷款贴息",
+      "policy_type": "融资支持",
+      "policy_level": "国家级",
+      "support_method": "贷款贴息",
+      "support_standard": "2026年新发放贷款单户贴息贷款规模最高1000万元，贴息期限不超过1年，年贴息比例1个百分点。",
+      "match_level": "HIGH",
+      "reason": "商户存在明确经营融资需求，且授信方案可提供贷款合同、用途证明和还款流水基础，适合进入贴息资格预筛。",
+      "required_materials": [
+        "营业执照",
+        "贷款合同或借据",
+        "资金用途证明",
+        "贷款发放与还款流水",
+        "贴息申请表"
+      ],
+      "application_steps": [
+        "确认贷款用途和行业范围",
+        "由经办银行或客户经理协助预筛",
+        "整理贷款与用途材料",
+        "提交贴息审核申请",
+        "跟踪财政贴息清算"
+      ],
+      "bank_actions": [
+        "协助核验适用条件与申报窗口",
+        "整理授信、流水、用途和材料证据",
+        "将活动核销、复购和投诉数据纳入后续监控"
+      ],
+      "consumer_introduction": [],
+      "source_url": "https://jrs.mof.gov.cn/zhengcefabu/phjr/202601/t20260119_3982164.htm",
+      "application_deadline": "2026-12-31",
+      "status": "ACTIVE",
+      "warnings": [
+        "需客户经理或运营人员核验地方口径、申报窗口和材料要求"
+      ]
+    },
+    {
+      "policy_id": "POL-NAT-2026-003",
+      "policy_name": "零售业创新与线上引流线下成交支持",
+      "policy_type": "消费促进",
+      "policy_level": "国家级",
+      "support_method": "服务支持",
+      "support_standard": "鼓励即时零售、线上引流+线下成交、消费券数字人民币结算、平台对中小经营主体技术赋能。",
+      "match_level": "MEDIUM",
+      "reason": "商户适合通过线上引流、平台曝光和线下成交提升消费转化，工行可结合支付和活动核销数据跟踪效果。",
+      "required_materials": [
+        "营业执照",
+        "线上平台经营截图",
+        "收款与核销能力说明",
+        "活动计划"
+      ],
+      "application_steps": [
+        "识别地方活动入口",
+        "完成线上门店和支付核销配置",
+        "提交活动报名材料",
+        "复盘活动效果数据"
+      ],
+      "bank_actions": [
+        "协助核验适用条件与申报窗口",
+        "整理授信、流水、用途和材料证据",
+        "将活动核销、复购和投诉数据纳入后续监控",
+        "一般个人账户定向消费券：定向发券; 支付核销; 核销率与复购率回传",
+        "企业员工账户福利券：对公客户员工福利活动; 节日权益包; 消费数据汇总",
+        "信用卡与数字人民币联合满减：信用卡满减; 数币红包核销; 活动资金闭环监管"
+      ],
+      "consumer_introduction": [
+        "一般个人账户定向消费券：定向发券; 支付核销; 核销率与复购率回传",
+        "企业员工账户福利券：对公客户员工福利活动; 节日权益包; 消费数据汇总",
+        "信用卡与数字人民币联合满减：信用卡满减; 数币红包核销; 活动资金闭环监管"
+      ],
+      "source_url": "https://www.mofcom.gov.cn/zfxxgk/fdzdgknr/ztfl/gnmygl/art/2026/art_8262ebcc8cf045d9bab632146c3e5ff2.html",
+      "application_deadline": null,
+      "status": "ACTIVE",
+      "warnings": [
+        "需客户经理或运营人员核验地方口径、申报窗口和材料要求"
+      ]
+    },
+    {
+      "policy_id": "POL-TAX-2026-001",
+      "policy_name": "小微企业和个体工商户六税两费减半",
+      "policy_type": "税收减免",
+      "policy_level": "国家级",
+      "support_method": "税收减免",
+      "support_standard": "对增值税小规模纳税人、小型微利企业和个体工商户减半征收六税两费，政策执行至2027年12月31日。",
+      "match_level": "MEDIUM",
+      "reason": "税费优惠不直接依赖授信审批结论，但可降低经营成本，应提示商户核验纳税人类型并合规享受。",
+      "required_materials": [
+        "纳税申报信息",
+        "主体身份信息",
+        "税务系统认定信息"
+      ],
+      "application_steps": [
+        "核验纳税人类型",
+        "在申报表中按规定享受减免",
+        "留存申报与税务认定资料"
+      ],
+      "bank_actions": [
+        "协助核验适用条件与申报窗口",
+        "整理授信、流水、用途和材料证据",
+        "将活动核销、复购和投诉数据纳入后续监控"
+      ],
+      "consumer_introduction": [],
+      "source_url": "https://tianjin.chinatax.gov.cn/11200000000/0300/030005/20260428092802062.shtml",
+      "application_deadline": "2027-12-31",
+      "status": "ACTIVE",
+      "warnings": []
+    },
+    {
+      "policy_id": "POL-TAX-2026-002",
+      "policy_name": "小微企业常用税收优惠组合",
+      "policy_type": "税收减免",
+      "policy_level": "国家级",
+      "support_method": "税收减免",
+      "support_standard": "包括小规模纳税人月销售额10万元以下免征增值税、小型微利企业所得税优惠、个体工商户个人所得税优惠等；需防范人为拆分收入等不合规行为。",
+      "match_level": "MEDIUM",
+      "reason": "小微主体可同步核验常用税收优惠组合，但需防范人为拆分收入等合规风险。",
+      "required_materials": [
+        "纳税申报表",
+        "收入台账",
+        "税务认定资料"
+      ],
+      "application_steps": [
+        "确认纳税人类型和收入规模",
+        "依法申报享受优惠",
+        "保存真实经营和收入证明"
+      ],
+      "bank_actions": [
+        "协助核验适用条件与申报窗口",
+        "整理授信、流水、用途和材料证据",
+        "将活动核销、复购和投诉数据纳入后续监控"
+      ],
+      "consumer_introduction": [],
+      "source_url": "https://www.chinatax.gov.cn/chinatax/c102414/c5247848/content.html",
+      "application_deadline": null,
+      "status": "ACTIVE",
+      "warnings": []
+    }
+  ],
+  "api_version": "0.4.0"
+}

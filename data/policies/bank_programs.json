@@ -1,0 +1,41 @@
+{
+  "programs_version": "bank_programs_2026_08_17",
+  "programs": [
+    {
+      "program_id": "BANK-CONSUME-001",
+      "program_name": "一般个人账户定向消费券",
+      "fit_tags": ["引流获客", "消费促进"],
+      "eligible_risk_bands": ["LOW", "MEDIUM"],
+      "bank_advantages": ["工行个人账户客群覆盖", "支付核销闭环", "活动效果可量化"],
+      "actions": ["定向发券", "支付核销", "核销率与复购率回传"],
+      "monitoring_metrics": ["券领取率", "核销率", "新增客户数", "30日复购率"]
+    },
+    {
+      "program_id": "BANK-CONSUME-002",
+      "program_name": "企业员工账户福利券",
+      "fit_tags": ["引流获客", "品牌荣誉"],
+      "eligible_risk_bands": ["LOW", "MEDIUM"],
+      "bank_advantages": ["对公客户资源", "员工福利场景", "商圈客群匹配"],
+      "actions": ["对公客户员工福利活动", "节日权益包", "消费数据汇总"],
+      "monitoring_metrics": ["企业员工转化数", "客单价", "投诉率", "复购率"]
+    },
+    {
+      "program_id": "BANK-CONSUME-003",
+      "program_name": "信用卡与数字人民币联合满减",
+      "fit_tags": ["数字化转型", "消费促进"],
+      "eligible_risk_bands": ["LOW", "MEDIUM"],
+      "bank_advantages": ["信用卡权益运营", "数字人民币智能合约", "风险和资金流向可追踪"],
+      "actions": ["信用卡满减", "数币红包核销", "活动资金闭环监管"],
+      "monitoring_metrics": ["满减核销额", "数币交易笔数", "退款率", "异常核销率"]
+    },
+    {
+      "program_id": "BANK-CONSUME-004",
+      "program_name": "合作平台曝光恢复与口碑修复",
+      "fit_tags": ["品牌荣誉", "引流获客"],
+      "eligible_risk_bands": ["MEDIUM", "MANUAL_REVIEW"],
+      "bank_advantages": ["平台授权数据交叉验证", "评价和投诉监测", "贷后跟踪联动"],
+      "actions": ["平台门店信息完善", "评价修复观察", "小额低强度活动试点"],
+      "monitoring_metrics": ["评分变化", "投诉率", "退款率", "异常交易变化"]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "rules_version": "policy_rules_2026_08_17",
+  "rules": [
+    {
+      "rule_id": "RULE-FINANCE-DISCOUNT",
+      "policy_id": "POL-NAT-2026-001",
+      "priority": 100,
+      "conditions": {
+        "risk_bands": ["LOW", "MEDIUM"],
+        "decisions": ["APPROVE", "MANUAL_REVIEW"],
+        "fund_uses": ["设备采购", "装修扩店", "旺季备货", "平台活动垫资", "其他经营周转"],
+        "min_material_count": 5
+      },
+      "reason_template": "商户存在明确经营融资需求，且授信方案可提供贷款合同、用途证明和还款流水基础，适合进入贴息资格预筛。"
+    },
+    {
+      "rule_id": "RULE-DIGITAL-RMB",
+      "policy_id": "POL-NAT-2026-002",
+      "priority": 92,
+      "conditions": {
+        "risk_bands": ["LOW", "MEDIUM"],
+        "fund_uses": ["平台活动垫资", "旺季备货", "其他经营周转"],
+        "min_capacity_score": 60
+      },
+      "reason_template": "商户具备承接新增消费的基础，可通过数字人民币或消费券核销形成支付、核销和复购数据闭环。"
+    },
+    {
+      "rule_id": "RULE-RETAIL-INNOVATION",
+      "policy_id": "POL-NAT-2026-003",
+      "priority": 85,
+      "conditions": {
+        "risk_bands": ["LOW", "MEDIUM"],
+        "fund_uses": ["平台活动垫资", "旺季备货", "设备采购", "其他经营周转"],
+        "min_reputation_score": 55
+      },
+      "reason_template": "商户适合通过线上引流、平台曝光和线下成交提升消费转化，工行可结合支付和活动核销数据跟踪效果。"
+    },
+    {
+      "rule_id": "RULE-TAX-SIX-FEES",
+      "policy_id": "POL-TAX-2026-001",
+      "priority": 78,
+      "conditions": {
+        "decisions": ["APPROVE", "MANUAL_REVIEW", "DECLINE"],
+        "fund_uses": ["租金工资周转", "其他经营周转", "设备采购", "装修扩店", "旺季备货", "人员扩充", "平台活动垫资"]
+      },
+      "reason_template": "税费优惠不直接依赖授信审批结论，但可降低经营成本，应提示商户核验纳税人类型并合规享受。"
+    },
+    {
+      "rule_id": "RULE-TAX-COMBO",
+      "policy_id": "POL-TAX-2026-002",
+      "priority": 70,
+      "conditions": {
+        "decisions": ["APPROVE", "MANUAL_REVIEW", "DECLINE"]
+      },
+      "reason_template": "小微主体可同步核验常用税收优惠组合，但需防范人为拆分收入等合规风险。"
+    },
+    {
+      "rule_id": "RULE-LOCAL-CONSUMPTION",
+      "policy_id": "POL-LOCAL-TPL-001",
+      "priority": 62,
+      "conditions": {
+        "risk_bands": ["LOW", "MEDIUM"],
+        "min_capacity_score": 65
+      },
+      "reason_template": "商户具备消费活动承接基础，可由客户经理每周核对所在地消费活动窗口后人工转入报名。"
+    },
+    {
+      "rule_id": "RULE-SKILL-TRAINING",
+      "policy_id": "POL-LOCAL-TPL-002",
+      "priority": 55,
+      "conditions": {
+        "fund_uses": ["人员扩充", "租金工资周转", "其他经营周转"]
+      },
+      "reason_template": "若商户存在员工扩充或服务质量提升需求，可核验地方技能培训、社保和稳岗类补贴。"
+    }
+  ]
+}

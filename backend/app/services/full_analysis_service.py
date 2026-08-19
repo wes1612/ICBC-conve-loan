@@ -1,0 +1,93 @@
+"""聚合三个 ML 引擎，向前端返回一次性分析结果。"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+
+from app.ml.anomaly_engine import analyze_transactions
+from app.ml.cash_gap_engine import forecast_cash_gap
+from app.schemas.full_analysis import (
+    FullAnalysisRequest,
+    FullAnalysisResult,
+    ModuleStates,
+)
+from app.services.analysis_service import analyze_merchant
+from app.services.loan_product_service import (
+    build_audit_trail,
+    build_eligibility,
+    build_loan_terms,
+    build_repayment_capacity,
+)
+from app.services.policy_match_service import match_policy_recommendations
+
+
+def _overall_risk(
+    score_risk: str,
+    review_required: bool,
+    anomaly_risk: str | None,
+    cash_gap_risk: str | None,
+) -> str:
+    if review_required or score_risk == "MANUAL_REVIEW" or anomaly_risk == "HIGH":
+        return "MANUAL_REVIEW"
+    if "HIGH" in {score_risk, cash_gap_risk}:
+        return "HIGH"
+    if "MEDIUM" in {score_risk, anomaly_risk, cash_gap_risk}:
+        return "MEDIUM"
+    return "LOW"
+
+
+def _overall_decision(score_decision: str, overall_risk: str) -> str:
+    """把评分、异常和流动性风险汇总成唯一的前端授信动作。"""
+
+    if score_decision == "DECLINE":
+        return "DECLINE"
+    if score_decision == "MANUAL_REVIEW" or overall_risk != "LOW":
+        return "MANUAL_REVIEW"
+    return "APPROVE"
+
+
+def run_full_analysis(request: FullAnalysisRequest) -> FullAnalysisResult:
+    score = analyze_merchant(request.merchant)
+    anomaly = analyze_transactions(request.anomaly) if request.anomaly else None
+    cash_gap = forecast_cash_gap(request.cash_gap) if request.cash_gap else None
+
+    warnings: list[str] = []
+    if anomaly is None:
+        warnings.append("未提供交易明细，异常交易模块未运行")
+    if cash_gap is None:
+        warnings.append("未提供月度现金流，资金缺口模块未运行")
+
+    overall_risk = _overall_risk(
+        score.risk_band,
+        score.review_required,
+        anomaly.risk_level if anomaly else None,
+        cash_gap.risk_level if cash_gap else None,
+    )
+    overall_decision = _overall_decision(score.decision, overall_risk)
+    generated_at = datetime.now(timezone.utc)
+    eligibility = build_eligibility(request.application, score)
+    loan_terms = build_loan_terms(request.application, score, overall_decision, cash_gap)
+    repayment_capacity = build_repayment_capacity(score, cash_gap)
+    audit_trail = build_audit_trail(request.application, generated_at, score)
+    policy_recommendations = match_policy_recommendations(request.application, score)
+    return FullAnalysisResult(
+        merchant_id=request.merchant.merchant_id,
+        generated_at=generated_at,
+        overall_risk=overall_risk,  # type: ignore[arg-type]
+        overall_decision=overall_decision,  # type: ignore[arg-type]
+        module_states=ModuleStates(
+            anomaly="READY" if anomaly else "NOT_PROVIDED",
+            cash_gap="READY" if cash_gap else "NOT_PROVIDED",
+        ),
+        data_warnings=warnings,
+        score=score,
+        anomaly=anomaly,
+        cash_gap=cash_gap,
+        material_evidence=request.application.materials,
+        eligibility=eligibility,
+        loan_terms=loan_terms,
+        repayment_capacity=repayment_capacity,
+        audit_trail=audit_trail,
+        policy_recommendations=policy_recommendations,
+    )
+

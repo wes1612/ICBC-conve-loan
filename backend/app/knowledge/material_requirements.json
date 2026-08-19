@@ -1,0 +1,40 @@
+{
+  "version": "material-requirements-1.0.0",
+  "requirements": [
+    {
+      "id": "MAT-REQ-LICENSE",
+      "group": "license",
+      "name": "经营主体证明",
+      "purpose": "确认经营主体和统一社会信用代码。",
+      "notice": "主体名称、法人和证件状态应与申请信息一致。"
+    },
+    {
+      "id": "MAT-REQ-CASHFLOW",
+      "group": "cashflow",
+      "name": "现金流材料",
+      "purpose": "支持经营稳定性、收支和资金缺口分析。",
+      "notice": "应覆盖连续期间，避免缺月、重复月份或主体不一致。"
+    },
+    {
+      "id": "MAT-REQ-STATEMENT",
+      "group": "statement",
+      "name": "财务报表",
+      "purpose": "支持偿债、流动性和经营能力相关指标。",
+      "notice": "注意期间、单位和主体是否一致。"
+    },
+    {
+      "id": "MAT-REQ-TAX",
+      "group": "tax",
+      "name": "纳税开票材料",
+      "purpose": "支持经营真实性和收入交叉核验。",
+      "notice": "应关注连续期间、有效票据和主体匹配。"
+    },
+    {
+      "id": "MAT-REQ-PLAN",
+      "group": "plan",
+      "name": "经营计划",
+      "purpose": "支持未来资本开支、债务偿付和资金用途解释。",
+      "notice": "计划金额和时间应清晰，不能用模糊描述代替。"
+    }
+  ]
+}

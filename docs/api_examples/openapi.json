@@ -1,0 +1,3575 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ICBC Consumer Supply Credit API",
+    "description": "消费供给动态授信：经营评分、交易异常与资金缺口预测 MVP",
+    "version": "0.4.0"
+  },
+  "paths": {
+    "/api/v1/analyze": {
+      "post": {
+        "tags": [
+          "analysis"
+        ],
+        "summary": "Analyze",
+        "description": "使用指定规则版本分析一个商户。",
+        "operationId": "analyze_api_v1_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/score": {
+      "post": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Score",
+        "description": "返回经营信用评分、风险带、审核规则和建议额度。",
+        "operationId": "score_api_v1_ml_score_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MerchantAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/anomalies": {
+      "post": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Anomalies",
+        "description": "识别近期交易异常并返回原因码与证据交易。",
+        "operationId": "anomalies_api_v1_ml_anomalies_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnomalyAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyAnalysisResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/cash-gap": {
+      "post": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Cash Gap",
+        "description": "预测未来三个月 P50/P90 经营资金缺口。",
+        "operationId": "cash_gap_api_v1_ml_cash_gap_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CashGapForecastRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashGapForecastResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/full-analysis": {
+      "post": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Full Analysis",
+        "description": "一次返回评分、异常识别和资金缺口结果；后两项允许暂缺。",
+        "operationId": "full_analysis_api_v1_ml_full_analysis_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FullAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FullAnalysisResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materials/parse": {
+      "post": {
+        "tags": [
+          "application-materials"
+        ],
+        "summary": "Parse Uploaded Material",
+        "description": "校验真实上传文件，并按竞赛案例返回明确标注的模拟解析摘要。",
+        "operationId": "parse_uploaded_material_api_v1_materials_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaterialParseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialEvidence"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/materials/demo/{merchant_id}/{group}": {
+      "get": {
+        "tags": [
+          "application-materials"
+        ],
+        "summary": "Download Demo Material",
+        "description": "下载仓库内置的 M001/M005 演示材料。",
+        "operationId": "download_demo_material_api_v1_materials_demo__merchant_id___group__get",
+        "parameters": [
+          {
+            "name": "merchant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Merchant Id"
+            }
+          },
+          {
+            "name": "group",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "license",
+                "cashflow",
+                "statement",
+                "tax",
+                "plan",
+                "asset"
+              ],
+              "type": "string",
+              "title": "Group"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/status": {
+      "get": {
+        "tags": [
+          "ai-explanations"
+        ],
+        "summary": "Ai Status",
+        "operationId": "ai_status_api_v1_ai_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiRuntimeStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/messages": {
+      "post": {
+        "tags": [
+          "ai-explanations"
+        ],
+        "summary": "Assistant Message",
+        "description": "Answer a bounded question about the current five-step workflow.",
+        "operationId": "assistant_message_api_v1_assistant_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantReply"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/report-summary": {
+      "post": {
+        "tags": [
+          "ai-explanations"
+        ],
+        "summary": "Report Summary",
+        "description": "Explain an existing FullAnalysisResult without changing its decisions.",
+        "operationId": "report_summary_api_v1_ai_report_summary_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportSummaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiReportSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AiReportSummary": {
+        "properties": {
+          "overall_summary": {
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 1,
+            "title": "Overall Summary"
+          },
+          "positive_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Positive Factors"
+          },
+          "risk_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Risk Factors"
+          },
+          "cash_gap_interpretation": {
+            "type": "string",
+            "maxLength": 600,
+            "minLength": 1,
+            "title": "Cash Gap Interpretation"
+          },
+          "recommended_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 1,
+            "title": "Recommended Actions"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Evidence Refs"
+          },
+          "disclaimer": {
+            "type": "string",
+            "const": "AI仅解释既有分析结果，不参与评分与授信决策。",
+            "title": "Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "overall_summary",
+          "positive_factors",
+          "risk_factors",
+          "cash_gap_interpretation",
+          "recommended_actions",
+          "evidence_refs",
+          "disclaimer"
+        ],
+        "title": "AiReportSummary"
+      },
+      "AiRuntimeStatus": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "deepseek",
+              "openai",
+              "local"
+            ],
+            "title": "Provider"
+          },
+          "assistant_model": {
+            "type": "string",
+            "title": "Assistant Model"
+          },
+          "report_model": {
+            "type": "string",
+            "title": "Report Model"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "inference_mode": {
+            "type": "string",
+            "enum": [
+              "hosted_api",
+              "local_fine_tuned"
+            ],
+            "title": "Inference Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "assistant_model",
+          "report_model",
+          "configured",
+          "inference_mode"
+        ],
+        "title": "AiRuntimeStatus"
+      },
+      "AnalysisResult": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "merchant_name": {
+            "type": "string",
+            "title": "Merchant Name"
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile"
+          },
+          "score_version": {
+            "type": "string",
+            "title": "Score Version"
+          },
+          "features": {
+            "$ref": "#/components/schemas/FeatureSnapshot"
+          },
+          "dimensions": {
+            "$ref": "#/components/schemas/DimensionScores"
+          },
+          "operating_credit_score": {
+            "type": "number",
+            "title": "Operating Credit Score"
+          },
+          "credit_grade": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E"
+            ],
+            "title": "Credit Grade"
+          },
+          "risk_band": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "MANUAL_REVIEW"
+            ],
+            "title": "Risk Band"
+          },
+          "pd_12m": {
+            "type": "null",
+            "title": "Pd 12M"
+          },
+          "pd_status": {
+            "type": "string",
+            "const": "UNCALIBRATED",
+            "title": "Pd Status",
+            "default": "UNCALIBRATED"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ],
+            "title": "Confidence"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "MANUAL_REVIEW",
+              "DECLINE"
+            ],
+            "title": "Decision"
+          },
+          "review_required": {
+            "type": "boolean",
+            "title": "Review Required"
+          },
+          "review_rules": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewRuleHit"
+            },
+            "type": "array",
+            "title": "Review Rules"
+          },
+          "positive_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Positive Reasons"
+          },
+          "negative_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Negative Reasons"
+          },
+          "limit": {
+            "$ref": "#/components/schemas/LimitDecision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "merchant_name",
+          "profile",
+          "score_version",
+          "features",
+          "dimensions",
+          "operating_credit_score",
+          "credit_grade",
+          "risk_band",
+          "confidence",
+          "decision",
+          "review_required",
+          "review_rules",
+          "positive_reasons",
+          "negative_reasons",
+          "limit"
+        ],
+        "title": "AnalysisResult"
+      },
+      "AnomalyAnalysisRequest": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "as_of_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of Time"
+          },
+          "transactions": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionDetail"
+            },
+            "type": "array",
+            "minItems": 5,
+            "title": "Transactions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "transactions"
+        ],
+        "title": "AnomalyAnalysisRequest"
+      },
+      "AnomalyAnalysisResult": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          },
+          "recent_transaction_count": {
+            "type": "integer",
+            "title": "Recent Transaction Count"
+          },
+          "anomaly_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Anomaly Score"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Risk Level"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Confidence"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "rule_hits": {
+            "items": {
+              "$ref": "#/components/schemas/AnomalyRuleHit"
+            },
+            "type": "array",
+            "title": "Rule Hits"
+          },
+          "evidence_transaction_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Transaction Ids"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version",
+            "default": "anomaly_hybrid_v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "evaluated_at",
+          "transaction_count",
+          "recent_transaction_count",
+          "anomaly_score",
+          "risk_level",
+          "confidence",
+          "reason_codes",
+          "rule_hits",
+          "evidence_transaction_ids"
+        ],
+        "title": "AnomalyAnalysisResult"
+      },
+      "AnomalyRuleHit": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM"
+            ],
+            "title": "Level"
+          },
+          "contribution": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Contribution"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "evidence_transaction_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Transaction Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "level",
+          "contribution",
+          "message",
+          "evidence_transaction_ids"
+        ],
+        "title": "AnomalyRuleHit"
+      },
+      "ApplicationContext": {
+        "properties": {
+          "social_credit_code": {
+            "type": "string",
+            "pattern": "^[0-9A-Z]{18}$",
+            "title": "Social Credit Code"
+          },
+          "province": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 30,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "operating_address": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Operating Address"
+          },
+          "legal_name": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Legal Name"
+          },
+          "legal_phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^1[3-9]\\d{9}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Phone"
+          },
+          "legal_id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{17}[0-9X]$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Id Number"
+          },
+          "contact_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Name"
+          },
+          "contact_phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Contact Phone"
+          },
+          "contact_id_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{17}[0-9X]$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id Number"
+          },
+          "industry": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 2,
+            "title": "Industry",
+            "default": "生活服务"
+          },
+          "requested_amount": {
+            "type": "integer",
+            "maximum": 20000000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Requested Amount",
+            "default": 100000
+          },
+          "use_of_funds": {
+            "type": "string",
+            "enum": [
+              "设备采购",
+              "装修扩店",
+              "旺季备货",
+              "人员扩充",
+              "平台活动垫资",
+              "租金工资周转",
+              "其他经营周转"
+            ],
+            "title": "Use Of Funds",
+            "default": "其他经营周转"
+          },
+          "requested_tenor_months": {
+            "type": "integer",
+            "maximum": 24.0,
+            "minimum": 3.0,
+            "title": "Requested Tenor Months",
+            "default": 12
+          },
+          "expected_repayment_source": {
+            "type": "string",
+            "enum": [
+              "经营现金流",
+              "平台订单回款",
+              "工行账户自动扣款",
+              "其他经营收入"
+            ],
+            "title": "Expected Repayment Source",
+            "default": "经营现金流"
+          },
+          "identity_verified": {
+            "type": "boolean",
+            "title": "Identity Verified"
+          },
+          "uploaded_data_groups": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "cashflow",
+                "statement",
+                "tax",
+                "plan"
+              ]
+            },
+            "type": "array",
+            "title": "Uploaded Data Groups"
+          },
+          "authorized_sources": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "bank",
+                "unionpay",
+                "alipay",
+                "wechat",
+                "meituan",
+                "douyin",
+                "xiaohongshu",
+                "enterprise"
+              ]
+            },
+            "type": "array",
+            "title": "Authorized Sources"
+          },
+          "consent_confirmed": {
+            "type": "boolean",
+            "title": "Consent Confirmed"
+          },
+          "consent_version": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 3,
+            "title": "Consent Version",
+            "default": "consent_v1_2026_08"
+          },
+          "consented_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consented At"
+          },
+          "materials": {
+            "items": {
+              "$ref": "#/components/schemas/MaterialEvidence"
+            },
+            "type": "array",
+            "title": "Materials"
+          }
+        },
+        "type": "object",
+        "required": [
+          "social_credit_code",
+          "operating_address",
+          "legal_name",
+          "contact_phone",
+          "identity_verified",
+          "uploaded_data_groups",
+          "authorized_sources",
+          "consent_confirmed",
+          "materials"
+        ],
+        "title": "ApplicationContext",
+        "description": "申请流程和授权证据；只用于校验与审计，不直接参与评分。"
+      },
+      "AssistantHistoryMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "AssistantHistoryMessage"
+      },
+      "AssistantMaterialStatus": {
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Material Id"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "license",
+              "cashflow",
+              "statement",
+              "tax",
+              "plan",
+              "asset"
+            ],
+            "title": "Group"
+          },
+          "completeness_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Completeness Score"
+          },
+          "subject_match": {
+            "type": "boolean",
+            "title": "Subject Match"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "material_id",
+          "group",
+          "completeness_score",
+          "subject_match"
+        ],
+        "title": "AssistantMaterialStatus"
+      },
+      "AssistantMessageRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "current_step": {
+            "type": "string",
+            "enum": [
+              "identity",
+              "verify",
+              "data",
+              "authorize",
+              "results"
+            ],
+            "title": "Current Step"
+          },
+          "context": {
+            "$ref": "#/components/schemas/AssistantWorkflowContext"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantHistoryMessage"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "current_step",
+          "context"
+        ],
+        "title": "AssistantMessageRequest"
+      },
+      "AssistantReply": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Answer"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Evidence Refs"
+          },
+          "should_escalate": {
+            "type": "boolean",
+            "title": "Should Escalate",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AssistantReply"
+      },
+      "AssistantWorkflowContext": {
+        "properties": {
+          "merchant_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant Id"
+          },
+          "identity_verified": {
+            "type": "boolean",
+            "title": "Identity Verified",
+            "default": false
+          },
+          "materials": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantMaterialStatus"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Materials"
+          },
+          "authorized_sources": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "bank",
+                "unionpay",
+                "alipay",
+                "wechat",
+                "meituan",
+                "douyin",
+                "xiaohongshu",
+                "enterprise"
+              ]
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Authorized Sources"
+          },
+          "consent_confirmed": {
+            "type": "boolean",
+            "title": "Consent Confirmed",
+            "default": false
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FullAnalysisResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "AssistantWorkflowContext"
+      },
+      "AuditTrail": {
+        "properties": {
+          "consent_version": {
+            "type": "string",
+            "title": "Consent Version"
+          },
+          "consent_timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consent Timestamp"
+          },
+          "authorized_sources": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "bank",
+                "unionpay",
+                "alipay",
+                "wechat",
+                "meituan",
+                "douyin",
+                "xiaohongshu",
+                "enterprise"
+              ]
+            },
+            "type": "array",
+            "title": "Authorized Sources"
+          },
+          "material_hashes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Material Hashes"
+          },
+          "material_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Material Ids"
+          },
+          "score_version": {
+            "type": "string",
+            "title": "Score Version"
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "ai_used": {
+            "type": "boolean",
+            "title": "Ai Used"
+          }
+        },
+        "type": "object",
+        "required": [
+          "consent_version",
+          "consent_timestamp",
+          "authorized_sources",
+          "material_hashes",
+          "material_ids",
+          "score_version",
+          "rules_version",
+          "model_version",
+          "generated_at",
+          "ai_used"
+        ],
+        "title": "AuditTrail"
+      },
+      "CashGapForecastRequest": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "snapshot_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Snapshot Date"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/MonthlyCashflow"
+            },
+            "type": "array",
+            "minItems": 12,
+            "title": "History"
+          },
+          "current_cash_balance": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Current Cash Balance"
+          },
+          "restricted_cash": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Restricted Cash",
+            "default": 0
+          },
+          "unused_credit": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Unused Credit",
+            "default": 0
+          },
+          "minimum_cash_balance": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Minimum Cash Balance"
+          },
+          "planned_capex_3m": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Planned Capex 3M"
+          },
+          "debt_service_3m": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Debt Service 3M"
+          },
+          "confirmed_extra_inflows_3m": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Confirmed Extra Inflows 3M"
+          },
+          "stress_inflow_decline": {
+            "type": "number",
+            "maximum": 0.8,
+            "minimum": 0.0,
+            "title": "Stress Inflow Decline",
+            "default": 0.15
+          },
+          "stress_outflow_increase": {
+            "type": "number",
+            "maximum": 0.8,
+            "minimum": 0.0,
+            "title": "Stress Outflow Increase",
+            "default": 0.1
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "snapshot_date",
+          "history",
+          "current_cash_balance",
+          "minimum_cash_balance",
+          "planned_capex_3m",
+          "debt_service_3m"
+        ],
+        "title": "CashGapForecastRequest"
+      },
+      "CashGapForecastResult": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "snapshot_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Snapshot Date"
+          },
+          "horizon_months": {
+            "type": "integer",
+            "title": "Horizon Months",
+            "default": 3
+          },
+          "available_cash_at_snapshot": {
+            "type": "number",
+            "title": "Available Cash At Snapshot"
+          },
+          "minimum_cash_balance": {
+            "type": "number",
+            "title": "Minimum Cash Balance"
+          },
+          "unused_credit": {
+            "type": "number",
+            "title": "Unused Credit"
+          },
+          "forecasts": {
+            "items": {
+              "$ref": "#/components/schemas/CashGapMonthForecast"
+            },
+            "type": "array",
+            "title": "Forecasts"
+          },
+          "max_p50_funding_gap": {
+            "type": "number",
+            "title": "Max P50 Funding Gap"
+          },
+          "max_p90_funding_gap": {
+            "type": "number",
+            "title": "Max P90 Funding Gap"
+          },
+          "first_p50_gap_month": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First P50 Gap Month"
+          },
+          "first_p90_gap_month": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First P90 Gap Month"
+          },
+          "p90_need_after_unused_credit": {
+            "type": "number",
+            "title": "P90 Need After Unused Credit"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Risk Level"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Confidence"
+          },
+          "drivers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Drivers"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version",
+            "default": "cash_gap_damped_trend_v1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "snapshot_date",
+          "available_cash_at_snapshot",
+          "minimum_cash_balance",
+          "unused_credit",
+          "forecasts",
+          "max_p50_funding_gap",
+          "max_p90_funding_gap",
+          "first_p50_gap_month",
+          "first_p90_gap_month",
+          "p90_need_after_unused_credit",
+          "risk_level",
+          "confidence",
+          "drivers"
+        ],
+        "title": "CashGapForecastResult"
+      },
+      "CashGapMonthForecast": {
+        "properties": {
+          "forecast_month": {
+            "type": "string",
+            "format": "date",
+            "title": "Forecast Month"
+          },
+          "p50_operating_inflow": {
+            "type": "number",
+            "title": "P50 Operating Inflow"
+          },
+          "p50_operating_outflow": {
+            "type": "number",
+            "title": "P50 Operating Outflow"
+          },
+          "p50_ending_cash": {
+            "type": "number",
+            "title": "P50 Ending Cash"
+          },
+          "p50_funding_gap": {
+            "type": "number",
+            "title": "P50 Funding Gap"
+          },
+          "p90_operating_inflow": {
+            "type": "number",
+            "title": "P90 Operating Inflow"
+          },
+          "p90_operating_outflow": {
+            "type": "number",
+            "title": "P90 Operating Outflow"
+          },
+          "p90_ending_cash": {
+            "type": "number",
+            "title": "P90 Ending Cash"
+          },
+          "p90_funding_gap": {
+            "type": "number",
+            "title": "P90 Funding Gap"
+          },
+          "planned_capex": {
+            "type": "number",
+            "title": "Planned Capex"
+          },
+          "debt_service": {
+            "type": "number",
+            "title": "Debt Service"
+          }
+        },
+        "type": "object",
+        "required": [
+          "forecast_month",
+          "p50_operating_inflow",
+          "p50_operating_outflow",
+          "p50_ending_cash",
+          "p50_funding_gap",
+          "p90_operating_inflow",
+          "p90_operating_outflow",
+          "p90_ending_cash",
+          "p90_funding_gap",
+          "planned_capex",
+          "debt_service"
+        ],
+        "title": "CashGapMonthForecast"
+      },
+      "DimensionScores": {
+        "properties": {
+          "stability": {
+            "type": "number",
+            "title": "Stability"
+          },
+          "growth": {
+            "type": "number",
+            "title": "Growth"
+          },
+          "authenticity": {
+            "type": "number",
+            "title": "Authenticity"
+          },
+          "capacity": {
+            "type": "number",
+            "title": "Capacity"
+          },
+          "online_reputation": {
+            "type": "number",
+            "title": "Online Reputation"
+          },
+          "social_activity": {
+            "type": "number",
+            "title": "Social Activity"
+          },
+          "complaint_risk": {
+            "type": "number",
+            "title": "Complaint Risk"
+          },
+          "unstructured": {
+            "type": "number",
+            "title": "Unstructured"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stability",
+          "growth",
+          "authenticity",
+          "capacity",
+          "online_reputation",
+          "social_activity",
+          "complaint_risk",
+          "unstructured"
+        ],
+        "title": "DimensionScores"
+      },
+      "EligibilityResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "SUPPLEMENT_REQUIRED",
+              "OUT_OF_SCOPE",
+              "MANUAL_REVIEW"
+            ],
+            "title": "Status"
+          },
+          "conclusion": {
+            "type": "string",
+            "title": "Conclusion"
+          },
+          "pilot_industry": {
+            "type": "boolean",
+            "title": "Pilot Industry"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "conclusion",
+          "pilot_industry",
+          "reasons",
+          "warnings"
+        ],
+        "title": "EligibilityResult"
+      },
+      "ExtractedMetric": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "NEUTRAL",
+              "POSITIVE",
+              "WARNING",
+              "DANGER"
+            ],
+            "title": "Tone",
+            "default": "NEUTRAL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "ExtractedMetric"
+      },
+      "FeatureSnapshot": {
+        "properties": {
+          "receipts_6m": {
+            "type": "number",
+            "title": "Receipts 6M"
+          },
+          "receipts_12m": {
+            "type": "number",
+            "title": "Receipts 12M"
+          },
+          "average_receipt_6m": {
+            "type": "number",
+            "title": "Average Receipt 6M"
+          },
+          "receipt_mom_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Mom Growth"
+          },
+          "receipt_cagr_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Cagr 6M"
+          },
+          "receipt_volatility": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Volatility"
+          },
+          "max_month_receipt_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Month Receipt Share"
+          },
+          "active_months_6m": {
+            "type": "integer",
+            "title": "Active Months 6M"
+          },
+          "operating_cashflow_margin_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Cashflow Margin 6M"
+          },
+          "debt_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debt Ratio"
+          },
+          "current_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Ratio"
+          },
+          "platform_orders_6m": {
+            "type": "number",
+            "title": "Platform Orders 6M"
+          },
+          "platform_order_growth_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform Order Growth 6M"
+          },
+          "redemption_rate_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Redemption Rate 6M"
+          },
+          "refund_rate_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refund Rate 6M"
+          },
+          "effective_orders_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Orders 6M"
+          },
+          "estimated_ticket_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Ticket 6M"
+          },
+          "invoice_receipt_diff": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Receipt Diff"
+          },
+          "cashflow_receipt_diff": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cashflow Receipt Diff"
+          },
+          "order_receipt_correlation": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Receipt Correlation"
+          },
+          "valid_invoice_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Invoice Ratio"
+          },
+          "subject_consistency": {
+            "type": "string",
+            "enum": [
+              "通过",
+              "异常",
+              "待补充"
+            ],
+            "title": "Subject Consistency"
+          },
+          "data_completeness": {
+            "type": "number",
+            "title": "Data Completeness"
+          },
+          "structured_inconsistency_count": {
+            "type": "integer",
+            "title": "Structured Inconsistency Count"
+          },
+          "final_inconsistency_count": {
+            "type": "integer",
+            "title": "Final Inconsistency Count"
+          },
+          "review_order_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Order Ratio"
+          },
+          "monthly_orders_6m": {
+            "type": "number",
+            "title": "Monthly Orders 6M"
+          },
+          "capacity_utilization": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity Utilization"
+          },
+          "peak_season_order_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Season Order Growth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receipts_6m",
+          "receipts_12m",
+          "average_receipt_6m",
+          "receipt_mom_growth",
+          "receipt_cagr_6m",
+          "receipt_volatility",
+          "max_month_receipt_share",
+          "active_months_6m",
+          "operating_cashflow_margin_6m",
+          "debt_ratio",
+          "current_ratio",
+          "platform_orders_6m",
+          "platform_order_growth_6m",
+          "redemption_rate_6m",
+          "refund_rate_6m",
+          "effective_orders_6m",
+          "estimated_ticket_6m",
+          "invoice_receipt_diff",
+          "cashflow_receipt_diff",
+          "order_receipt_correlation",
+          "valid_invoice_ratio",
+          "subject_consistency",
+          "data_completeness",
+          "structured_inconsistency_count",
+          "final_inconsistency_count",
+          "review_order_ratio",
+          "monthly_orders_6m",
+          "capacity_utilization",
+          "peak_season_order_growth"
+        ],
+        "title": "FeatureSnapshot"
+      },
+      "FullAnalysisRequest": {
+        "properties": {
+          "application": {
+            "$ref": "#/components/schemas/ApplicationContext"
+          },
+          "merchant": {
+            "$ref": "#/components/schemas/MerchantAnalysisRequest"
+          },
+          "anomaly": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnomalyAnalysisRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cash_gap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CashGapForecastRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "application",
+          "merchant"
+        ],
+        "title": "FullAnalysisRequest"
+      },
+      "FullAnalysisResult": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "overall_risk": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "MANUAL_REVIEW"
+            ],
+            "title": "Overall Risk"
+          },
+          "overall_decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "MANUAL_REVIEW",
+              "DECLINE"
+            ],
+            "title": "Overall Decision"
+          },
+          "module_states": {
+            "$ref": "#/components/schemas/ModuleStates"
+          },
+          "data_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Data Warnings"
+          },
+          "score": {
+            "$ref": "#/components/schemas/AnalysisResult"
+          },
+          "anomaly": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnomalyAnalysisResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cash_gap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CashGapForecastResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "material_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/MaterialEvidence"
+            },
+            "type": "array",
+            "title": "Material Evidence"
+          },
+          "eligibility": {
+            "$ref": "#/components/schemas/EligibilityResult"
+          },
+          "loan_terms": {
+            "$ref": "#/components/schemas/LoanTerms"
+          },
+          "repayment_capacity": {
+            "$ref": "#/components/schemas/RepaymentCapacity"
+          },
+          "audit_trail": {
+            "$ref": "#/components/schemas/AuditTrail"
+          },
+          "policy_recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyRecommendation"
+            },
+            "type": "array",
+            "title": "Policy Recommendations"
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version",
+            "default": "0.4.0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "generated_at",
+          "overall_risk",
+          "overall_decision",
+          "module_states",
+          "data_warnings",
+          "score",
+          "anomaly",
+          "cash_gap",
+          "material_evidence",
+          "eligibility",
+          "loan_terms",
+          "repayment_capacity",
+          "audit_trail"
+        ],
+        "title": "FullAnalysisResult"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LimitDecision": {
+        "properties": {
+          "score_multiplier": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Multiplier"
+          },
+          "stability_factor": {
+            "type": "number",
+            "title": "Stability Factor"
+          },
+          "capacity_factor": {
+            "type": "number",
+            "title": "Capacity Factor"
+          },
+          "growth_bonus": {
+            "type": "number",
+            "title": "Growth Bonus"
+          },
+          "recommended_limit": {
+            "type": "integer",
+            "title": "Recommended Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score_multiplier",
+          "stability_factor",
+          "capacity_factor",
+          "growth_bonus",
+          "recommended_limit"
+        ],
+        "title": "LimitDecision"
+      },
+      "LoanTerms": {
+        "properties": {
+          "requested_amount": {
+            "type": "integer",
+            "title": "Requested Amount"
+          },
+          "recommended_limit": {
+            "type": "integer",
+            "title": "Recommended Limit"
+          },
+          "limit_range": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Limit Range"
+          },
+          "tenor_months": {
+            "type": "integer",
+            "title": "Tenor Months"
+          },
+          "repayment_method": {
+            "type": "string",
+            "title": "Repayment Method"
+          },
+          "is_revolving": {
+            "type": "boolean",
+            "title": "Is Revolving"
+          },
+          "drawdown_rule": {
+            "type": "string",
+            "title": "Drawdown Rule"
+          },
+          "renewal_rule": {
+            "type": "string",
+            "title": "Renewal Rule"
+          },
+          "limit_adjustment_rule": {
+            "type": "string",
+            "title": "Limit Adjustment Rule"
+          },
+          "use_of_funds": {
+            "type": "string",
+            "enum": [
+              "设备采购",
+              "装修扩店",
+              "旺季备货",
+              "人员扩充",
+              "平台活动垫资",
+              "租金工资周转",
+              "其他经营周转"
+            ],
+            "title": "Use Of Funds"
+          },
+          "use_of_funds_match": {
+            "type": "string",
+            "title": "Use Of Funds Match"
+          },
+          "use_of_funds_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Use Of Funds Warnings"
+          },
+          "expected_repayment_source": {
+            "type": "string",
+            "enum": [
+              "经营现金流",
+              "平台订单回款",
+              "工行账户自动扣款",
+              "其他经营收入"
+            ],
+            "title": "Expected Repayment Source"
+          },
+          "repayment_source_note": {
+            "type": "string",
+            "title": "Repayment Source Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requested_amount",
+          "recommended_limit",
+          "limit_range",
+          "tenor_months",
+          "repayment_method",
+          "is_revolving",
+          "drawdown_rule",
+          "renewal_rule",
+          "limit_adjustment_rule",
+          "use_of_funds",
+          "use_of_funds_match",
+          "use_of_funds_warnings",
+          "expected_repayment_source",
+          "repayment_source_note"
+        ],
+        "title": "LoanTerms"
+      },
+      "MaterialEvidence": {
+        "properties": {
+          "material_id": {
+            "type": "string",
+            "title": "Material Id"
+          },
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "license",
+              "cashflow",
+              "statement",
+              "tax",
+              "plan",
+              "asset"
+            ],
+            "title": "Group"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256"
+          },
+          "parse_status": {
+            "type": "string",
+            "const": "PARSED",
+            "title": "Parse Status",
+            "default": "PARSED"
+          },
+          "simulated": {
+            "type": "boolean",
+            "title": "Simulated",
+            "default": true
+          },
+          "completeness_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Completeness Score"
+          },
+          "period_months": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 120.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Months"
+          },
+          "subject_match": {
+            "type": "boolean",
+            "title": "Subject Match"
+          },
+          "extracted_metrics": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedMetric"
+            },
+            "type": "array",
+            "title": "Extracted Metrics"
+          },
+          "findings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "material_id",
+          "merchant_id",
+          "group",
+          "file_name",
+          "media_type",
+          "size_bytes",
+          "sha256",
+          "completeness_score",
+          "subject_match",
+          "extracted_metrics",
+          "findings",
+          "warnings"
+        ],
+        "title": "MaterialEvidence"
+      },
+      "MaterialParseRequest": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{2,40}$",
+            "title": "Merchant Id"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "license",
+              "cashflow",
+              "statement",
+              "tax",
+              "plan",
+              "asset"
+            ],
+            "title": "Group"
+          },
+          "file_name": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "File Name"
+          },
+          "media_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Media Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "maximum": 5242880.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          },
+          "content_base64": {
+            "type": "string",
+            "minLength": 4,
+            "title": "Content Base64"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "group",
+          "file_name",
+          "media_type",
+          "size_bytes",
+          "content_base64"
+        ],
+        "title": "MaterialParseRequest"
+      },
+      "MerchantAnalysisRequest": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "profile": {
+            "type": "string",
+            "enum": [
+              "v5_current",
+              "legacy_acceptance"
+            ],
+            "title": "Profile",
+            "default": "v5_current"
+          },
+          "structural": {
+            "$ref": "#/components/schemas/StructuralData"
+          },
+          "unstructured": {
+            "$ref": "#/components/schemas/UnstructuredData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "structural",
+          "unstructured"
+        ],
+        "title": "MerchantAnalysisRequest"
+      },
+      "ModuleStates": {
+        "properties": {
+          "score": {
+            "type": "string",
+            "const": "READY",
+            "title": "Score",
+            "default": "READY"
+          },
+          "anomaly": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "NOT_PROVIDED"
+            ],
+            "title": "Anomaly"
+          },
+          "cash_gap": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "NOT_PROVIDED"
+            ],
+            "title": "Cash Gap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "anomaly",
+          "cash_gap"
+        ],
+        "title": "ModuleStates"
+      },
+      "MonthlyCashflow": {
+        "properties": {
+          "month": {
+            "type": "string",
+            "format": "date",
+            "title": "Month"
+          },
+          "operating_inflow": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Operating Inflow"
+          },
+          "operating_outflow": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Operating Outflow"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month",
+          "operating_inflow",
+          "operating_outflow"
+        ],
+        "title": "MonthlyCashflow"
+      },
+      "PolicyRecommendation": {
+        "properties": {
+          "policy_id": {
+            "type": "string",
+            "title": "Policy Id"
+          },
+          "policy_name": {
+            "type": "string",
+            "title": "Policy Name"
+          },
+          "policy_type": {
+            "type": "string",
+            "title": "Policy Type"
+          },
+          "policy_level": {
+            "type": "string",
+            "title": "Policy Level"
+          },
+          "support_method": {
+            "type": "string",
+            "title": "Support Method"
+          },
+          "support_standard": {
+            "type": "string",
+            "title": "Support Standard"
+          },
+          "match_level": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW",
+              "CANDIDATE"
+            ],
+            "title": "Match Level"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "required_materials": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Materials"
+          },
+          "application_steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Application Steps"
+          },
+          "bank_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bank Actions"
+          },
+          "consumer_introduction": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Consumer Introduction"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "application_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Deadline"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DRAFT",
+              "EXPIRED"
+            ],
+            "title": "Status"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "policy_id",
+          "policy_name",
+          "policy_type",
+          "policy_level",
+          "support_method",
+          "support_standard",
+          "match_level",
+          "reason",
+          "required_materials",
+          "application_steps",
+          "bank_actions",
+          "consumer_introduction",
+          "source_url",
+          "application_deadline",
+          "status",
+          "warnings"
+        ],
+        "title": "PolicyRecommendation"
+      },
+      "RepaymentCapacity": {
+        "properties": {
+          "conclusion": {
+            "type": "string",
+            "title": "Conclusion"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ],
+            "title": "Confidence"
+          },
+          "monthly_operating_inflow": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Operating Inflow"
+          },
+          "monthly_operating_outflow": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Operating Outflow"
+          },
+          "fixed_cost_coverage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Cost Coverage"
+          },
+          "p90_funding_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90 Funding Gap"
+          },
+          "debt_pressure_level": {
+            "type": "string",
+            "title": "Debt Pressure Level"
+          },
+          "refund_complaint_pressure": {
+            "type": "string",
+            "title": "Refund Complaint Pressure"
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conclusion",
+          "confidence",
+          "monthly_operating_inflow",
+          "monthly_operating_outflow",
+          "fixed_cost_coverage",
+          "p90_funding_gap",
+          "debt_pressure_level",
+          "refund_complaint_pressure",
+          "evidence"
+        ],
+        "title": "RepaymentCapacity"
+      },
+      "ReportSummaryRequest": {
+        "properties": {
+          "analysis": {
+            "$ref": "#/components/schemas/FullAnalysisResult"
+          }
+        },
+        "type": "object",
+        "required": [
+          "analysis"
+        ],
+        "title": "ReportSummaryRequest"
+      },
+      "ReviewRuleHit": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "HIGH",
+              "MEDIUM"
+            ],
+            "title": "Level"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "level",
+          "message"
+        ],
+        "title": "ReviewRuleHit"
+      },
+      "StructuralData": {
+        "properties": {
+          "merchant_name": {
+            "type": "string",
+            "title": "Merchant Name"
+          },
+          "industry": {
+            "type": "string",
+            "title": "Industry"
+          },
+          "license_subject": {
+            "type": "string",
+            "title": "License Subject"
+          },
+          "account_holder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Holder"
+          },
+          "invoice_issuer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Issuer"
+          },
+          "months_in_business": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Months In Business"
+          },
+          "legal_credit_status": {
+            "type": "string",
+            "enum": [
+              "正常",
+              "关注",
+              "异常",
+              "未知"
+            ],
+            "title": "Legal Credit Status"
+          },
+          "employee_count": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Employee Count"
+          },
+          "requested_amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Requested Amount"
+          },
+          "plan_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Score"
+          },
+          "missing_key_field_count": {
+            "type": "integer",
+            "maximum": 14.0,
+            "minimum": 0.0,
+            "title": "Missing Key Field Count",
+            "default": 0
+          },
+          "monthly_receipts": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Monthly Receipts"
+          },
+          "monthly_orders": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Monthly Orders"
+          },
+          "monthly_redemption_rates": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Monthly Redemption Rates"
+          },
+          "monthly_refund_rates": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Monthly Refund Rates"
+          },
+          "operating_cash_inflow_6m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Cash Inflow 6M"
+          },
+          "operating_cash_outflow_6m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Cash Outflow 6M"
+          },
+          "total_assets": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Assets"
+          },
+          "total_liabilities": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Liabilities"
+          },
+          "current_assets": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Assets"
+          },
+          "current_liabilities": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Liabilities"
+          },
+          "sales_invoice_amount_12m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sales Invoice Amount 12M"
+          },
+          "purchase_invoice_amount_12m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purchase Invoice Amount 12M"
+          },
+          "invoice_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Count"
+          },
+          "valid_invoice_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Invoice Count"
+          },
+          "transaction_anomaly_hits": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Transaction Anomaly Hits",
+            "default": 0
+          },
+          "contract_invoice_match": {
+            "type": "string",
+            "enum": [
+              "通过",
+              "失败",
+              "待补充"
+            ],
+            "title": "Contract Invoice Match"
+          },
+          "raw_inconsistency_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Raw Inconsistency Count",
+            "default": 0
+          },
+          "peak_season_order_growth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Season Order Growth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_name",
+          "industry",
+          "license_subject",
+          "months_in_business",
+          "legal_credit_status",
+          "employee_count",
+          "requested_amount",
+          "monthly_receipts",
+          "monthly_orders",
+          "monthly_redemption_rates",
+          "monthly_refund_rates",
+          "contract_invoice_match"
+        ],
+        "title": "StructuralData"
+      },
+      "TransactionDetail": {
+        "properties": {
+          "merchant_id": {
+            "type": "string",
+            "title": "Merchant Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "transaction_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Transaction Time"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "IN",
+              "OUT"
+            ],
+            "title": "Direction"
+          },
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount"
+          },
+          "counterparty_hash": {
+            "type": "string",
+            "title": "Counterparty Hash"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "COLLECTION",
+              "TRANSFER",
+              "CASH",
+              "REFUND",
+              "REVERSAL"
+            ],
+            "title": "Channel"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "REFUNDED",
+              "REVERSED"
+            ],
+            "title": "Status",
+            "default": "SUCCESS"
+          },
+          "order_id_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id Hash"
+          },
+          "invoice_id_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Id Hash"
+          },
+          "purpose_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose Code"
+          },
+          "is_business_hour": {
+            "type": "boolean",
+            "title": "Is Business Hour"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_id",
+          "transaction_id",
+          "transaction_time",
+          "direction",
+          "amount",
+          "counterparty_hash",
+          "channel",
+          "is_business_hour"
+        ],
+        "title": "TransactionDetail"
+      },
+      "UnstructuredData": {
+        "properties": {
+          "valid_review_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Valid Review Count"
+          },
+          "review_platform_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Review Platform Count"
+          },
+          "average_rating": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 5.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Rating"
+          },
+          "low_rating_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low Rating Ratio"
+          },
+          "sentiment_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment Score"
+          },
+          "negative_review_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Negative Review Ratio"
+          },
+          "keyword_risk_hits": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Keyword Risk Hits",
+            "default": 0
+          },
+          "merchant_reply_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant Reply Rate"
+          },
+          "review_interactions": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Interactions"
+          },
+          "media_review_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Review Ratio"
+          },
+          "suspected_ai_review_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suspected Ai Review Ratio"
+          },
+          "social_account_age_months": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Account Age Months"
+          },
+          "social_posts_per_month": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Posts Per Month"
+          },
+          "follower_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follower Count"
+          },
+          "social_engagement_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Engagement Rate"
+          },
+          "social_negative_comment_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Social Negative Comment Ratio"
+          },
+          "ugc_count_90d": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ugc Count 90D"
+          },
+          "ugc_sentiment_score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ugc Sentiment Score"
+          },
+          "complaint_source_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Complaint Source Count",
+            "default": 0
+          },
+          "complaint_count_6m": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Complaint Count 6M",
+            "default": 0
+          },
+          "severe_complaint_ratio": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severe Complaint Ratio"
+          },
+          "complaint_completion_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complaint Completion Rate"
+          },
+          "complaint_amount_6m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Complaint Amount 6M"
+          }
+        },
+        "type": "object",
+        "required": [
+          "valid_review_count",
+          "review_platform_count"
+        ],
+        "title": "UnstructuredData"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
