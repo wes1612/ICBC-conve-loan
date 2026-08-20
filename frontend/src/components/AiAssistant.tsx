@@ -35,13 +35,11 @@ const STEP_LABELS: Record<WorkflowStep, string> = {
   results: '第五步 · 授信报告',
 }
 
-const QUICK_QUESTIONS: Record<WorkflowStep, string[]> = {
-  identity: ['这一步要注意什么？', '为什么需要主体资料？'],
-  verify: ['为什么需要身份核验？', '核验失败怎么办？'],
-  data: ['为什么需要这些材料？', '现在还缺哪些材料？'],
-  authorize: ['这些授权有什么用途？', '授权时要注意什么？'],
-  results: ['为什么进入这个风险等级？', '资金缺口结果怎么理解？'],
-}
+const QUICK_QUESTIONS = [
+  '消费引导策略是什么？需要我自己去申请吗？',
+  '为什么我要上传支付宝、微信、美团等数据？',
+  '法人和联系人的区别是什么？',
+]
 
 function AssistantContent({ content }: { content: string }) {
   const lines = content.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)
@@ -135,24 +133,27 @@ export function AiAssistant({
   return (
     <aside className={`ai-assistant ${open ? 'is-open' : ''}`} aria-label="五步授信流程助手">
       {open && (
-        <div className="ai-assistant__panel">
-          <header>
-            <div className="ai-assistant__mark"><Icon name="spark" size={20} /></div>
-            <div><strong>工小信 · 流程助手</strong><span>{STEP_LABELS[currentStep]}</span></div>
-            <button type="button" onClick={() => setOpen(false)} aria-label="关闭流程助手">×</button>
+        <div className="ai-assistant__panel" role="dialog" aria-label="小微助手对话框">
+          <header className="ai-assistant__intro">
+            <div>
+              <strong>hi, 我是您的小微助手~</strong>
+              <span>试试这样问：</span>
+              <small>{STEP_LABELS[currentStep]} · 仅作解释，不参与审批</small>
+            </div>
+            <button className="ai-assistant__avatar" type="button" onClick={() => setOpen(false)} aria-label="收起小微助手">
+              <i className="ai-assistant__eye ai-assistant__eye--left" />
+              <i className="ai-assistant__eye ai-assistant__eye--right" />
+              <i className="ai-assistant__smile" />
+            </button>
           </header>
 
-          <div className="ai-assistant__scope">
-            仅解释当前流程与既有分析结果，不参与评分或授信决策。
+          <div className="ai-assistant__quick">
+            {QUICK_QUESTIONS.map((question) => (
+              <button type="button" key={question} onClick={() => void submit(question)} disabled={loading || apiOnline === false}>{question}</button>
+            ))}
           </div>
 
           <div className="ai-assistant__messages" aria-live="polite">
-            {messages.length === 0 && (
-              <div className="ai-assistant__empty">
-                <Icon name="shield" size={24} />
-                <p>可以询问本步骤的资料要求、注意事项和结果含义。</p>
-              </div>
-            )}
             {messages.map((message) => (
               <div className={`ai-message ai-message--${message.role}`} key={message.id}>
                 {message.role === 'assistant'
@@ -169,21 +170,16 @@ export function AiAssistant({
             {apiOnline === false && <div className="ai-assistant__error"><Icon name="warning" size={17} />后端服务离线，流程助手暂不可用。</div>}
           </div>
 
-          <div className="ai-assistant__quick">
-            {QUICK_QUESTIONS[currentStep].map((question) => (
-              <button type="button" key={question} onClick={() => void submit(question)} disabled={loading || apiOnline === false}>{question}</button>
-            ))}
-          </div>
-
           <form onSubmit={(event) => { event.preventDefault(); void submit(draft) }}>
             <input
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               maxLength={500}
-              placeholder="输入关于当前步骤的问题"
+              placeholder="任何问题都可以在这里问小微~"
               disabled={loading || apiOnline === false}
             />
-            <button type="submit" disabled={!draft.trim() || loading || apiOnline === false} aria-label="发送问题"><Icon name="arrow" size={18} /></button>
+            <button className="ai-assistant__add" type="button" disabled aria-label="暂不支持添加附件" title="当前版本暂不支持附件问答">+</button>
+            <button className="ai-assistant__send" type="submit" disabled={!draft.trim() || loading || apiOnline === false} aria-label="发送问题"><Icon name="arrow" size={22} /></button>
           </form>
         </div>
       )}
