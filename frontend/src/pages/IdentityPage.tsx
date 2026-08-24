@@ -65,12 +65,12 @@ export function IdentityPage({
             <button type="button" onClick={() => licenseInputRef.current?.click()}>
               {licenseFile ? '重新选择' : '选择文件'}
             </button>
-            <small>{licenseFile ? '文件已暂存，将在经营数据步骤自动提交后端校验与解析。' : '也可在经营数据步骤载入仓库内置的演示执照。'}</small>
+            {licenseFile && <small>文件已暂存，将在经营数据步骤自动提交后端校验与解析。</small>}
           </div>
         </section>
 
         <section className="form-card">
-          <div className="form-section-title"><span>02</span><div><h2>法人及联系人</h2><p>用于身份核验与申请进度通知</p></div></div>
+          <div className="form-section-title"><span>02</span><div><h2>法人及联系人</h2><p>联系人请填写贵司持续跟进该业务、与银行对接的负责人</p></div></div>
           <div className="form-grid">
             <label className="field"><span>法人姓名 <b>*</b></span><input value={value.legalName} onChange={(e) => update('legalName', e.target.value)} placeholder="请输入法人姓名" /></label>
             <label className="field"><span>法人手机号 <b>*</b></span><input value={value.legalPhone} onChange={(e) => update('legalPhone', e.target.value)} placeholder="11 位手机号" inputMode="tel" maxLength={11} /></label>

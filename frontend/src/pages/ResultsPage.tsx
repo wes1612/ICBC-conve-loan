@@ -19,6 +19,12 @@ const decisionLabels = {
 }
 
 const confidenceLabels = { HIGH: '高', MEDIUM: '中', LOW: '低' }
+const riskLevelLabels: Record<RiskLevel, string> = {
+  LOW: '低',
+  MEDIUM: '中',
+  HIGH: '高',
+  MANUAL_REVIEW: '人工复核',
+}
 
 function money(value: number) {
   return new Intl.NumberFormat('zh-CN', {
@@ -165,24 +171,8 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
   const recommendations = buildRecommendationSet(data)
 
   return (
-    <main className="report-page">
-      <section className={`report-hero report-hero--${data.overall_risk.toLowerCase()}`}>
-        <div className="page-shell report-hero__inner">
-          <div>
-            <Eyebrow>综合分析结果 · {data.merchant_id}</Eyebrow>
-            <h1>{score.merchant_name}</h1>
-            <p>生成于 {new Intl.DateTimeFormat('zh-CN', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(data.generated_at))}</p>
-          </div>
-          <div className="report-hero__decision">
-            <RiskPill risk={data.overall_risk} />
-            <h2>{decisionLabels[score.decision]}</h2>
-            <p>{riskCopy(data.overall_risk)}</p>
-          </div>
-          <div className="report-hero__source"><i className={source === 'api' ? 'is-live' : ''} />{source === 'api' ? '真实接口响应' : '固定联调样例'} · API {data.api_version}</div>
-        </div>
-      </section>
-
-      <div className="report-toolbar page-shell">
+    <main className="report-page report-page--dashboard">
+      <div className="report-toolbar report-toolbar--dashboard page-shell">
         <div className="segmented">
           <button className={view === 'merchant' ? 'is-active' : ''} onClick={() => setView('merchant')}>商户摘要</button>
           <button className={view === 'reviewer' ? 'is-active' : ''} onClick={() => setView('reviewer')}>银行审核台</button>
@@ -195,82 +185,77 @@ export function ResultsPage({ data, source, onRestart, onBack }: ResultsPageProp
       )}
 
       {view === 'merchant' ? (
-        <div className="report-grid report-grid--final page-shell">
-          <AiSummaryCard data={data} />
+        <div className="result-dashboard page-shell">
+          <section className={`result-decision-card result-decision-card--${data.overall_risk.toLowerCase()}`}>
+            <div>
+              <h1>{score.merchant_name}</h1>
+              <span>风险等级：{riskLevelLabels[data.overall_risk]}</span>
+            </div>
+            <strong>{decisionLabels[score.decision]}</strong>
+            <small>{source === 'api' ? '综合分析已完成' : '固定联调样例'} · {data.merchant_id}</small>
+          </section>
 
-          <section className="score-card report-card">
-            <div className="card-heading"><div><h2>综合评分：等级 {score.credit_grade}</h2></div></div>
-            <div className="score-card__body">
-              <div className="score-ring" style={{ '--score': `${score.operating_credit_score * 3.6}deg` } as React.CSSProperties}>
-                <div><strong>{score.operating_credit_score.toFixed(1)}</strong><span>/ 100</span></div>
+          <section className="result-score-card report-card">
+            <div>
+              <h2>综合评分<br />等级 {score.credit_grade}</h2>
+              <p>数据置信度：{confidenceLabels[score.confidence]}</p>
+            </div>
+            <div className="score-ring score-ring--compact" style={{ '--score': `${score.operating_credit_score * 3.6}deg` } as React.CSSProperties}>
+              <div><strong>{score.operating_credit_score.toFixed(1)}</strong><span>/ 100</span></div>
+            </div>
+          </section>
+
+          <section className="result-limit-card report-card">
+            <h2>建议额度</h2>
+            <strong>{money(roundedLimit(score.limit.recommended_limit))}</strong>
+            <p>额度将根据后续经营表现动态复评。</p>
+          </section>
+
+          <div className="result-dashboard__modules">
+            <AiSummaryCard data={data} />
+
+            <section className="merchant-rec-intro report-card">
+              <h2>消费承接与政策申请推荐</h2>
+              <p>工行将基于授权信息，为企业匹配消费场景、引荐入口与可申请政策。完成协议确认后，可由客户经理继续对接。</p>
+            </section>
+
+            <section className="merchant-policy-card report-card">
+              <div className="card-heading"><div><h2>政策内推卡</h2></div><Icon name="bank" size={22} /></div>
+              <p className="module-explanation">以下为可优先咨询的政策方向，具体资格以主管部门和银行复核为准。</p>
+              <div className="compact-recommendation-list compact-recommendation-list--policy">
+                {recommendations.policies.map((item) => (
+                  <article key={item.title}>
+                    <div><h3>{item.title}</h3><p>{item.summary}</p></div>
+                    <button type="button">申请引荐</button>
+                  </article>
+                ))}
               </div>
-              <div className="score-summary">
-                <p>评分反映经营表现与资料可信度，不等同于违约概率。</p>
-                <div>
-                  <Metric label="数据置信度" value={confidenceLabels[score.confidence]} />
-                  <Metric label="建议额度" value={money(roundedLimit(score.limit.recommended_limit))} />
-                </div>
+            </section>
+
+            <section className="merchant-dimension-card report-card">
+              <div className="card-heading"><div><h2>经营情况评分</h2></div></div>
+              <DimensionBars values={score.dimensions} />
+            </section>
+
+            <section className="merchant-consumption-card report-card">
+              <div className="card-heading"><div><h2>消费承接卡</h2></div><Icon name="spark" size={22} /></div>
+              <p className="module-explanation">结合企业承接能力，推荐可快速启动的消费触达方案。</p>
+              <div className="compact-recommendation-list">
+                {recommendations.strategies.map((item) => (
+                  <article key={item.title}>
+                    <div><h3>{item.title}</h3><p>{item.summary}</p></div>
+                    <button type="button">签署并申请</button>
+                  </article>
+                ))}
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section className="limit-card report-card">
-            <div className="card-heading"><div><h2>建议额度</h2></div><Icon name="bank" size={25} /></div>
-            <strong className="big-money">{money(roundedLimit(score.limit.recommended_limit))}</strong>
-            <p>建议额度由综合评分、稳定系数、消费承接系数和成长加成共同计算，并按1000元整数倍取整展示。</p>
-          </section>
-
-          <section className="dimension-card report-card report-card--wide">
-            <div className="card-heading"><div><h2>经营画像</h2></div></div>
-            <DimensionBars values={score.dimensions} />
-          </section>
-
-          <section className="recommendation-intro report-card report-card--full">
-            <h2>消费承接与政策申请推荐</h2>
-            <p>本栏目给出部分 ICBC 可以为贵司提供的消费场景引介和推荐的政策申请。工商银行主要提供的消费场景包括：①一般个人账户、企业员工账户定向消费券发放；②合作平台曝光率增加；③工商银行畅销产品消费券捆绑。</p>
-            <p>推荐的政策申请，即工商银行根据贵司情况推荐贵司申请的相关政府消费政策。贵司如有需要，可以通过工行内部优先渠道申请。</p>
-            <p>如您需要申请以上政策或消费场景，请点击对应按钮签署协议。签署协议完成后，后台会自动为您登记信息、进入申请流程。如有需要，会有人工客服通过联系人手机号码联系您。</p>
-          </section>
-
-          <section className="recommendation-card report-card report-card--full">
-            <div className="card-heading"><div><h2>消费承接卡</h2></div></div>
-            <div className="recommendation-stack">
-              {recommendations.strategies.map((item) => (
-                <article key={item.title} className="dark-rec-card">
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.summary}</p>
-                    <a href={item.link} target="_blank" rel="noreferrer">{item.link}</a>
-                  </div>
-                  <ul>{item.points.map((point) => <li key={point}>{point}</li>)}</ul>
-                  <button type="button">签署协议并申请</button>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="recommendation-card report-card report-card--full">
-            <div className="card-heading"><div><h2>推荐政策卡</h2></div></div>
-            <div className="recommendation-stack">
-              {recommendations.policies.map((item) => (
-                <article key={item.title} className="dark-rec-card dark-rec-card--policy">
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.summary}</p>
-                    <a href={item.link} target="_blank" rel="noreferrer">{item.link}</a>
-                  </div>
-                  <ul>{item.points.map((point) => <li key={point}>{point}</li>)}</ul>
-                  <button type="button">签署协议并申请</button>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="report-closing-note report-card report-card--full">
-            <p>长期授信与消费引导服务会根据贵司实时经营情况动态调整，以持续跟进贵司贷后情况，达到全生命周期服务与支持的效果。您可以在贷后或申请消费政策后随时登录本平台，查看最新经营分析与授信额度。</p>
-            <p>更多分析结果与详尽信息，请下载结构化摘要查看。如有疑问，请咨询工小信或人工客服。</p>
-            <strong>人工客服热线：021-00000000</strong>
-          </section>
+            <section className="merchant-report-note report-card">
+              <h2>经营报告已生成</h2>
+              <p>评分、消费策略与政策引荐均来自本次授权数据。后续经营变化会触发动态复评。</p>
+              <strong>人工客服热线：021-00000000</strong>
+            </section>
+          </div>
         </div>
       ) : (
         <ReviewerView data={data} />

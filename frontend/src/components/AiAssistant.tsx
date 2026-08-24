@@ -132,6 +132,7 @@ export function AiAssistant({
 
   return (
     <aside className={`ai-assistant ${open ? 'is-open' : ''}`} aria-label="五步授信流程助手">
+      {open && <button className="ai-assistant__dismiss-area" type="button" onClick={() => setOpen(false)} tabIndex={-1} aria-label="点击浮窗左侧区域收起小微助手" />}
       {open && (
         <div className="ai-assistant__panel" role="dialog" aria-label="小微助手对话框">
           <header className="ai-assistant__intro">
@@ -140,10 +141,8 @@ export function AiAssistant({
               <span>试试这样问：</span>
               <small>{STEP_LABELS[currentStep]} · 仅作解释，不参与审批</small>
             </div>
-            <button className="ai-assistant__avatar" type="button" onClick={() => setOpen(false)} aria-label="收起小微助手">
-              <i className="ai-assistant__eye ai-assistant__eye--left" />
-              <i className="ai-assistant__eye ai-assistant__eye--right" />
-              <i className="ai-assistant__smile" />
+            <button className="ai-assistant__avatar assistant-smiley" type="button" onClick={() => setOpen(false)} aria-label="收起小微助手">
+              <Icon name="smiley" size={36} />
             </button>
           </header>
 

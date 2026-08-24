@@ -25,6 +25,7 @@ export function VerifyPage({ legalName, verified, onVerifiedChange, onBack, onNe
       <Eyebrow>02 · 身份核验</Eyebrow>
       <section className={`verify-device ${verified ? 'is-verified' : ''}`}>
         <h1>法人人脸核验</h1>
+        <p className="verify-device__instruction">请使用微信扫码，验证法人身份</p>
         <div className="face-stage">
           <div className="portrait-frame">
             {verified ? <Icon name="check" size={58} /> : <><span className="portrait-head" /><span className="portrait-body" /></>}

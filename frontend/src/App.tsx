@@ -21,6 +21,7 @@ import { VerifyPage } from './pages/VerifyPage'
 import { DataPage } from './pages/DataPage'
 import { AuthorizePage } from './pages/AuthorizePage'
 import { ResultsPage } from './pages/ResultsPage'
+import { AnalysisLoadingPage } from './pages/AnalysisLoadingPage'
 
 const steps = [
   { key: 'home', label: '申请首页' },
@@ -159,7 +160,7 @@ function App() {
       const response = await runFullAnalysis(request)
       setResult(response)
 
-      const remaining = Math.max(0, 900 - (Date.now() - startedAt))
+      const remaining = Math.max(0, 6200 - (Date.now() - startedAt))
       if (remaining) await new Promise((resolve) => window.setTimeout(resolve, remaining))
       setAnalyzing(false)
       go('results')
@@ -181,8 +182,8 @@ function App() {
   const activeIndex = steps.findIndex((item) => item.key === step)
 
   return (
-    <div className="app-shell">
-      <header className="site-header">
+    <div className={`app-shell ${analyzing ? 'app-shell--analyzing' : ''}`}>
+      {!analyzing && <header className="site-header">
         <div className="page-shell site-header__inner">
           <button className="brand" onClick={() => go('home')} aria-label="返回申请首页">
             <span className="brand__mark">融</span>
@@ -192,14 +193,10 @@ function App() {
             <button className={step === 'home' ? 'is-active' : ''} onClick={() => go('home')}>申请测算</button>
             <button className={step === 'results' ? 'is-active' : ''} onClick={() => result && go('results')} disabled={!result}>分析报告</button>
           </nav>
-          <div className="header-meta">
-            <span className={`header-status ${apiOnline ? 'is-online' : ''}`}><i />{apiOnline === null ? '连接中' : apiOnline ? '服务在线' : '服务离线'}</span>
-            <span className="competition-tag">工商银行杯 · MVP</span>
-          </div>
         </div>
-      </header>
+      </header>}
 
-      {step !== 'home' && (
+      {!analyzing && step !== 'home' && (
         <div className="stepper-wrap">
           <ol className="stepper page-shell">
             {steps.slice(1).map((item, index) => {
@@ -219,7 +216,9 @@ function App() {
         </div>
       )}
 
-      {step === 'home' && (
+      {analyzing && <AnalysisLoadingPage />}
+
+      {!analyzing && step === 'home' && (
         <HomePage
           demoCase={demoCase}
           caseLoading={caseLoading}
@@ -228,9 +227,9 @@ function App() {
           onStart={() => go('identity')}
         />
       )}
-      {step === 'identity' && <IdentityPage value={draft} licenseFile={identityLicenseFile} onChange={changeDraft} onLicenseFileChange={changeIdentityLicense} onBack={() => go('home')} onNext={() => go('verify')} />}
-      {step === 'verify' && <VerifyPage legalName={draft.legalName} verified={identityVerified} onVerifiedChange={setIdentityVerified} onBack={() => go('identity')} onNext={() => go('data')} />}
-      {step === 'data' && (
+      {!analyzing && step === 'identity' && <IdentityPage value={draft} licenseFile={identityLicenseFile} onChange={changeDraft} onLicenseFileChange={changeIdentityLicense} onBack={() => go('home')} onNext={() => go('verify')} />}
+      {!analyzing && step === 'verify' && <VerifyPage legalName={draft.legalName} verified={identityVerified} onVerifiedChange={setIdentityVerified} onBack={() => go('identity')} onNext={() => go('data')} />}
+      {!analyzing && step === 'data' && (
         <DataPage
           merchantId={demoCase.merchant_id}
           demoMaterials={demoCase.materials}
@@ -242,14 +241,13 @@ function App() {
           onNext={() => go('authorize')}
         />
       )}
-      {step === 'authorize' && (
+      {!analyzing && step === 'authorize' && (
         <AuthorizePage
-          merchantId={demoCase.merchant_id}
-          caseLabel={demoCase.case_label}
           analysisMode="api"
           analyzing={analyzing}
           apiOnline={apiOnline}
           error={analysisError}
+          contactPhone={draft.contactPhone}
           enabled={authorizedSources}
           consentConfirmed={consentConfirmed}
           prerequisitesReady={identityVerified && materialsReady}
@@ -259,9 +257,9 @@ function App() {
           onAnalyze={analyze}
         />
       )}
-      {step === 'results' && result && <ResultsPage data={result} source="api" onRestart={restart} onBack={() => go('authorize')} />}
+      {!analyzing && step === 'results' && result && <ResultsPage data={result} source="api" onRestart={restart} onBack={() => go('authorize')} />}
 
-      {step !== 'home' && (
+      {!analyzing && step !== 'home' && (
         <AiAssistant
           currentStep={step}
           apiOnline={apiOnline}
@@ -274,9 +272,9 @@ function App() {
         />
       )}
 
-      <footer className="site-footer">
+      {!analyzing && <footer className="site-footer">
         <div className="page-shell"><span>融策 · 消费供给动态授信 MVP</span><span>可解释评分 · 异常证据 · 资金情景</span><span>仅供竞赛演示</span></div>
-      </footer>
+      </footer>}
     </div>
   )
 }

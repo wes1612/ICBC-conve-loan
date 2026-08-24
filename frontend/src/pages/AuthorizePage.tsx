@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react'
-import type { AnalysisMode, ConnectorId, DemoMerchantId } from '../types'
+import { useState } from 'react'
+import type { AnalysisMode, ConnectorId } from '../types'
 import { Icon } from '../components/Icon'
 import { Button, Eyebrow, InfoNote } from '../components/Ui'
 
 interface AuthorizePageProps {
-  merchantId: DemoMerchantId
-  caseLabel: string
   analysisMode: AnalysisMode
   analyzing: boolean
   apiOnline: boolean | null
   error: string | null
+  contactPhone: string
   enabled: ConnectorId[]
   consentConfirmed: boolean
   prerequisitesReady: boolean
@@ -25,27 +24,33 @@ const connectors: Array<{
   type: string
   available: boolean
   required: boolean
+  icon: string
 }> = [
-  { id: 'bank', name: '银行经营流水', type: '评分、异常与现金流', available: true, required: true },
-  { id: 'meituan', name: '美团订单与评价', type: '订单与口碑交叉验证', available: true, required: true },
-  { id: 'enterprise', name: '公开工商信息', type: '主体身份核验', available: true, required: true },
-  { id: 'unionpay', name: '银联收单', type: '后续真实接口', available: false, required: false },
-  { id: 'alipay', name: '支付宝经营数据', type: '后续真实接口', available: false, required: false },
-  { id: 'wechat', name: '微信经营数据', type: '后续真实接口', available: false, required: false },
-  { id: 'douyin', name: '抖音团购与社媒', type: '后续真实接口', available: false, required: false },
-  { id: 'xiaohongshu', name: '小红书口碑', type: '后续真实接口', available: false, required: false },
+  { id: 'bank', name: '银行经营流水', type: '评分、异常与现金流', available: true, required: true, icon: '/connector-icons/icbc.webp' },
+  { id: 'meituan', name: '美团订单与评价', type: '订单与口碑交叉验证', available: true, required: true, icon: '/connector-icons/meituan.jpg' },
+  { id: 'enterprise', name: '公开工商信息', type: '主体身份核验', available: true, required: true, icon: '/connector-icons/national-emblem.webp' },
+  { id: 'unionpay', name: '银联收单', type: '后续真实接口', available: false, required: false, icon: '/connector-icons/union-pay.png' },
+  { id: 'alipay', name: '支付宝经营数据', type: '后续真实接口', available: false, required: false, icon: '/connector-icons/alipay.png' },
+  { id: 'wechat', name: '微信经营数据', type: '后续真实接口', available: false, required: false, icon: '/connector-icons/wechat.jpg' },
+  { id: 'douyin', name: '抖音团购与抖音账户', type: '后续真实接口', available: false, required: false, icon: '/connector-icons/tiktok.jpg' },
+  { id: 'xiaohongshu', name: '小红书账号数据', type: '后续真实接口', available: false, required: false, icon: '/connector-icons/rednote.jpg' },
 ]
 
 const requiredSourceIds = connectors.filter((item) => item.required).map((item) => item.id)
 const availableCount = connectors.filter((item) => item.available).length
 
+function maskedPhone(phone: string) {
+  const digits = phone.replace(/\D/g, '')
+  if (digits.length < 7) return phone || '132****1919'
+  return `${digits.slice(0, 3)}****${digits.slice(-4)}`
+}
+
 export function AuthorizePage({
-  merchantId,
-  caseLabel,
   analysisMode,
   analyzing,
   apiOnline,
   error,
+  contactPhone,
   enabled,
   consentConfirmed,
   prerequisitesReady,
@@ -54,18 +59,10 @@ export function AuthorizePage({
   onBack,
   onAnalyze,
 }: AuthorizePageProps) {
-  const [progress, setProgress] = useState(0)
+  const [verificationCode, setVerificationCode] = useState('')
+  const [codeSent, setCodeSent] = useState(false)
   const requiredReady = requiredSourceIds.every((id) => enabled.includes(id))
   const ready = prerequisitesReady && requiredReady && consentConfirmed
-
-  useEffect(() => {
-    if (!analyzing) {
-      setProgress(0)
-      return
-    }
-    const timer = window.setInterval(() => setProgress((value) => Math.min(92, value + 8)), 140)
-    return () => window.clearInterval(timer)
-  }, [analyzing])
 
   const toggle = (id: ConnectorId, available: boolean) => {
     if (!available) return
@@ -82,18 +79,17 @@ export function AuthorizePage({
 
   return (
     <main className="workflow page-shell">
-      <div className="workflow__intro">
+      <div className="workflow__intro workflow__intro--authorize">
         <div>
-          <Eyebrow>步骤 04 · 数据授权与分析</Eyebrow>
-          <h1>授权边界，由企业决定。</h1>
-          <p>每项授权均由申请人主动选择并记录确认时间；未授权的数据不能随分析请求发送。</p>
+          <Eyebrow>04 · 数据授权与分析</Eyebrow>
+          <p>工商银行可通过授权获取企业在相关平台的信息，综合评价企业经营状况。授权数据的来源和数量可能影响最终评判结果。请合理选择。</p>
         </div>
         <div className={`backend-state ${analysisMode === 'mock' || apiOnline ? 'is-online' : 'is-offline'}`}><i /><span>{serviceLabel}</span></div>
       </div>
 
       <div className="authorize-layout">
         <section className="connector-panel">
-          <div className="panel-heading"><div><h2>数据来源</h2><p>已授权 {enabled.length} / {availableCount} 项可用来源</p></div><Icon name="lock" /></div>
+          <div className="panel-heading"><div><h2>数据来源</h2><p>8 个接口可供授权，当前开放 {availableCount} 项 · 已授权 {enabled.length} 项</p></div><Icon name="lock" /></div>
           <div className="connector-list">
             {connectors.map((item) => {
               const active = enabled.includes(item.id)
@@ -106,7 +102,7 @@ export function AuthorizePage({
                   disabled={!item.available || analyzing}
                   aria-pressed={active}
                 >
-                  <span className="connector-logo">{item.name.slice(0, 1)}</span>
+                  <span className={`connector-logo connector-logo--${item.id}`} aria-hidden="true"><img src={item.icon} alt="" /></span>
                   <span><strong>{item.name}{item.required ? ' *' : ''}</strong><small>{item.type} · {item.available ? '需主动授权' : '尚未接入'}</small></span>
                   <i className="toggle"><b /></i>
                 </button>
@@ -117,21 +113,28 @@ export function AuthorizePage({
             <input type="checkbox" checked={consentConfirmed} onChange={(event) => onConsentChange(event.target.checked)} disabled={analyzing} />
             <span><strong>我已阅读并同意本次数据使用授权</strong><small>仅用于本次授信分析；取消授权后不能提交。</small></span>
           </label>
-          {!ready && <InfoNote tone="warning">{!prerequisitesReady ? '主体核验或五份必交材料已发生变更，请返回补齐。' : '请授权三项带 * 的当前可用来源，并主动勾选数据使用授权。'}</InfoNote>}
+          <div className="phone-verification" aria-label="手机号验证">
+            <span>手机号：<strong>{maskedPhone(contactPhone)}</strong></span>
+            <button type="button" onClick={() => setCodeSent(true)} disabled={analyzing}>{codeSent ? '重新发送' : '发送验证码'}</button>
+            <input
+              value={verificationCode}
+              onChange={(event) => setVerificationCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
+              inputMode="numeric"
+              placeholder={codeSent ? '输入验证码' : ''}
+              aria-label="短信验证码"
+              disabled={analyzing}
+            />
+          </div>
         </section>
 
         <section className="analysis-panel">
-          <div className="analysis-panel__case"><span>本轮随机数据</span><strong>{merchantId} · {caseLabel}</strong><small>{analysisMode === 'api' ? '模拟数据库 → FastAPI · profile: v5_current' : '显式固定样例 · 不代表接口成功'}</small></div>
-          <div className={`analysis-core ${analyzing ? 'is-running' : ''}`}>
-            <div className="analysis-core__mark"><Icon name={analyzing ? 'refresh' : 'spark'} size={34} /></div>
-            <h2>{analyzing ? '正在汇总三类分析…' : ready ? '资料与授权已准备完成' : '等待完成授权'}</h2>
-            <p>{analyzing ? '经营评分、异常识别与资金缺口预测将由统一接口一次返回。' : '接口失败会保留在本页并显示原因，不会自动生成授信结果。'}</p>
-            {analyzing && <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>}
-            {analyzing && <small>{progress < 34 ? '正在计算经营特征' : progress < 68 ? '正在核查交易异常' : '正在生成现金情景'}</small>}
+          <div className="analysis-core">
+            <div className="analysis-core__mark"><Icon name="spark" size={34} /></div>
+            <h2>{ready ? '资料与授权已准备完成' : '等待完成授权'}</h2>
+            <p>接口失败会保留在本页并显示原因，不会自动生成授信结果。</p>
           </div>
           {error && <InfoNote tone="warning">{error} 当前没有生成任何授信结论，请修正后重试。</InfoNote>}
           <Button icon="arrow" onClick={onAnalyze} disabled={analyzing || !ready}>{analyzing ? '分析进行中…' : '运行综合分析'}</Button>
-          <div className="analysis-contract"><Icon name="shield" /><span><strong>接口契约 v0.4.0</strong>POST /api/v1/ml/full-analysis</span></div>
         </section>
       </div>
 

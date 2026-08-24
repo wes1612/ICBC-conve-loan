@@ -14,6 +14,7 @@ export type IconName =
   | 'lock'
   | 'refresh'
   | 'shield'
+  | 'smiley'
   | 'spark'
   | 'upload'
   | 'warning'
@@ -32,6 +33,7 @@ const paths: Record<IconName, JSX.Element> = {
   lock: <><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></>,
   refresh: <><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M6.1 8a7 7 0 0 1 11.6-2.6L20 8M4 16l2.3 2.6A7 7 0 0 0 18 16"/></>,
   shield: <><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10"/><path d="m9 12 2 2 4-5"/></>,
+  smiley: <><path d="M8.2 7.2v3"/><path d="M15.8 7.2v3"/><path d="M7.2 13.2c.8 2.3 2.5 3.6 4.8 3.6s4-1.3 4.8-3.6"/></>,
   spark: <><path d="m12 3-1.2 3.8L7 8l3.8 1.2L12 13l1.2-3.8L17 8l-3.8-1.2z"/><path d="m5 15-.7 2.3L2 18l2.3.7L5 21l.7-2.3L8 18l-2.3-.7zM19 14l-.6 1.9-1.9.6 1.9.6.6 1.9.6-1.9 1.9-.6-1.9-.6z"/></>,
   upload: <><path d="M12 21V8"/><path d="m7 13 5-5 5 5"/><path d="M5 3h14"/></>,
   warning: <><path d="M10.3 3.6 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0"/><path d="M12 9v4M12 17h.01"/></>,
